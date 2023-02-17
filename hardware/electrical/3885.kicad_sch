@@ -120,6 +120,12 @@
     (path "/0217b7ef-3928-43d6-9a5a-467bfde0e5ea/eb5832e7-5361-4334-8a53-7709ecc4eb77"
       (reference "#PWR0106") (unit 1) (value "VBUS") (footprint "")
     )
+    (path "/0217b7ef-3928-43d6-9a5a-467bfde0e5ea/ab13b049-42e7-4b21-b8f6-4e023d502acc"
+      (reference "#PWR?") (unit 1) (value "+3V3") (footprint "")
+    )
+    (path "/0217b7ef-3928-43d6-9a5a-467bfde0e5ea/e3021fb0-5454-47a0-a193-aff8eccd621b"
+      (reference "#PWR?") (unit 1) (value "GND") (footprint "")
+    )
     (path "/0217b7ef-3928-43d6-9a5a-467bfde0e5ea/868e3ab4-7549-4ad2-b897-c37a417778bf"
       (reference "C1") (unit 1) (value "4.7uF") (footprint "Capacitor_SMD:C_0402_1005Metric")
     )
