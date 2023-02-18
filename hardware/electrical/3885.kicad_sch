@@ -148,10 +148,10 @@
       (reference "D2") (unit 1) (value "D_Schottky") (footprint "Diode_THT:D_DO-41_SOD81_P2.54mm_Vertical_AnodeUp")
     )
     (path "/0217b7ef-3928-43d6-9a5a-467bfde0e5ea/33acf369-b9bb-4903-81fd-499104fea2ab"
-      (reference "J1") (unit 1) (value "USB_OTG") (footprint "Connector_USB:USB_Micro-B_GCT_USB3076-30-A")
+      (reference "J1") (unit 1) (value "Micro USB B") (footprint "Connector_USB:USB_Micro-B_GCT_USB3076-30-A")
     )
     (path "/0217b7ef-3928-43d6-9a5a-467bfde0e5ea/a409f5a2-d801-45d5-85c8-56c063099b85"
-      (reference "J3") (unit 1) (value "Conn_01x02_Male") (footprint "Connector_PinHeader_2.00mm:PinHeader_1x02_P2.00mm_Vertical")
+      (reference "J3") (unit 1) (value "JST-XH") (footprint "Connector_PinHeader_2.00mm:PinHeader_1x02_P2.00mm_Vertical")
     )
     (path "/0217b7ef-3928-43d6-9a5a-467bfde0e5ea/56f8fda6-2d52-41f9-b377-58b536d3402a"
       (reference "Q1") (unit 1) (value "IRLZ34N") (footprint "Package_TO_SOT_SMD:SOT-23")
@@ -166,7 +166,7 @@
       (reference "Q4") (unit 1) (value "IRLML5203") (footprint "Package_TO_SOT_SMD:SOT-23")
     )
     (path "/0217b7ef-3928-43d6-9a5a-467bfde0e5ea/42432c3c-6b80-4783-bc6f-de074e39d785"
-      (reference "R1") (unit 1) (value "R") (footprint "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder")
+      (reference "R1") (unit 1) (value "TBD") (footprint "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder")
     )
     (path "/0217b7ef-3928-43d6-9a5a-467bfde0e5ea/bf5e5076-35f6-4fda-a2d2-5da2e0063af0"
       (reference "R2") (unit 1) (value "470") (footprint "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder")
