@@ -102,6 +102,9 @@
     (path "/0217b7ef-3928-43d6-9a5a-467bfde0e5ea/49f29c65-e268-4192-926d-f9dd823575a0"
       (reference "#PWR03") (unit 1) (value "GND") (footprint "")
     )
+    (path "/0217b7ef-3928-43d6-9a5a-467bfde0e5ea/59b8598c-6688-497f-b1ec-87ff0251acc2"
+      (reference "#PWR04") (unit 1) (value "GND") (footprint "")
+    )
     (path "/0217b7ef-3928-43d6-9a5a-467bfde0e5ea/54eee7f2-8129-498e-b267-4a6566c9546d"
       (reference "#PWR05") (unit 1) (value "GND") (footprint "")
     )
@@ -156,8 +159,17 @@
     (path "/0217b7ef-3928-43d6-9a5a-467bfde0e5ea/8c7219bc-fbbe-445c-95bd-ae57945a6a60"
       (reference "C5") (unit 1) (value "1uF") (footprint "Capacitor_SMD:C_0402_1005Metric")
     )
+    (path "/0217b7ef-3928-43d6-9a5a-467bfde0e5ea/d422eb7e-d377-4f62-bd8d-434c0a83a8fd"
+      (reference "C6") (unit 1) (value "4u7") (footprint "")
+    )
+    (path "/0217b7ef-3928-43d6-9a5a-467bfde0e5ea/7d68b900-f675-4f5d-a09d-75d9d95fefc0"
+      (reference "C7") (unit 1) (value "DNP") (footprint "")
+    )
     (path "/0217b7ef-3928-43d6-9a5a-467bfde0e5ea/ce4bf817-a5c1-41e0-ab7b-a8279ac2c19d"
       (reference "D2") (unit 1) (value "D_Schottky") (footprint "Diode_THT:D_DO-41_SOD81_P2.54mm_Vertical_AnodeUp")
+    )
+    (path "/0217b7ef-3928-43d6-9a5a-467bfde0e5ea/3af49c7f-bf02-406a-b418-f7bd487abc90"
+      (reference "FB1") (unit 1) (value "0R") (footprint "")
     )
     (path "/0217b7ef-3928-43d6-9a5a-467bfde0e5ea/3735e752-9f84-4e14-a262-a9113c063368"
       (reference "J1") (unit 1) (value "Micro USB B") (footprint "Connector_USB:USB_Micro-B_GCT_USB3076-30-A")
