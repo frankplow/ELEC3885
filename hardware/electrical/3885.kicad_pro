@@ -385,6 +385,7 @@
           "DCMI_D1",
           "DCMI_D2",
           "DCMI_D3",
+          "DCMI_D4",
           "DCMI_D5",
           "DCMI_D6",
           "DCMI_D7",
@@ -468,11 +469,14 @@
         "name": "Power",
         "nets": [
           "+3V3",
+          "+BATT",
+          "-BATT",
           "GND",
           "LIPO+",
           "LIPO-",
           "OUT+",
-          "VBUS"
+          "VBUS",
+          "VDD"
         ],
         "pcb_color": "rgba(0, 0, 0, 0.000)",
         "schematic_color": "rgb(255, 0, 0)",
@@ -517,6 +521,7 @@
         "microvia_drill": 0.1,
         "name": "USB",
         "nets": [
+          "USB_OTG_HS_RESET",
           "USB_OTG_HS_ULPI_CLK",
           "USB_OTG_HS_ULPI_D0",
           "USB_OTG_HS_ULPI_D1",
@@ -528,7 +533,8 @@
           "USB_OTG_HS_ULPI_D7",
           "USB_OTG_HS_ULPI_DIR",
           "USB_OTG_HS_ULPI_NXT",
-          "USB_OTG_HS_ULPI_STP"
+          "USB_OTG_HS_ULPI_STP",
+          "USB_TG_HS_RESET"
         ],
         "pcb_color": "rgba(0, 0, 0, 0.000)",
         "schematic_color": "rgb(255, 0, 255)",
