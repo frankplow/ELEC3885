@@ -160,22 +160,22 @@
       (reference "C5") (unit 1) (value "1uF") (footprint "Capacitor_SMD:C_0402_1005Metric")
     )
     (path "/0217b7ef-3928-43d6-9a5a-467bfde0e5ea/d422eb7e-d377-4f62-bd8d-434c0a83a8fd"
-      (reference "C6") (unit 1) (value "4u7") (footprint "")
+      (reference "C6") (unit 1) (value "4u7") (footprint "Capacitor_SMD:C_0402_1005Metric")
     )
     (path "/0217b7ef-3928-43d6-9a5a-467bfde0e5ea/7d68b900-f675-4f5d-a09d-75d9d95fefc0"
-      (reference "C7") (unit 1) (value "DNP") (footprint "")
+      (reference "C7") (unit 1) (value "DNP") (footprint "Capacitor_SMD:C_0402_1005Metric")
     )
     (path "/0217b7ef-3928-43d6-9a5a-467bfde0e5ea/ce4bf817-a5c1-41e0-ab7b-a8279ac2c19d"
-      (reference "D2") (unit 1) (value "D_Schottky") (footprint "Diode_THT:D_DO-41_SOD81_P2.54mm_Vertical_AnodeUp")
+      (reference "D2") (unit 1) (value "D_Schottky") (footprint "Diode_SMD:D_SOD-323_HandSoldering")
     )
     (path "/0217b7ef-3928-43d6-9a5a-467bfde0e5ea/3af49c7f-bf02-406a-b418-f7bd487abc90"
-      (reference "FB1") (unit 1) (value "0R") (footprint "")
+      (reference "FB1") (unit 1) (value "0R") (footprint "Diode_SMD:D_0201_0603Metric")
     )
     (path "/0217b7ef-3928-43d6-9a5a-467bfde0e5ea/3735e752-9f84-4e14-a262-a9113c063368"
       (reference "J1") (unit 1) (value "Micro USB B") (footprint "Connector_USB:USB_Micro-B_GCT_USB3076-30-A")
     )
     (path "/0217b7ef-3928-43d6-9a5a-467bfde0e5ea/a409f5a2-d801-45d5-85c8-56c063099b85"
-      (reference "J3") (unit 1) (value "JST-XH") (footprint "Connector_PinHeader_2.00mm:PinHeader_1x02_P2.00mm_Vertical")
+      (reference "J3") (unit 1) (value "JST-XH") (footprint "Connector_JST:JST_XH_S2B-XH-A-1_1x02_P2.50mm_Horizontal")
     )
     (path "/0217b7ef-3928-43d6-9a5a-467bfde0e5ea/56f8fda6-2d52-41f9-b377-58b536d3402a"
       (reference "Q1") (unit 1) (value "IRLZ34N") (footprint "Package_TO_SOT_SMD:SOT-23")
@@ -211,10 +211,10 @@
       (reference "R7") (unit 1) (value "10k") (footprint "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder")
     )
     (path "/0217b7ef-3928-43d6-9a5a-467bfde0e5ea/5c6168f6-9215-40cc-8f5a-e0b6ddd72a3c"
-      (reference "TP1") (unit 1) (value "TestPoint") (footprint "")
+      (reference "TP1") (unit 1) (value "TestPoint") (footprint "TestPoint:TestPoint_Loop_D2.50mm_Drill1.0mm_LowProfile")
     )
     (path "/0217b7ef-3928-43d6-9a5a-467bfde0e5ea/3ba8306d-e91f-472a-8e0c-e2ace0fa7eb6"
-      (reference "TP2") (unit 1) (value "TestPoint") (footprint "")
+      (reference "TP2") (unit 1) (value "TestPoint") (footprint "TestPoint:TestPoint_Loop_D2.50mm_Drill1.0mm_LowProfile")
     )
     (path "/0217b7ef-3928-43d6-9a5a-467bfde0e5ea/6cc300f0-c9de-48e9-9bbe-5478e7f61763"
       (reference "U1") (unit 1) (value "MCP73831-2-OT") (footprint "Package_TO_SOT_SMD:SOT-23-5")
