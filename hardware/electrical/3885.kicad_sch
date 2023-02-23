@@ -319,7 +319,7 @@
       (reference "#PWR072") (unit 1) (value "+3V3") (footprint "")
     )
     (path "/b2a90f2c-c4bd-40df-ad3c-0b37c5fa6b32/8016cd35-a038-4bdd-8729-e0a8cb5f7b31"
-      (reference "C1") (unit 1) (value "DNP") (footprint "Capacitor_SMD:C_0402_1005Metric")
+      (reference "C1") (unit 1) (value "4u7") (footprint "Capacitor_SMD:C_0402_1005Metric")
     )
     (path "/b2a90f2c-c4bd-40df-ad3c-0b37c5fa6b32/b99bb055-73a5-4bf0-a950-761baa0e0a33"
       (reference "C2") (unit 1) (value "4u7") (footprint "")
@@ -457,7 +457,7 @@
       (reference "D4") (unit 1) (value "D_Schottky") (footprint "Diode_THT:D_DO-41_SOD81_P2.54mm_Vertical_AnodeUp")
     )
     (path "/b2a90f2c-c4bd-40df-ad3c-0b37c5fa6b32/53738907-b14a-4d83-ad6b-d38164c722b1"
-      (reference "FB1") (unit 1) (value "0R") (footprint "Diode_SMD:D_0201_0603Metric")
+      (reference "FB1") (unit 1) (value "GZ2012D101TF") (footprint "Diode_SMD:D_0201_0603Metric")
     )
     (path "/b2a90f2c-c4bd-40df-ad3c-0b37c5fa6b32/5f195bb3-331c-48bb-b473-bcd3cdd96edc"
       (reference "J1") (unit 1) (value "USB_B_Micro") (footprint "")
@@ -493,7 +493,7 @@
       (reference "Q6") (unit 1) (value "AO3401A") (footprint "Package_TO_SOT_SMD:SOT-23")
     )
     (path "/b2a90f2c-c4bd-40df-ad3c-0b37c5fa6b32/c635149d-4efc-436e-84f8-623c752b927a"
-      (reference "R1") (unit 1) (value "0R") (footprint "")
+      (reference "R1") (unit 1) (value "670R") (footprint "")
     )
     (path "/b2a90f2c-c4bd-40df-ad3c-0b37c5fa6b32/f2bcd4d3-d12a-47c0-97c2-e086111f98e9"
       (reference "R2") (unit 1) (value "12k±1%") (footprint "")
@@ -551,6 +551,9 @@
     )
     (path "/0217b7ef-3928-43d6-9a5a-467bfde0e5ea/0ce91c95-3317-45ef-832a-6b202887121c"
       (reference "R20") (unit 1) (value "10k") (footprint "")
+    )
+    (path "/b2a90f2c-c4bd-40df-ad3c-0b37c5fa6b32/afc47404-cc70-49bd-b253-6d5cca3d3e4a"
+      (reference "R?") (unit 1) (value "33R") (footprint "")
     )
     (path "/239a74a2-fce8-4103-83ba-af4dbf21fb68/994bf9a7-cdca-44ca-8ca5-27dd9fb4853c"
       (reference "SW1") (unit 1) (value "SW_Push") (footprint "")
