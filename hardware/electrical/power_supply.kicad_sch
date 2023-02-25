@@ -1634,7 +1634,6 @@
     )
   )
 
-
   (junction (at 39.37 40.64) (diameter 0) (color 0 0 0 0)
     (uuid 01334ca8-931e-46f2-a24e-b48dd25067ab)
   )
@@ -2661,7 +2660,6 @@
     )
     (pin "1" (uuid b585b025-c519-4e99-848a-b3b668e7ea50))
   )
-
 
   (symbol (lib_id "Device:C") (at 177.8 116.84 0) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
