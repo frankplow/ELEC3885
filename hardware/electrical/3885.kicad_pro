@@ -501,7 +501,8 @@
           "SDIO_D0",
           "SDIO_D1",
           "SDIO_D2",
-          "SDIO_D3"
+          "SDIO_D3",
+          "SD_DETECT"
         ],
         "pcb_color": "rgba(0, 0, 0, 0.000)",
         "schematic_color": "rgb(0, 255, 255)",
