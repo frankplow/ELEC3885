@@ -1,7 +1,7 @@
 (kicad_pcb (version 20211014) (generator pcbnew)
 
   (general
-    (thickness 1.599998)
+    (thickness 1.143532)
   )
 
   (paper "A4")
@@ -43,15 +43,15 @@
     (stackup
       (layer "F.SilkS" (type "Top Silk Screen") (color "White"))
       (layer "F.Paste" (type "Top Solder Paste"))
-      (layer "F.Mask" (type "Top Solder Mask") (color "Green") (thickness 0.01))
+      (layer "F.Mask" (type "Top Solder Mask") (color "Green") (thickness 0.02) (material "TAIYO PSR-2000 ECLiPSE") (epsilon_r 3.8) (loss_tangent 0))
       (layer "F.Cu" (type "copper") (thickness 0.035))
-      (layer "dielectric 1" (type "core") (thickness 0.491666) (material "FR4") (epsilon_r 4.5) (loss_tangent 0.02))
+      (layer "dielectric 1" (type "prepreg") (thickness 0.0152) (material "3313") (epsilon_r 4.05) (loss_tangent 0.002))
       (layer "In1.Cu" (type "copper") (thickness 0.0175))
-      (layer "dielectric 2" (type "prepreg") (thickness 0.491666) (material "FR4") (epsilon_r 4.5) (loss_tangent 0.02))
+      (layer "dielectric 2" (type "core") (thickness 0.491666) (material "FR4") (epsilon_r 4.5) (loss_tangent 0.02))
       (layer "In2.Cu" (type "copper") (thickness 0.0175))
-      (layer "dielectric 3" (type "core") (thickness 0.491666) (material "FR4") (epsilon_r 4.5) (loss_tangent 0.02))
+      (layer "dielectric 3" (type "prepreg") (thickness 0.491666) (material "3313") (epsilon_r 4.05) (loss_tangent 0.002))
       (layer "B.Cu" (type "copper") (thickness 0.035))
-      (layer "B.Mask" (type "Bottom Solder Mask") (color "Green") (thickness 0.01))
+      (layer "B.Mask" (type "Bottom Solder Mask") (color "Green") (thickness 0.02) (material "TAIYO PSR-2000 ECLiPSE") (epsilon_r 3.8) (loss_tangent 0))
       (layer "B.Paste" (type "Bottom Solder Paste"))
       (layer "B.SilkS" (type "Bottom Silk Screen") (color "White"))
       (copper_finish "HAL SnPb")
