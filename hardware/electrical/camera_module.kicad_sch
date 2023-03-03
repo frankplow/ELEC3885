@@ -943,6 +943,11 @@
     )
     (pin "1" (uuid 6303da91-8d5a-4d84-8c5d-f73152814f95))
     (instances
+      (project "3885"
+        (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/3d295dc3-8a35-43fc-844e-970cdaaeb722"
+          (reference "#PWR05") (unit 1)
+        )
+      )
       (project "CameraModule1"
         (path "/b76a688a-2755-4a30-bb15-cf91a1e570c9"
           (reference "#PWR05") (unit 1)
@@ -969,6 +974,11 @@
     (pin "1" (uuid d7a9363f-3a35-43b7-a0b4-36bba6fb7ea9))
     (pin "2" (uuid ce55d770-560e-4b6b-be84-dbf262eacd41))
     (instances
+      (project "3885"
+        (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/3d295dc3-8a35-43fc-844e-970cdaaeb722"
+          (reference "C3") (unit 1)
+        )
+      )
       (project "CameraModule1"
         (path "/b76a688a-2755-4a30-bb15-cf91a1e570c9"
           (reference "C3") (unit 1)
@@ -994,6 +1004,11 @@
     )
     (pin "1" (uuid 243fcebf-f6d6-48dd-a07a-4a09a6885730))
     (instances
+      (project "3885"
+        (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/3d295dc3-8a35-43fc-844e-970cdaaeb722"
+          (reference "#PWR02") (unit 1)
+        )
+      )
       (project "CameraModule1"
         (path "/b76a688a-2755-4a30-bb15-cf91a1e570c9"
           (reference "#PWR02") (unit 1)
@@ -1020,6 +1035,11 @@
     (pin "1" (uuid e9c53b18-4fb0-434c-a4ab-91b901636f04))
     (pin "2" (uuid 7da7b781-ddf9-4edf-b77a-669ae0533a19))
     (instances
+      (project "3885"
+        (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/3d295dc3-8a35-43fc-844e-970cdaaeb722"
+          (reference "C5") (unit 1)
+        )
+      )
       (project "CameraModule1"
         (path "/b76a688a-2755-4a30-bb15-cf91a1e570c9"
           (reference "C5") (unit 1)
@@ -1045,6 +1065,11 @@
     )
     (pin "1" (uuid 256b7682-a03e-41f9-b21a-1022d6d409de))
     (instances
+      (project "3885"
+        (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/3d295dc3-8a35-43fc-844e-970cdaaeb722"
+          (reference "#PWR07") (unit 1)
+        )
+      )
       (project "CameraModule1"
         (path "/b76a688a-2755-4a30-bb15-cf91a1e570c9"
           (reference "#PWR07") (unit 1)
@@ -1071,6 +1096,11 @@
     (pin "1" (uuid c314db28-47d8-4727-b921-210badfa76df))
     (pin "2" (uuid 4b7abcc7-3b7d-4b2d-9940-51b328c9b229))
     (instances
+      (project "3885"
+        (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/3d295dc3-8a35-43fc-844e-970cdaaeb722"
+          (reference "R1") (unit 1)
+        )
+      )
       (project "CameraModule1"
         (path "/b76a688a-2755-4a30-bb15-cf91a1e570c9"
           (reference "R1") (unit 1)
@@ -1096,6 +1126,11 @@
     )
     (pin "1" (uuid f08a1f46-cf85-47ce-9ff6-16aec0fc4094))
     (instances
+      (project "3885"
+        (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/3d295dc3-8a35-43fc-844e-970cdaaeb722"
+          (reference "#PWR09") (unit 1)
+        )
+      )
       (project "CameraModule1"
         (path "/b76a688a-2755-4a30-bb15-cf91a1e570c9"
           (reference "#PWR09") (unit 1)
@@ -1144,6 +1179,11 @@
     (pin "8" (uuid 21b82a0c-2b26-47ea-877f-9030e3a1e8ac))
     (pin "9" (uuid 134c9e84-eb3a-47bb-a3e2-81026bf4393f))
     (instances
+      (project "3885"
+        (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/3d295dc3-8a35-43fc-844e-970cdaaeb722"
+          (reference "U2") (unit 1)
+        )
+      )
       (project "CameraModule1"
         (path "/b76a688a-2755-4a30-bb15-cf91a1e570c9"
           (reference "U2") (unit 1)
@@ -1169,6 +1209,11 @@
     )
     (pin "1" (uuid a9bfc0b9-479c-45fa-bb74-20cdd96af492))
     (instances
+      (project "3885"
+        (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/3d295dc3-8a35-43fc-844e-970cdaaeb722"
+          (reference "#PWR010") (unit 1)
+        )
+      )
       (project "CameraModule1"
         (path "/b76a688a-2755-4a30-bb15-cf91a1e570c9"
           (reference "#PWR010") (unit 1)
@@ -1198,6 +1243,11 @@
     (pin "4" (uuid 96f73503-cc6b-41a3-975d-b8c557c32149))
     (pin "5" (uuid 0cab185d-6390-441d-aa37-cf38a607685d))
     (instances
+      (project "3885"
+        (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/3d295dc3-8a35-43fc-844e-970cdaaeb722"
+          (reference "U1") (unit 1)
+        )
+      )
       (project "CameraModule1"
         (path "/b76a688a-2755-4a30-bb15-cf91a1e570c9"
           (reference "U1") (unit 1)
@@ -1223,6 +1273,11 @@
     )
     (pin "1" (uuid 3568113e-d3a8-4826-8650-91a1e2bc5942))
     (instances
+      (project "3885"
+        (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/3d295dc3-8a35-43fc-844e-970cdaaeb722"
+          (reference "#PWR011") (unit 1)
+        )
+      )
       (project "CameraModule1"
         (path "/b76a688a-2755-4a30-bb15-cf91a1e570c9"
           (reference "#PWR011") (unit 1)
@@ -1249,6 +1304,11 @@
     (pin "1" (uuid fc891d61-b7a3-4c21-8ca5-aa5b0bf63911))
     (pin "2" (uuid 4afcf88c-7565-44dc-9e62-66708df29992))
     (instances
+      (project "3885"
+        (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/3d295dc3-8a35-43fc-844e-970cdaaeb722"
+          (reference "R2") (unit 1)
+        )
+      )
       (project "CameraModule1"
         (path "/b76a688a-2755-4a30-bb15-cf91a1e570c9"
           (reference "R2") (unit 1)
@@ -1274,6 +1334,11 @@
     )
     (pin "1" (uuid 9db95137-1e4d-4430-b736-d2120e190a41))
     (instances
+      (project "3885"
+        (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/3d295dc3-8a35-43fc-844e-970cdaaeb722"
+          (reference "#PWR06") (unit 1)
+        )
+      )
       (project "CameraModule1"
         (path "/b76a688a-2755-4a30-bb15-cf91a1e570c9"
           (reference "#PWR06") (unit 1)
@@ -1300,6 +1365,11 @@
     (pin "1" (uuid bbc3d37a-ac8d-4b6a-9bf1-c283c907cf69))
     (pin "2" (uuid d8471efd-c282-492b-be3a-369f25c5def1))
     (instances
+      (project "3885"
+        (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/3d295dc3-8a35-43fc-844e-970cdaaeb722"
+          (reference "C4") (unit 1)
+        )
+      )
       (project "CameraModule1"
         (path "/b76a688a-2755-4a30-bb15-cf91a1e570c9"
           (reference "C4") (unit 1)
@@ -1325,6 +1395,11 @@
     )
     (pin "1" (uuid 2f25556f-7011-49b5-a858-b00689314115))
     (instances
+      (project "3885"
+        (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/3d295dc3-8a35-43fc-844e-970cdaaeb722"
+          (reference "#PWR04") (unit 1)
+        )
+      )
       (project "CameraModule1"
         (path "/b76a688a-2755-4a30-bb15-cf91a1e570c9"
           (reference "#PWR04") (unit 1)
@@ -1354,6 +1429,11 @@
     (pin "4" (uuid 9daa2f5b-3a8c-4f3e-a18b-3e44c2439cea))
     (pin "5" (uuid b54765cd-7edb-4599-bccc-e7be92f029d0))
     (instances
+      (project "3885"
+        (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/3d295dc3-8a35-43fc-844e-970cdaaeb722"
+          (reference "U3") (unit 1)
+        )
+      )
       (project "CameraModule1"
         (path "/b76a688a-2755-4a30-bb15-cf91a1e570c9"
           (reference "U3") (unit 1)
@@ -1380,6 +1460,11 @@
     (pin "1" (uuid 7d5abf51-5f13-4aa6-b971-6af877a4f2e1))
     (pin "2" (uuid f2a7fdeb-303d-484b-9cc7-cc909172dc08))
     (instances
+      (project "3885"
+        (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/3d295dc3-8a35-43fc-844e-970cdaaeb722"
+          (reference "C2") (unit 1)
+        )
+      )
       (project "CameraModule1"
         (path "/b76a688a-2755-4a30-bb15-cf91a1e570c9"
           (reference "C2") (unit 1)
@@ -1406,6 +1491,11 @@
     (pin "1" (uuid 93de8693-3d0f-4745-8c99-d0bd9f08b468))
     (pin "2" (uuid 575414ac-b6f9-4a61-a777-3f2bd0dd6b4a))
     (instances
+      (project "3885"
+        (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/3d295dc3-8a35-43fc-844e-970cdaaeb722"
+          (reference "C6") (unit 1)
+        )
+      )
       (project "CameraModule1"
         (path "/b76a688a-2755-4a30-bb15-cf91a1e570c9"
           (reference "C6") (unit 1)
@@ -1431,6 +1521,11 @@
     )
     (pin "1" (uuid 825e5746-5a08-454b-ac32-ede53b6412ca))
     (instances
+      (project "3885"
+        (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/3d295dc3-8a35-43fc-844e-970cdaaeb722"
+          (reference "#PWR01") (unit 1)
+        )
+      )
       (project "CameraModule1"
         (path "/b76a688a-2755-4a30-bb15-cf91a1e570c9"
           (reference "#PWR01") (unit 1)
@@ -1457,6 +1552,11 @@
     (pin "1" (uuid 5b05648a-32ff-4407-bc05-c7d54751553d))
     (pin "2" (uuid 5f8bba76-9c3c-4f80-9215-bd71e56e06b3))
     (instances
+      (project "3885"
+        (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/3d295dc3-8a35-43fc-844e-970cdaaeb722"
+          (reference "C7") (unit 1)
+        )
+      )
       (project "CameraModule1"
         (path "/b76a688a-2755-4a30-bb15-cf91a1e570c9"
           (reference "C7") (unit 1)
@@ -1483,6 +1583,11 @@
     (pin "1" (uuid ef8aa56b-4e14-418e-8f9a-c7ea7437da60))
     (pin "2" (uuid 11865451-0a75-46eb-a724-b062714aa271))
     (instances
+      (project "3885"
+        (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/3d295dc3-8a35-43fc-844e-970cdaaeb722"
+          (reference "R3") (unit 1)
+        )
+      )
       (project "CameraModule1"
         (path "/b76a688a-2755-4a30-bb15-cf91a1e570c9"
           (reference "R3") (unit 1)
@@ -1508,6 +1613,11 @@
     )
     (pin "1" (uuid dd9f9df9-0f1a-4c56-9450-1a99d7a96236))
     (instances
+      (project "3885"
+        (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/3d295dc3-8a35-43fc-844e-970cdaaeb722"
+          (reference "#PWR012") (unit 1)
+        )
+      )
       (project "CameraModule1"
         (path "/b76a688a-2755-4a30-bb15-cf91a1e570c9"
           (reference "#PWR012") (unit 1)
@@ -1533,6 +1643,11 @@
     )
     (pin "1" (uuid 3c22b607-c6db-410d-bf80-43e9b2557f7f))
     (instances
+      (project "3885"
+        (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/3d295dc3-8a35-43fc-844e-970cdaaeb722"
+          (reference "#PWR08") (unit 1)
+        )
+      )
       (project "CameraModule1"
         (path "/b76a688a-2755-4a30-bb15-cf91a1e570c9"
           (reference "#PWR08") (unit 1)
@@ -1559,6 +1674,11 @@
     (pin "1" (uuid 7202a255-f258-4fc0-8162-0f936c6a2b30))
     (pin "2" (uuid b154a5dc-b769-4e62-bcdd-ec0e8a5b0cc8))
     (instances
+      (project "3885"
+        (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/3d295dc3-8a35-43fc-844e-970cdaaeb722"
+          (reference "C8") (unit 1)
+        )
+      )
       (project "CameraModule1"
         (path "/b76a688a-2755-4a30-bb15-cf91a1e570c9"
           (reference "C8") (unit 1)
@@ -1585,6 +1705,11 @@
     (pin "1" (uuid 098d537d-d11b-4f54-8bd0-eac9bbbfa88e))
     (pin "2" (uuid 62afc6e6-630c-4cb1-baa6-0c2beaa11562))
     (instances
+      (project "3885"
+        (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/3d295dc3-8a35-43fc-844e-970cdaaeb722"
+          (reference "C1") (unit 1)
+        )
+      )
       (project "CameraModule1"
         (path "/b76a688a-2755-4a30-bb15-cf91a1e570c9"
           (reference "C1") (unit 1)
@@ -1613,6 +1738,11 @@
     (pin "3" (uuid c0b69929-825e-48ce-819d-08ccfd4d3607))
     (pin "4" (uuid fbbe95b9-916b-4567-9331-6c5565a846fb))
     (instances
+      (project "3885"
+        (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/3d295dc3-8a35-43fc-844e-970cdaaeb722"
+          (reference "U5") (unit 1)
+        )
+      )
       (project "CameraModule1"
         (path "/b76a688a-2755-4a30-bb15-cf91a1e570c9"
           (reference "U5") (unit 1)
