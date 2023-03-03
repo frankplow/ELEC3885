@@ -1876,6 +1876,7 @@
     )
   )
 
+
   (junction (at 200.66 266.7) (diameter 0) (color 0 0 0 0)
     (uuid 010a0566-75fc-4194-845d-dbc18f80a2fb)
   )
@@ -3684,10 +3685,10 @@
       (effects (font (size 1.27 1.27)) (justify left) hide)
     )
   )
-  (global_label "Cam_LDO_Enable" (shape output) (at 154.94 226.06 180) (fields_autoplaced)
+  (global_label "Cam_Enable" (shape output) (at 154.94 226.06 180) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right))
     (uuid c117e371-e4a5-48ea-99a3-7148e1d6149f)
-    (property "Intersheetrefs" "${INTERSHEET_REFS}" (at 136.0083 226.06 0)
+    (property "Intersheetrefs" "${INTERSHEET_REFS}" (at 140.6045 226.06 0)
       (effects (font (size 1.27 1.27)) (justify right) hide)
     )
   )
