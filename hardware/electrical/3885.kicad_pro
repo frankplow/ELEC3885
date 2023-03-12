@@ -530,10 +530,6 @@
         "pattern": "DCMI_*"
       },
       {
-        "netclass": "FMC",
-        "pattern": "FMC_*"
-      },
-      {
         "netclass": "USB",
         "pattern": "USB_*"
       },
