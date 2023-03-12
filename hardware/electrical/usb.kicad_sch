@@ -777,6 +777,58 @@
         )
       )
     )
+    (symbol "power:VDD" (power) (pin_names (offset 0)) (in_bom yes) (on_board yes)
+      (property "Reference" "#PWR" (at 0 -3.81 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "Value" "VDD" (at 0 3.81 0)
+        (effects (font (size 1.27 1.27)))
+      )
+      (property "Footprint" "" (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "Datasheet" "" (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "ki_keywords" "global power" (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "ki_description" "Power symbol creates a global label with name \"VDD\"" (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (symbol "VDD_0_1"
+        (polyline
+          (pts
+            (xy -0.762 1.27)
+            (xy 0 2.54)
+          )
+          (stroke (width 0) (type default))
+          (fill (type none))
+        )
+        (polyline
+          (pts
+            (xy 0 0)
+            (xy 0 2.54)
+          )
+          (stroke (width 0) (type default))
+          (fill (type none))
+        )
+        (polyline
+          (pts
+            (xy 0 2.54)
+            (xy 0.762 1.27)
+          )
+          (stroke (width 0) (type default))
+          (fill (type none))
+        )
+      )
+      (symbol "VDD_1_1"
+        (pin power_in line (at 0 0 90) (length 0) hide
+          (name "VDD" (effects (font (size 1.27 1.27))))
+          (number "1" (effects (font (size 1.27 1.27))))
+        )
+      )
+    )
   )
 
 
@@ -1345,31 +1397,6 @@
     )
   )
 
-  (symbol (lib_id "power:+3V3") (at 139.7 45.72 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
-    (uuid 132a9493-6285-4dda-90e6-d9204bef5145)
-    (property "Reference" "#PWR06" (at 139.7 49.53 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Value" "+3V3" (at 139.7 40.64 0)
-      (effects (font (size 1.27 1.27)))
-    )
-    (property "Footprint" "" (at 139.7 45.72 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "" (at 139.7 45.72 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (pin "1" (uuid 6fed2cdf-f7bd-43fe-b90d-e933e87cad67))
-    (instances
-      (project "3885"
-        (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/b2a90f2c-c4bd-40df-ad3c-0b37c5fa6b32"
-          (reference "#PWR06") (unit 1)
-        )
-      )
-    )
-  )
-
   (symbol (lib_id "power:GND") (at 149.86 55.88 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 144e98c7-2719-4ba6-bafe-688065e7ac83)
@@ -1749,6 +1776,31 @@
       (project "3885"
         (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/b2a90f2c-c4bd-40df-ad3c-0b37c5fa6b32"
           (reference "#PWR010") (unit 1)
+        )
+      )
+    )
+  )
+
+  (symbol (lib_id "power:VDD") (at 139.7 45.72 0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (uuid a3b81017-3a76-44a6-89ab-9e53278d369f)
+    (property "Reference" "#PWR06" (at 139.7 49.53 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Value" "VDD" (at 139.7 41.91 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "" (at 139.7 45.72 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "" (at 139.7 45.72 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid 8345b647-131c-42d0-9aea-21c90c3e15be))
+    (instances
+      (project "3885"
+        (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/b2a90f2c-c4bd-40df-ad3c-0b37c5fa6b32"
+          (reference "#PWR06") (unit 1)
         )
       )
     )

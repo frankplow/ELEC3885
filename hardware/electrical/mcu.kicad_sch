@@ -3421,6 +3421,31 @@
     )
   )
 
+  (symbol (lib_id "power:VDD") (at 367.03 121.92 0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (uuid 0bb25d5e-dff4-489d-a512-fb6273448686)
+    (property "Reference" "#PWR049" (at 367.03 125.73 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Value" "VDD" (at 367.03 118.11 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "" (at 367.03 121.92 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "" (at 367.03 121.92 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid 172f01cc-6953-41a1-8d63-a36b35c93e4b))
+    (instances
+      (project "3885"
+        (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/239a74a2-fce8-4103-83ba-af4dbf21fb68"
+          (reference "#PWR049") (unit 1)
+        )
+      )
+    )
+  )
+
   (symbol (lib_id "Device:C_Small") (at 147.32 248.92 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 0d59a390-b2cf-43b8-aa6c-a5f7a8fe683d)
@@ -3968,6 +3993,31 @@
     )
   )
 
+  (symbol (lib_id "power:VDD") (at 162.56 68.58 0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (uuid 37ab5626-c8ec-4ae4-8c6d-1c275a13157b)
+    (property "Reference" "#PWR033" (at 162.56 72.39 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Value" "VDD" (at 162.56 64.77 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "" (at 162.56 68.58 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "" (at 162.56 68.58 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid 168a87c3-413d-4781-8aaa-82b144b678c0))
+    (instances
+      (project "3885"
+        (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/239a74a2-fce8-4103-83ba-af4dbf21fb68"
+          (reference "#PWR033") (unit 1)
+        )
+      )
+    )
+  )
+
   (symbol (lib_id "power:GND") (at 379.73 71.12 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 3cfea7fa-959c-4b7e-b8d7-ce50e2d3b833)
@@ -4040,31 +4090,6 @@
       (project "3885"
         (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/239a74a2-fce8-4103-83ba-af4dbf21fb68"
           (reference "C16") (unit 1)
-        )
-      )
-    )
-  )
-
-  (symbol (lib_id "power:+3V3") (at 162.56 68.58 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
-    (uuid 449462ca-9660-4e4c-b2db-ae68a590ae72)
-    (property "Reference" "#PWR033" (at 162.56 72.39 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Value" "+3V3" (at 162.56 63.5 0)
-      (effects (font (size 1.27 1.27)))
-    )
-    (property "Footprint" "" (at 162.56 68.58 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "" (at 162.56 68.58 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (pin "1" (uuid 43d71d35-235d-4b8f-970f-cfaa6ca5a512))
-    (instances
-      (project "3885"
-        (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/239a74a2-fce8-4103-83ba-af4dbf21fb68"
-          (reference "#PWR033") (unit 1)
         )
       )
     )
@@ -4454,31 +4479,6 @@
     )
   )
 
-  (symbol (lib_id "power:+3V3") (at 379.73 41.91 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
-    (uuid 7fc1ba58-534b-4813-84c8-d9c79b0a394f)
-    (property "Reference" "#PWR053" (at 379.73 45.72 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Value" "+3V3" (at 379.73 36.83 0)
-      (effects (font (size 1.27 1.27)))
-    )
-    (property "Footprint" "" (at 379.73 41.91 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "" (at 379.73 41.91 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (pin "1" (uuid 9f775366-5a5c-4a0d-882e-e54aa26f9865))
-    (instances
-      (project "3885"
-        (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/239a74a2-fce8-4103-83ba-af4dbf21fb68"
-          (reference "#PWR053") (unit 1)
-        )
-      )
-    )
-  )
-
   (symbol (lib_id "Device:C_Small") (at 81.28 30.48 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 812b1e85-a0d8-4ba4-a239-2e55b3720337)
@@ -4603,6 +4603,31 @@
       (project "3885"
         (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/239a74a2-fce8-4103-83ba-af4dbf21fb68"
           (reference "Y1") (unit 1)
+        )
+      )
+    )
+  )
+
+  (symbol (lib_id "power:VDD") (at 379.73 41.91 0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (uuid 969c8c91-6063-44ad-9704-ff5fdf96d214)
+    (property "Reference" "#PWR053" (at 379.73 45.72 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Value" "VDD" (at 379.73 38.1 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "" (at 379.73 41.91 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "" (at 379.73 41.91 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid 2da9a9c2-31af-46e8-96cc-514f9e69c2fd))
+    (instances
+      (project "3885"
+        (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/239a74a2-fce8-4103-83ba-af4dbf21fb68"
+          (reference "#PWR053") (unit 1)
         )
       )
     )
@@ -5040,31 +5065,6 @@
       (project "3885"
         (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/239a74a2-fce8-4103-83ba-af4dbf21fb68"
           (reference "C17") (unit 1)
-        )
-      )
-    )
-  )
-
-  (symbol (lib_id "power:+3V3") (at 367.03 121.92 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
-    (uuid bffba1d3-d228-4a62-a82b-ce4525e8579a)
-    (property "Reference" "#PWR049" (at 367.03 125.73 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Value" "+3V3" (at 367.03 116.84 0)
-      (effects (font (size 1.27 1.27)))
-    )
-    (property "Footprint" "" (at 367.03 121.92 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "" (at 367.03 121.92 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (pin "1" (uuid 6e0c8030-f3f5-4194-9efd-b3abf9c82ad3))
-    (instances
-      (project "3885"
-        (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/239a74a2-fce8-4103-83ba-af4dbf21fb68"
-          (reference "#PWR049") (unit 1)
         )
       )
     )
