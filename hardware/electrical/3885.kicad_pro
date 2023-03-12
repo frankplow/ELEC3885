@@ -524,36 +524,7 @@
     },
     "net_colors": null,
     "netclass_assignments": null,
-    "netclass_patterns": [
-      {
-        "netclass": "DCMI",
-        "pattern": "DCMI_*"
-      },
-      {
-        "netclass": "USB",
-        "pattern": "USB_*"
-      },
-      {
-        "netclass": "SDIO",
-        "pattern": "SD*"
-      },
-      {
-        "netclass": "Power",
-        "pattern": "+*"
-      },
-      {
-        "netclass": "Power",
-        "pattern": "V*"
-      },
-      {
-        "netclass": "Power",
-        "pattern": "GND"
-      },
-      {
-        "netclass": "Power",
-        "pattern": "-*"
-      }
-    ]
+    "netclass_patterns": []
   },
   "pcbnew": {
     "last_paths": {
