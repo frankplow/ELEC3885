@@ -5142,7 +5142,7 @@
     (property "Value" "RED" (at 308.61 92.71 90)
       (effects (font (size 1.27 1.27)) (justify right))
     )
-    (property "Footprint" "" (at 304.8 91.44 0)
+    (property "Footprint" "3885:Everlight_21-21S" (at 304.8 91.44 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "https://datasheet.lcsc.com/lcsc/1808072032_Everlight-Elec-12-21SURC-S530-A3-TR8_C131288.pdf" (at 304.8 91.44 0)
