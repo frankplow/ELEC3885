@@ -510,9 +510,9 @@
       "/Camera Module/AVDD": "Power",
       "/Camera Module/DOVDD": "Power",
       "/Camera Module/DVDD": "Power",
+      "Net-(#FLG07-pwr)": "Power",
       "Net-(C8-Pad1)": "Power",
       "Net-(D1-A2)": "Power",
-      "Net-(D4-K)": "Power",
       "Net-(Q5-D)": "Power",
       "Net-(U1-VDDA1.8)": "Power"
     },
