@@ -1,0 +1,21 @@
+(version 1)
+
+(rule "Pad-to-Silkscreen Clearance"
+	(layer "F.Mask")
+	(constraint silk_clearance (min 0.15mm)))
+
+(rule "Single-Sided Assembly"
+    (layer B.Cu)
+    (constraint disallow footprint))
+
+(rule "PTH-to-Track Clearance"
+	(condition "A.isPlated()")
+	(constraint hole_clearance (min 0.33mm)))
+
+(rule "Different Net Hole-to-Hole Clearance"
+	(condition "A.net == B.net")
+	(constraint hole_to_hole (min 0.5mm)))
+
+(rule "Minimum NPTH size"
+	(condition "!A.isPlated()")
+	(constraint hole_size (min 0.50mm)))
