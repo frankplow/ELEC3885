@@ -19,3 +19,18 @@
 (rule "Minimum NPTH size"
 	(condition "!A.isPlated()")
 	(constraint hole_size (min 0.50mm)))
+
+# 50ps max skew
+(rule "ULPI skew"
+	(condition "A.NetClass == 'ULPI'")
+	(constraint skew (max 8.97mm)))
+
+# 1.58ns max delay
+(rule "ULPI length"
+	(condition "A.NetClass == 'ULPI'")
+	(constraint skew (max 283.6mm)))
+
+# 100ps max skew
+(rule "USB skew"
+	(condition "A.NetClass == 'USB'")
+	(constraint skew (max 17.9mm)))
