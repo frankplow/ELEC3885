@@ -1,0 +1,6 @@
+*/STM32-for-VSCode.config.yaml
+*/STM32F746.svd
+*/STM32Make.make
+*/openocd.cfg
+*/build
+*/.vscode
