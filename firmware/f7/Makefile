@@ -61,6 +61,9 @@ Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_sd.c \
 Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pcd.c \
 Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pcd_ex.c \
 Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_ll_usb.c
+Cam/Src/F746Cam_Driver.c \
+Cam/Src/ov5640_driver.c \
+
 
 # ASM sources
 ASM_SOURCES =  \
@@ -122,6 +125,7 @@ C_INCLUDES =  \
 -IDrivers/STM32F7xx_HAL_Driver/Inc/Legacy \
 -IDrivers/CMSIS/Device/ST/STM32F7xx/Include \
 -IDrivers/CMSIS/Include
+-ICam/Inc \
 
 
 # compile gcc flags
