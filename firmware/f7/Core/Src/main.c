@@ -21,16 +21,62 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdbool.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
+/// @brief An enum over all possible events.
+typedef enum {
+    /// @brief Dispatched at the end of a frame.
+    DCMIFrameComplete,
 
+    /// @brief Dispatched when some video data is valid.
+    /// @note The data may only be part of a frame.
+    DCMIDataReady,
+
+    /// @brief Dispatched every time the camera produces a VSync pulse.
+    ///        This should occur at the start of every frame.
+    DCMIVSync,
+
+    /// @brief Dispatched when the power button is pressed.
+    PowerOff,
+
+    /// @brief Dispatched when a cable is plugged into the USB port.
+    /// @note This event is dispatched if a USB cable with only power and no data is connected.
+    USBPluggedIn,
+} EventType;
+
+/// @brief An event.
+typedef struct {
+    /// @brief The type of the event.
+    EventType type;
+
+    /// @brief Data associated with the event.
+    ///        This is cast to a DCMI*EventData type, depending on the event's type.
+    void *data;
+} Event;
+
+/// @brief The data associated with a DCMIDataReady event.
+typedef struct {
+    /// @brief A pointer to the start of the data.
+    char *data;
+
+    /// @brief The number of valid bytes.
+    size_t size;
+} DCMIDataReadyEventData;
+
+/// @brief The data associated with a DCMIFrameComplete event.
+typedef struct {
+    /// @brief The number of bytes in the frame.
+    size_t size;
+} DCMIFrameCompleteEventData;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+/// @brief The maximum number of events in the queue at a given time
+#define MAX_PENDING_EVENTS 8
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -49,7 +95,12 @@ SD_HandleTypeDef hsd1;
 PCD_HandleTypeDef hpcd_USB_OTG_HS;
 
 /* USER CODE BEGIN PV */
+/// @brief The number of events in the queue.
+static size_t pending_events = 0;
 
+/// @brief An array of events which are waiting to be dispatched.
+///        The first element is the oldest.
+static Event event_queue[MAX_PENDING_EVENTS];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -60,12 +111,49 @@ static void MX_I2C1_Init(void);
 static void MX_SDMMC1_SD_Init(void);
 static void MX_USB_OTG_HS_PCD_Init(void);
 /* USER CODE BEGIN PFP */
+/// @brief Adds an event to the event queue
+/// @param event The event
+/// @return Whether or not the event was successfully added to the queue
+bool push_event_queue(Event event);
 
+/// @brief Removes an event from the queue
+/// @param event A pointer to where to store the retrieved event
+/// @return Whether or not an event was removed from the queue
+bool pop_event_queue(Event *event);
+
+/// @brief Dispatches an event to the relevant handler
+/// @param event The event to dispatch
+void handle_event(Event event);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+void handle_event(Event event) {
+    switch (event.type) {
+      case DCMIFrameComplete: {
+          const DCMIFrameCompleteEventData event_data =
+                  *((DCMIFrameCompleteEventData*) event.data);
+          break;
+      }
+      case DCMIDataReady: {
+          const DCMIDataReadyEventData event_data =
+                  *((DCMIDataReadyEventData*) event.data);
+          break;
+      }
+      case DCMIVSync: {
+          break;
+      }
+      case PowerOff: {
+          break;
+      }
+      case USBPluggedIn: {
+          break;
+      }
+      default:
+          Error_Handler();
+          break;
+    }
+}
 /* USER CODE END 0 */
 
 /**
@@ -108,9 +196,18 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    // Sleep until an interrupt occurs
+    HAL_SuspendTick();
+    HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON, PWR_SLEEPENTRY_WFI);
+    HAL_ResumeTick();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    // Handle any events produced by the interrupt
+    Event event;
+    while (pop_event_queue(&event)) {
+      handle_event(event);
+    }
   }
   /* USER CODE END 3 */
 }
@@ -739,7 +836,30 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+bool push_event_queue(Event event) {
+    if (pending_events >= MAX_PENDING_EVENTS) {
+        return false;
+    }
 
+    event_queue[pending_events] = event;
+    pending_events++;
+    return true;
+}
+
+bool pop_event_queue(Event *event) {
+    if (pending_events == 0) {
+        return false;
+    }
+
+    *event = event_queue[0];
+
+    pending_events--;
+    for (size_t i = 0; i < pending_events; ++i) {
+        event_queue[i] = event_queue[i + 1];
+    }
+
+    return true;
+}
 /* USER CODE END 4 */
 
 /**
