@@ -130,28 +130,28 @@ void handle_event(Event event);
 /* USER CODE BEGIN 0 */
 void handle_event(Event event) {
     switch (event.type) {
-    case DCMIFrameComplete: {
-        const DCMIFrameCompleteEventData event_data =
-                *((DCMIFrameCompleteEventData*) event.data);
-        break;
-    }
-    case DCMIDataReady: {
-        const DCMIDataReadyEventData event_data =
-                *((DCMIDataReadyEventData*) event.data);
-        break;
-    }
-    case DCMIVSync: {
-        break;
-    }
-    case PowerOff: {
-        break;
-    }
-    case USBPluggedIn: {
-        break;
-    }
-    default:
-        Error_Handler();
-        break;
+      case DCMIFrameComplete: {
+          const DCMIFrameCompleteEventData event_data =
+                  *((DCMIFrameCompleteEventData*) event.data);
+          break;
+      }
+      case DCMIDataReady: {
+          const DCMIDataReadyEventData event_data =
+                  *((DCMIDataReadyEventData*) event.data);
+          break;
+      }
+      case DCMIVSync: {
+          break;
+      }
+      case PowerOff: {
+          break;
+      }
+      case USBPluggedIn: {
+          break;
+      }
+      default:
+          Error_Handler();
+          break;
     }
 }
 /* USER CODE END 0 */
@@ -837,7 +837,7 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 bool push_event_queue(Event event) {
-    if (pending_events > MAX_PENDING_EVENTS) {
+    if (pending_events >= MAX_PENDING_EVENTS) {
         return false;
     }
 
@@ -853,10 +853,10 @@ bool pop_event_queue(Event *event) {
 
     *event = event_queue[0];
 
+    pending_events--;
     for (size_t i = 0; i < pending_events; ++i) {
         event_queue[i] = event_queue[i + 1];
     }
-    pending_events--;
 
     return true;
 }
