@@ -200,6 +200,9 @@ int main(void)
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
   printf("\nmain\n");
+  BSP_CAMERA_Init(FMT_RGB565, 320, 240);
+  BSP_CAMERA_ContinuousStart();
+
   /* USER CODE END 2 */
 
   /* Infinite loop */

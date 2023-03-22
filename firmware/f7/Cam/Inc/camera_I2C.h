@@ -144,9 +144,6 @@ uint8_t CAMERA_IO_Read_OV5640(uint16_t DeviceAddr, uint16_t Reg);
 //========================================================
 
 
-#define FMT_JPEG 0x00
-#define FMT_RGB565 0x01
-
 #define OV5640_PCLK_7M                  0x00   /* Pixel Clock set to 7Mhz    */
 #define OV5640_PCLK_8M                  0x01   /* Pixel Clock set to 8Mhz    */
 #define OV5640_PCLK_9M                  0x02   /* Pixel Clock set to 9Mhz    */

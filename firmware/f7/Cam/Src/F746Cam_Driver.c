@@ -25,6 +25,8 @@ uint8_t cam_fb[CAM_FB_SIZE];
 static uint32_t CameraHwAddress;
 static uint32_t GetSize(uint32_t resolution);
 
+uint8_t frameCounter;
+
 #ifdef OV2640
 uint8_t BSP_CAMERA_Init_OV2640(uint32_t Resolution)
 { 
@@ -619,6 +621,8 @@ __weak void BSP_CAMERA_LineEventCallback(void)
 void HAL_DCMI_VsyncEventCallback(DCMI_HandleTypeDef *hdcmi)
 {        
   BSP_CAMERA_VsyncEventCallback();
+  frameCounter++;
+  //printf("VSYNC\n");
 }
 
 /**
@@ -674,19 +678,9 @@ __weak void BSP_CAMERA_ErrorCallback(void)
    */
 }
 
-/**
-  * @}
-  */  
+void FPSCalculate(void) {
+printf("\n%i FPS\n", frameCounter);
+	frameCounter = 0;
+}
   
-/**
-  * @}
-  */
-  
-/**
-  * @}
-  */
-  
-/**
-  * @}
-  */      
 

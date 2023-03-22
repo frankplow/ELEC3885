@@ -61,9 +61,9 @@ void ov5640_Set_RGB565(void) {
 
 void ov5640_Init_JPEG(uint16_t x_res, uint16_t y_res)
 {
-  uint32_t index = 0;
+  //uint32_t index = 0;
   uint8_t tmp = 0;
-  uint8_t redreg = 0;
+  //uint8_t redreg = 0;
   //send initial config
 
   ov5640_Init();
@@ -124,11 +124,13 @@ int32_t OV5640_SetPCLK(uint32_t ClockValue)
     CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL3, tmp);
     break;
   case OV5640_PCLK_9M:
+  tmp = 0x00; //unsure
 	CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL2, tmp);
     tmp = 0x18;
     CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL3, tmp);
     break;
   case OV5640_PCLK_12M:
+  tmp = 0x00; //unsure
 	CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL2, tmp);
     tmp = 0x16;
     CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL3, tmp);

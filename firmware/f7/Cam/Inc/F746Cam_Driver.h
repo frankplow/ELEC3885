@@ -16,6 +16,9 @@
 #define Y_RES 40
 #define CAM_FB_SIZE X_RES * Y_RES * 2
 
+#define FMT_JPEG 0x00
+#define FMT_RGB565 0x01
+
 extern uint8_t cam_fb[CAM_FB_SIZE];
 
 typedef enum 
@@ -55,6 +58,7 @@ void    BSP_CAMERA_ColorEffectConfig(uint32_t Effect);
 void BSP_CAMERA_MspInit(DCMI_HandleTypeDef *hdcmi, void *Params);
 void BSP_CAMERA_MspDeInit(DCMI_HandleTypeDef *hdcmi, void *Params);
 
+void FPSCalculate(void);
 
 
 #ifdef __cplusplus

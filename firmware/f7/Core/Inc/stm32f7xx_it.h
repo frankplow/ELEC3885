@@ -27,7 +27,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+//#include "../Cam/Inc/F476Cam_Driver.h"
+#include "stdio.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -55,6 +56,7 @@ void SVC_Handler(void);
 void DebugMon_Handler(void);
 void PendSV_Handler(void);
 void SysTick_Handler(void);
+void TIM3_IRQHandler(void);
 void DMA2_Stream1_IRQHandler(void);
 void DCMI_IRQHandler(void);
 /* USER CODE BEGIN EFP */
