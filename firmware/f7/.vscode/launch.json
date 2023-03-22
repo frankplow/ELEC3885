@@ -8,7 +8,6 @@
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "openocd",
-            "searchDir": ["/opt/homebrew/share/openocd/scripts"],
             "preLaunchTask": "Build STM",
             "device": "stm32f746",
             "configFiles": [
