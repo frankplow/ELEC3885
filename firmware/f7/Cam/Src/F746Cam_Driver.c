@@ -2,32 +2,28 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "F746Cam_Driver.h"
-#include "stm32746g_discovery.h"
 #include "stdio.h"
 
 //Define camera module: OV9655, OV2640, OV5640
 #define OV5640
 
-
-#define CAMERA_VGA_RES_X          640
-#define CAMERA_VGA_RES_Y          480
-#define CAMERA_480x272_RES_X      480
-#define CAMERA_480x272_RES_Y      272
-#define CAMERA_QVGA_RES_X         320
-#define CAMERA_QVGA_RES_Y         240
-#define CAMERA_QQVGA_RES_X        160
-#define CAMERA_QQVGA_RES_Y        120
+// #define CAMERA_VGA_RES_X          640
+// #define CAMERA_VGA_RES_Y          480
+// #define CAMERA_480x272_RES_X      480
+// #define CAMERA_480x272_RES_Y      272
+// #define CAMERA_QVGA_RES_X         320
+// #define CAMERA_QVGA_RES_Y         240
+// #define CAMERA_QQVGA_RES_X        160
+// #define CAMERA_QQVGA_RES_Y        120
 
 DCMI_HandleTypeDef  hDcmiHandler;
 CAMERA_DrvTypeDef   *camera_drv;
-/* Camera current resolution naming (QQVGA, VGA, ...) */
 static uint32_t CameraCurrentResolution;
+uint8_t cam_fb[CAM_FB_SIZE];
 
 /* Camera module I2C HW address */
 static uint32_t CameraHwAddress;
-
 static uint32_t GetSize(uint32_t resolution);
-
 
 #ifdef OV2640
 uint8_t BSP_CAMERA_Init_OV2640(uint32_t Resolution)
@@ -178,7 +174,7 @@ uint8_t BSP_CAMERA_Init(uint32_t Format, uint16_t x_res, uint16_t y_res)
 
   /* Get the DCMI handle structure */
   phdcmi = &hDcmiHandler;
-
+  printf("\nstart ov5640 init\n");
   /* DCMI configuration */
   phdcmi->Init.CaptureRate      = DCMI_CR_ALL_FRAME;
   phdcmi->Init.HSPolarity       = DCMI_HSPOLARITY_HIGH; //updated for ov5640
@@ -187,7 +183,7 @@ uint8_t BSP_CAMERA_Init(uint32_t Format, uint16_t x_res, uint16_t y_res)
   phdcmi->Init.ExtendedDataMode = DCMI_EXTEND_DATA_8B;
   phdcmi->Init.PCKPolarity      = DCMI_PCKPOLARITY_RISING;
   if (Format == FMT_JPEG) {
-	  phdcmi->Init.JPEGMode 		= DCMI_JPEG_ENABLE;
+	  phdcmi->Init.JPEGMode 		  = DCMI_JPEG_ENABLE;
   }
   phdcmi->Instance              = DCMI;
 
@@ -230,9 +226,7 @@ uint8_t BSP_CAMERA_Init(uint32_t Format, uint16_t x_res, uint16_t y_res)
 
     HAL_DCMI_DisableCROP(phdcmi);
 
-
     CameraCurrentResolution = x_res * y_res * 0.5;
-
 
     //OV5640_SetLightMode(CAMERA_I2C_ADDRESS_OV5640, OV5640_LIGHT_AUTO);
     //OV5640_MirrorFlipConfig1(OV5640_FLIP);
@@ -263,15 +257,10 @@ uint8_t BSP_CAMERA_DeInit(void)
   return CAMERA_OK;
 }
 
-/**
-  * @brief  Starts the camera capture in continuous mode.
-  * @param  buff: pointer to the camera output buffer
-  * @retval None
-  */
-void BSP_CAMERA_ContinuousStart(uint8_t *buff)
+void BSP_CAMERA_ContinuousStart()
 { 
   /* Start the camera capture */
-  HAL_DCMI_Start_DMA(&hDcmiHandler, DCMI_MODE_CONTINUOUS, (uint32_t)buff, 0x1900); //CameraCurrentResolution);
+  HAL_DCMI_Start_DMA(&hDcmiHandler, DCMI_MODE_CONTINUOUS, (uint32_t)*cam_fb, 0x1900); //CameraCurrentResolution);
 }
 
 /**

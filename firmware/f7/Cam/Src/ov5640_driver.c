@@ -15,13 +15,13 @@ uint32_t  jpeg_buf_size = 0;
 
 const uint16_t jpeg_size_tbl[][2]=
 {
-    {160, 120},	//QQVGA
+  {160, 120},	//QQVGA
 	{176, 144},	//QCIF
 	{320, 240},	//QVGA
 	{400, 240},	//WQVGA
 	{352, 288},	//CIF
 	{640, 480},	//VGA
-    {800, 600},	//SVGA
+  {800, 600},	//SVGA
 };
 
 const uint32_t jpeg_buf_max_size[]=

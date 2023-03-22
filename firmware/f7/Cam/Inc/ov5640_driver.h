@@ -28,7 +28,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 //#include "../Common/camera.h"
-#include "./camera.h"
+#include "./camera_I2C.h"
 /** @addtogroup BSP
   * @{
   */ 
@@ -192,11 +192,10 @@ int32_t OV5640_SetPCLK(uint32_t ClockValue);
 void  OV5640_MirrorFlipConfig1(uint8_t Config);
 uint16_t ov5640_ReadID();
 void     CAMERA_IO_Init(void);
-void     CAMERA_IO_Write_OV5640(uint8_t addr, uint16_t reg, uint16_t value);
-uint16_t CAMERA_IO_Read_OV5640(uint8_t Addr, uint16_t Reg);
+//void     CAMERA_IO_Write_OV5640(uint8_t addr, uint16_t reg, uint16_t value);
+//uint16_t CAMERA_IO_Read_OV5640(uint8_t Addr, uint16_t Reg);
 void     CAMERA_Delay(uint32_t delay);
 void ov5640_Config(uint32_t feature, uint32_t value, uint32_t BR_value);
-
 
 
 //void     ov5640_Config(uint16_t DeviceAddr, uint32_t feature, uint32_t value, uint32_t BR_value);

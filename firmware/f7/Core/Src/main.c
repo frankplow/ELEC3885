@@ -192,7 +192,7 @@ int main(void)
   MX_I2C1_Init();
   MX_USB_OTG_HS_PCD_Init();
   /* USER CODE BEGIN 2 */
-  printf("main\n");
+  printf("\nmain\n");
   /* USER CODE END 2 */
 
   /* Infinite loop */
