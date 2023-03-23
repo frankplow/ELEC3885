@@ -13,7 +13,7 @@
 	(constraint hole_clearance (min 0.33mm)))
 
 (rule "Different Net Hole-to-Hole Clearance"
-	(condition "A.net == B.net")
+	(condition "A.net != B.net")
 	(constraint hole_to_hole (min 0.5mm)))
 
 (rule "Minimum NPTH size"
@@ -34,3 +34,8 @@
 (rule "USB skew"
 	(condition "A.NetClass == 'USB'")
 	(constraint skew (max 17.9mm)))
+
+# 250ps max skew
+(rule "SDIO skew"
+	(condition "A.Netclass == 'SDIO'")
+	(constraint skew (max 44.9mm)))
