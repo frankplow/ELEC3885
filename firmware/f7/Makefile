@@ -141,6 +141,7 @@ C_INCLUDES =  \
 -IDrivers/CMSIS/Include \
 -IDrivers/CMSIS/Core/Include \
 -ICam/Inc \
+-IContainer/Inc \
 -Imutff/include
 
 # compile gcc flags
