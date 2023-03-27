@@ -2363,7 +2363,7 @@
   )
 
   (symbol (lib_id "Oscillator:SG-8002CA") (at 92.71 146.05 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp yes)
+    (in_bom no) (on_board yes) (dnp yes)
     (uuid ce2a4122-54a9-4bcc-ae81-3e59115d34ec)
     (property "Reference" "X2" (at 99.06 139.7 0)
       (effects (font (size 1.27 1.27)) (justify left))
@@ -2451,7 +2451,7 @@
   )
 
   (symbol (lib_id "Device:C_Small") (at 83.82 134.62 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp yes)
+    (in_bom no) (on_board yes) (dnp yes)
     (uuid e7a48f38-6c8a-4e7a-a36d-e69cc647b5f7)
     (property "Reference" "C54" (at 81.28 133.9913 0)
       (effects (font (size 1.27 1.27)) (justify right))
