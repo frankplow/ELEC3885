@@ -11,8 +11,10 @@
 
 #include "events.h"
 
-void on_dcmi_data_ready(DCMIDataReadyEventData data);
+void container_init(void);
 
-void on_dcmi_frame_complete(DCMIFrameCompleteEventData data);
+void container_on_dcmi_data_ready(DCMIDataReadyEventData data);
+
+void container_on_dcmi_frame_complete(DCMIFrameCompleteEventData data);
 
 #endif  // CONTAINER_H_

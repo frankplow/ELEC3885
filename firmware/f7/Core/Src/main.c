@@ -18,11 +18,13 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "fatfs.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdbool.h>
 
+#include "container.h"
 #include "events.h"
 /* USER CODE END Includes */
 
@@ -75,11 +77,13 @@ void handle_event(Event event) {
       case DCMIFrameComplete: {
           const DCMIFrameCompleteEventData event_data =
                   *((DCMIFrameCompleteEventData*) event.data);
+          container_on_dcmi_frame_complete(event_data);
           break;
       }
       case DCMIDataReady: {
           const DCMIDataReadyEventData event_data =
                   *((DCMIDataReadyEventData*) event.data);
+          container_on_dcmi_data_ready(event_data);
           break;
       }
       case DCMIVSync: {
@@ -131,6 +135,7 @@ int main(void)
   MX_DCMI_Init();
   MX_USB_OTG_HS_PCD_Init();
   MX_TIM3_Init();
+  MX_FATFS_Init();
   /* USER CODE BEGIN 2 */
   printf("\nmain\n");
   BSP_CAMERA_Init(FMT_RGB565, 320, 240);
