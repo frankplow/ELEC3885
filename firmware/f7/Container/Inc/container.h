@@ -10,8 +10,9 @@
 #define CONTAINER_H_
 
 #include "events.h"
+#include "fatfs.h"
 
-void container_init(void);
+void container_init(FIL *file);
 
 void container_on_dcmi_data_ready(DCMIDataReadyEventData data);
 

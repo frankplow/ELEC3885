@@ -6,20 +6,22 @@
 #include "mutff_fatfs.h"
 #include <stdint.h>
 
+static FIL *file;
 
-static MuTFFMovieFile container_file = file_template;
+static MuTFFMovieFile container = file_template;
 
 static uint64_t size_table_length = 0;
 
-void container_init(void) {
+void container_init(FIL *target_file) {
+  file = target_file;
   mutff_set_read_fn(mutff_read_fatfs);
   mutff_set_write_fn(mutff_write_fatfs);
   mutff_set_tell_fn(mutff_tell_fatfs);
   mutff_set_seek_fn(mutff_seek_fatfs);
 
-  mutff_write_movie_atom(&USERFile, NULL, &container_file.movie);
-  mutff_write_free_atom(&USERFile, NULL, &container_file.free[0]);
-  mutff_write_movie_data_atom(&USERFile, NULL, &container_file.movie_data[0]);
+  mutff_write_movie_atom(file, NULL, &container.movie);
+  mutff_write_free_atom(file, NULL, &container.free[0]);
+  mutff_write_movie_data_atom(file, NULL, &container.movie_data[0]);
 }
 
 ///
@@ -31,27 +33,27 @@ void container_init(void) {
 ///
 void container_on_dcmi_data_ready(DCMIDataReadyEventData data) {
   FRESULT err;
-  const FSIZE_t mdat_offset = f_tell(&USERFile);
+  const FSIZE_t mdat_offset = f_tell(file);
 
-  container_file.movie_data[0].data_size += data.size;
-  const uint64_t data_size = container_file.movie_data[0].data_size;
+  container.movie_data[0].data_size += data.size;
+  const uint64_t data_size = container.movie_data[0].data_size;
 
   // Reserve space for extended header if necessary
   if (data_size + 8 <= UINT32_MAX) {
-    mutff_write_wide_atom(&USERFile, NULL, &(MuTFFWideAtom) {8});
+    mutff_write_wide_atom(file, NULL, &(MuTFFWideAtom) {8});
   }
 
-  mutff_write_movie_data_atom(&USERFile, NULL, &container_file.movie_data[0]);
+  mutff_write_movie_data_atom(file, NULL, &container.movie_data[0]);
 
   // Go to end of file
-  err = f_lseek(&USERFile, f_size(&USERFile));
+  err = f_lseek(file, f_size(file));
   if (err != FR_OK) {
     exit(1);
   }
 
   // Append data
   unsigned int bytes_written;
-  err = f_write(&USERFile, data.data, data.size, &bytes_written);
+  err = f_write(file, data.data, data.size, &bytes_written);
   if (err != FR_OK) {
     exit(1);
   }
@@ -60,8 +62,8 @@ void container_on_dcmi_data_ready(DCMIDataReadyEventData data) {
     exit(1);
   }
 
-  f_lseek(&USERFile, mdat_offset);
-  f_sync(&USERFile);
+  f_lseek(file, mdat_offset);
+  f_sync(file);
 }
 
 void container_on_dcmi_frame_complete(DCMIFrameCompleteEventData data) {
