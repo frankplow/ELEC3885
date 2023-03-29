@@ -10,7 +10,10 @@ static FIL *file;
 
 static MuTFFMovieFile container = file_template;
 
-static uint64_t size_table_length = 0;
+static MuTFFMovieAtom *const movie = &container.movie;
+static MuTFFTrackAtom *const track = &movie->track[0];
+static MuTFFMediaAtom *const media = &track->media;
+static MuTFFSampleTableAtom *const sample_table = &media->video_media_information.sample_table;
 
 void container_init(FIL *target_file) {
   file = target_file;
@@ -22,6 +25,30 @@ void container_init(FIL *target_file) {
   mutff_write_movie_atom(file, NULL, &container.movie);
   mutff_write_free_atom(file, NULL, &container.free[0]);
   mutff_write_movie_data_atom(file, NULL, &container.movie_data[0]);
+}
+
+void container_set_frame_rate(uint32_t rate) {
+  container.movie.movie_header.time_scale = rate;
+  container.movie.track->media.media_header.time_scale = rate;
+}
+
+void container_set_duration(uint32_t duration) {
+  sample_table->time_to_sample.time_to_sample_table[0].sample_count = duration;
+  sample_table->sample_to_chunk.sample_to_chunk_table[0].samples_per_chunk = duration;
+  media->media_header.duration = duration;
+  track->track_header.duration = duration;
+  movie->movie_header.duration = duration;
+}
+
+void container_set_resolution(uint16_t x, uint16_t y) {
+  sample_table->sample_description.sample_description_table[0].data.video.width = x;
+  sample_table->sample_description.sample_description_table[0].data.video.height = y;
+  track->track_header.track_width = (mutff_q16_16_t) {x, 0};
+  track->track_header.track_height = (mutff_q16_16_t) {y, 0};
+}
+
+void container_set_format(uint32_t format) {
+  sample_table->sample_description.sample_description_table[0].data_format = format;
 }
 
 ///

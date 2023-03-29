@@ -92,7 +92,7 @@ const MuTFFVideoSampleDescription video_sample_desc_template = {
 const MuTFFSampleDescription sample_desc_template = {
     MuTFF_FOURCC('j', 'p', 'e', 'g'),  // Data format
     1,                                 // Data reference index
-    video_sample_desc_template,
+    {video_sample_desc_template},
 };
 
 const MuTFFSampleDescriptionAtom stsd_template = {
