@@ -45,36 +45,18 @@
 #include <stdbool.h>
 
 // library includes
-#include <mutff.h>
+#include "mutff.h"
 
 // project includes
-
-
-#define FRAME_RATE 15
-
-#define WIDTH 480
-
-#define HEIGHT 272
-
-#define DURATION 0
-
-#define BIT_DEPTH 16
-
-#define SAMPLE_SIZE (WIDTH * HEIGHT * BIT_DEPTH / 8)
-
-#define DATA_SIZE (SAMPLE_SIZE * DURATION)
-
-// Enough to store 8 hours of footage at 30fps.
-// In the future, this will depend on the frame_rate given to container_init.
-#define MAX_FRAMES 8 * 60 * 60 * 30
+#include "container.h"
 
 const MuTFFVideoSampleDescription video_sample_desc_template = {
     0,                                 // version
     MuTFF_FOURCC('G', 'D', 'P', '4'),  // vendor
     0,                                 // temporal quality
     0,                                 // spatial quality
-    WIDTH,                             // width
-    HEIGHT,                            // height
+    0,                                 // width
+    0,                                 // height
     {
         72, 0                          // horizontal resolution
     },
@@ -85,7 +67,7 @@ const MuTFFVideoSampleDescription video_sample_desc_template = {
     {                                  // compressor name
         'O', 'V', '5', '6', '4', '0', ' ', 'J', 'P', 'E', 'G',
     },
-    BIT_DEPTH,                         // depth
+    0,                                 // depth
     -1                                 // color table id
 };
 
@@ -110,8 +92,8 @@ const MuTFFTimeToSampleAtom stts_template = {
     1,                         // Number of entries
     {                          // Entries
         {
-            DURATION,  // Sample count
-            1          // Sample duration
+            0,                 // Sample count
+            1                  // Sample duration
         }
     }
 };
@@ -123,7 +105,7 @@ const MuTFFSampleToChunkAtom stsc_template = {
     {
         {
             1,         // First chunk
-            DURATION,  // Samples per chunk
+            0,         // Samples per chunk
             1          // Sample description ID
         }
     }
@@ -132,8 +114,8 @@ const MuTFFSampleToChunkAtom stsc_template = {
 const MuTFFSampleSizeAtom stsz_template = {
     0,            // Version
     0,            // Flags,
-    SAMPLE_SIZE,  // Sample size
-    DURATION,     // Number of entries
+    0,            // Sample size
+    0,            // Number of entries
     {}            // Entries
 };
 
@@ -235,9 +217,9 @@ const MuTFFMediaHeaderAtom mdhd_template = {
     0,           // Flags
     0,           // Creation time
     0,           // Modification time
-    FRAME_RATE,  // Time scale
-    DURATION,    // Duration
-    0,         // Language
+    0,           // Time scale
+    0,           // Duration
+    0,           // Language
     0,           // Quality
 };
 
@@ -261,17 +243,17 @@ const MuTFFTrackHeaderAtom tkhd_template = {
     0,                          // Creation time
     0,                          // Modification time
     0,                          // Track ID
-    DURATION,                      // Duration
+    0,                          // Duration
     0,                          // Layer
-    0,                        // Alternate group
+    0,                          // Alternate group
     {1, 0},                     // Volume
     {                           // Matrix structure
         {1, 0}, {0, 0}, {0, 0},
         {0, 0}, {1, 0}, {0, 0},
         {0, 0}, {0, 0}, {1, 0}
     },
-    {WIDTH, 0},                  // Track width
-    {HEIGHT, 0}                  // Track height
+    {0, 0},                     // Track width
+    {0, 0}                      // Track height
 };
 
 const MuTFFTrackAtom trak_template = {
@@ -301,9 +283,9 @@ const MuTFFMovieHeaderAtom mvhd_template = {
     0,                           // Version
     0,                           // Flags
     0,                           // Creation time
-    0,                            // Modification time
-    FRAME_RATE,                  // Frames per second
-    DURATION,                       // Duration
+    0,                           // Modification time
+    0,                           // Frames per second
+    0,                           // Duration
     {1, 0},                      // Preferred rate
     {1, 0},                      // Preferred volume
     {                            // Matrix structure
@@ -350,7 +332,7 @@ const MuTFFMovieFile file_template = {
     1,              // mdat count
     {               // mdat
         {
-            DATA_SIZE,
+            0,
             0
         }
     },

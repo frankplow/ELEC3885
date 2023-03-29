@@ -51,6 +51,10 @@ void container_set_format(uint32_t format) {
   sample_table->sample_description.sample_description_table[0].data_format = format;
 }
 
+void container_set_depth(uint16_t depth) {
+  sample_table->sample_description.sample_description_table[0].data.video.depth = depth;
+}
+
 ///
 /// @brief Handle writing data produced by the camera module to the SD card
 ///
@@ -93,5 +97,11 @@ void container_on_dcmi_data_ready(DCMIDataReadyEventData data) {
   f_sync(file);
 }
 
+///
+/// @brief Update container file metadata to add a new frame
+///
+/// Appends the size of the frame to the sample size table
+/// Shrinks the free space atom as necessary to fit the new table entry
+///
 void container_on_dcmi_frame_complete(DCMIFrameCompleteEventData data) {
 }
