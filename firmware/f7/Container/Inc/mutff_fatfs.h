@@ -1,7 +1,7 @@
 #ifndef MUTFF_FATFS_H_
 #define MUTFF_FATFS_H_
 
-#include <mutff.h>
+#include "mutff.h"
 
 MuTFFError mutff_read_fatfs(mutff_file_t *file, void *dest,
                              unsigned int bytes);

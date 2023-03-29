@@ -67,6 +67,7 @@ Cam/Src/F746Cam_Driver.c \
 Cam/Src/ov5640_driver.c \
 Cam/Src/Camera_I2C.c \
 Container/Src/container.c \
+Container/Src/mutff_fatfs.c \
 Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma2d.c \
 Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_tim.c \
 Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_tim_ex.c \

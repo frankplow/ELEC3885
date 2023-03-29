@@ -24,6 +24,8 @@
 /* USER CODE BEGIN Includes */
 #include <stdbool.h>
 
+#include "mutff.h"
+
 #include "container.h"
 #include "events.h"
 /* USER CODE END Includes */
@@ -141,6 +143,10 @@ int main(void)
   BSP_CAMERA_Init(FMT_RGB565, 320, 240);
   BSP_CAMERA_ContinuousStart();
 
+  container_set_frame_rate(15);
+  container_set_resolution(320, 240);
+  container_set_format(MuTFF_FOURCC('j', 'p', 'e', 'g'));
+  container_init(&USERFile);
   /* USER CODE END 2 */
 
   /* Infinite loop */
