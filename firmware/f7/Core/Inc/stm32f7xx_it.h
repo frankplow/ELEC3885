@@ -27,7 +27,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-//#include "../Cam/Inc/F476Cam_Driver.h"
+#include "F7Cam_Driver.h"
 #include "stdio.h"
 /* USER CODE END Includes */
 

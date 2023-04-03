@@ -834,10 +834,11 @@ const  uint16_t format_rgb565[][2] = {
 		{0x4004, 0x02}, // BLC line number
 		{0x3002, 0x1c}, // reset JFIFO, SFIFO, JPG
 		{0x3006, 0xc3}, // disable clock of JPEG2x, JPEG
-		{0x4713, 0x03}, // JPEG mode 3
+		//{0x4713, 0x03}, // JPEG mode 3
+		{0x4713, 0x02}, // JPEG mode 2
 		{0x4407, 0x04}, // Quantization scale
 		{0x460b, 0x37},
-		{0x460c, 0x20},
+		{0x460c, 0x20}, //VFIFO CTRL0C - default value
 		{0x4837, 0x16}, // MIPI global timing
 		{0x3824, 0x04}, // PCLK manual divider
 		{0x5001, 0xA3}, // SDE on, scale on, UV average off, color matrix on, AWB on

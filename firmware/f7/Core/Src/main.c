@@ -102,6 +102,16 @@ void handle_event(Event event) {
           break;
     }
 }
+
+struct Cam_config default_settings =  {
+		.img_format = FMT_JPEG,
+		.x_res = 320,
+		.y_res = 240,
+		.FPS = 7.5,
+		.FB_size = 320 * 40 * 2, // 25600
+		.FIFO_width = 40,
+		.jpeg_comp_ratio = 12
+};
 /* USER CODE END 0 */
 
 /**
@@ -140,8 +150,15 @@ int main(void)
   MX_FATFS_Init();
   /* USER CODE BEGIN 2 */
   printf("\nmain\n");
-  BSP_CAMERA_Init(FMT_RGB565, 320, 240);
-  BSP_CAMERA_ContinuousStart();
+  CAM_Init(default_settings.img_format,
+    			default_settings.x_res,
+					default_settings.y_res,
+					default_settings.FPS,
+					default_settings.FB_size,
+					default_settings.FIFO_width,
+					default_settings.jpeg_comp_ratio);
+
+    BSP_CAMERA_ContinuousStart();
 
   container_set_frame_rate(15);
   container_set_resolution(320, 240);

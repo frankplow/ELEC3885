@@ -40,10 +40,26 @@ void CAMERA_IO_Write_OV5640(uint16_t Addr, uint16_t Reg, uint8_t value)
   I2Cx_WriteMultiple(&hI2cExtHandler, Addr, (uint16_t)Reg, I2C_MEMADD_SIZE_16BIT,(uint8_t*)&value, 1);
 }
 
+void CAMERA_IO_Write_OV5640_16(uint16_t Addrup, uint16_t Reg, uint16_t value)
+{
+
+
+  I2Cx_WriteMultiple(&hI2cExtHandler, Addrup, (uint16_t)Reg, I2C_MEMADD_SIZE_16BIT,(uint16_t*)&value, 2);
+
+  //I2Cx_WriteMultiple(&hI2cExtHandler, Addrlow, (uint16_t)Reg, I2C_MEMADD_SIZE_16BIT,(uint8_t*)&lower, 1);
+}
+
 uint8_t CAMERA_IO_Read_OV5640(uint16_t Addr, uint16_t Reg)
 {
   uint8_t read_value = 0;
   I2Cx_ReadMultiple(&hI2cExtHandler, Addr, Reg, I2C_MEMADD_SIZE_16BIT, (uint8_t*)&read_value, 1);
+  return read_value;
+}
+
+uint16_t CAMERA_IO_Read_OV5640_16(uint16_t Addr, uint16_t Reg)
+{
+  uint16_t read_value = 0;
+  I2Cx_ReadMultiple(&hI2cExtHandler, Addr, Reg, I2C_MEMADD_SIZE_16BIT, (uint16_t*)&read_value, 2);
   return read_value;
 }
 

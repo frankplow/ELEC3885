@@ -27,8 +27,9 @@
 #endif 
 
 /* Includes ------------------------------------------------------------------*/
-//#include "../Common/camera.h"
-#include "./camera_I2C.h"
+#include "camera_I2C.h"
+#include "stdio.h"
+//#include "./camera_I2C.h"
 /** @addtogroup BSP
   * @{
   */ 
@@ -184,10 +185,16 @@ void ov5640_Set_JPEG(void);
 void ov5640_Init_JPEG(uint16_t x_res, uint16_t y_res);
 void ov5640_Init_RGB565(uint16_t x_res, uint16_t y_res);
 uint8_t OV5640_Set_Size(uint16_t offx, uint16_t offy, uint16_t width, uint16_t height);
-void OV5640_JPEG_Config(uint16_t quality, uint16_t width, uint16_t height);
+
+//void OV5640_JPEG_Config(uint16_t quality, uint16_t width, uint16_t height);
+
+
 void OV5640_Set_NightMode(void);
 int32_t OV5640_SetPCLK(uint32_t ClockValue);
 
+
+void OV5640_Set_FIFO_Width(uint16_t fifo_width);
+void OV5640_Set_Comp_Ratio(uint16_t comp_ratio);
 
 void  OV5640_MirrorFlipConfig1(uint8_t Config);
 uint16_t ov5640_ReadID();
@@ -198,25 +205,6 @@ void     CAMERA_Delay(uint32_t delay);
 void ov5640_Config(uint32_t feature, uint32_t value, uint32_t BR_value);
 
 
-//void     ov5640_Config(uint16_t DeviceAddr, uint32_t feature, uint32_t value, uint32_t BR_value);
-//void     OV5640_SetLightMode(uint16_t DeviceAddr, uint8_t LightMode);
-//void     OV5640_SetEffect(uint16_t DeviceAddr, uint32_t Effect);
-//void     OV5640_SetBrightness(uint16_t DeviceAddr, uint8_t Level);
-//void     OV5640_SetSaturation(uint16_t DeviceAddr, uint8_t Level);
-//void     OV5640_SetContrast(uint16_t DeviceAddr, uint8_t Level);
-//void     OV5640_SetHueDegree(uint16_t DeviceAddr, uint16_t Degree);
-
-//void     OV5640_ZoomConfig(uint16_t DeviceAddr, uint8_t Zoom);
-//int32_t  OV5640_GetResolution(uint16_t DeviceAddr);
-
-
-
-
-//void send_reg_list(uint16_t DeviceAddr, uint16_t reg_settings[][2]);
-
-
-
-/* CAMERA driver structure */
 extern CAMERA_DrvTypeDef   ov5640_drv;
 /**
   * @}

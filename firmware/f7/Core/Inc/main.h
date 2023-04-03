@@ -32,7 +32,7 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "stdio.h"
-#include "F746Cam_Driver.h"
+#include "F7Cam_Driver.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -47,6 +47,18 @@ extern "C" {
 
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
+
+struct Cam_config {
+	uint8_t img_format;
+	uint16_t x_res;
+	uint16_t y_res;
+	uint16_t FPS;
+	uint16_t FB_size;
+	uint16_t FIFO_width;
+	uint8_t jpeg_comp_ratio; //1 - 63 lower = more compression
+
+};
+
 
 /* USER CODE END EM */
 

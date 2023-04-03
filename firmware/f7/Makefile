@@ -63,7 +63,7 @@ Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_sd.c \
 Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pcd.c \
 Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pcd_ex.c \
 Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_ll_usb.c \
-Cam/Src/F746Cam_Driver.c \
+Cam/Src/F7Cam_Driver.c \
 Cam/Src/ov5640_driver.c \
 Cam/Src/Camera_I2C.c \
 Container/Src/container.c \

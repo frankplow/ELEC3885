@@ -240,19 +240,70 @@ uint8_t OV5640_Set_Size(uint16_t offx,uint16_t offy,uint16_t width,uint16_t heig
 }
 
 //0-63, lower number means higher quality
-void OV5640_JPEG_Config(uint16_t quality, uint16_t width, uint16_t height) {
-	 //set JPEG quality
-	 CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, COMPRESSION_CTRL07, quality & 0x3f);
-	 //set JPEG PACKET size, variable width
+//void OV5640_JPEG_Config(uint16_t quality, uint16_t width, uint16_t height) {
+//	 //set JPEG quality
+//	 uint8_t fifo_control = CAMERA_IO_Read_OV5640(OV5640_I2C_ADDRESS, OV5640_VFIFO_CTRL00);
+//	 printf("\nrfifo control: %x\n", fifo_control);
+//	 //CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_VFIFO_CTRL00, fifo_control | 0x08);
+//
+//	 //CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, COMPRESSION_CTRL07, quality & 0x3f);
+//	 //set JPEG PACKET size, variable width
+//
+//
+////	 uint16_t left_byte = width >> 8;
+////	 uint16_t right_byte = width << 8;
+////	 uint16_t bit_swapped;
+//
+//	 //&0x00FF;
+//
+//	 //swapped = (num>>8) | (num<<8);
+//
+//
+//
+//	  // = (width >> 8) + width &0x00FF;
+//
+//
+//	 printf("\n Left byte = %x\n", left_byte);
+//	 printf("\n  right_byte = %x\n", right_byte);
+//
+//	 //bit_swapped = right_byte | left_byte;
+//
+//	 printf("\n bits swapped = %x\n", bit_swapped);
+//
+//
+//	 //width (variable)
+//	 //CAMERA_IO_Write_OV5640_16(OV5640_I2C_ADDRESS, VFIFO_X_SIZE_H, bit_swapped);
+//
+//	 //Height (constant)
+//     //CAMERA_IO_Write_OV5640_16(OV5640_I2C_ADDRESS, VFIFO_Y_SIZE_H, height);
+//
+//	 uint16_t read_width = CAMERA_IO_Read_OV5640_16(OV5640_I2C_ADDRESS, VFIFO_X_SIZE_H);
+//     printf("\nread fifo width: %i\n", read_width);
+//
+//	 uint16_t read_height = CAMERA_IO_Read_OV5640_16(OV5640_I2C_ADDRESS, VFIFO_Y_SIZE_H);
+//	 printf("\nread height width: %i\n", read_height);
+//
+//
+//
+//
+//}
 
-	 //width (variable)
-	 //CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, VFIFO_X_SIZE_H, width);
+void OV5640_Set_FIFO_Width(uint16_t fifo_width)
+ {
+	 uint16_t left_byte, right_byte, bit_swapped;
 
-	 //Height (constant)
-	 //CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, VFIFO_Y_SIZE_H, height);
+	 left_byte	= fifo_width >> 8;
+	 right_byte = fifo_width << 8;
+	 bit_swapped = right_byte | left_byte;
 
+	 CAMERA_IO_Write_OV5640_16(OV5640_I2C_ADDRESS, VFIFO_X_SIZE_H, bit_swapped);
+}
+
+void OV5640_Set_Comp_Ratio(uint16_t comp_ratio) {
+	 CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, COMPRESSION_CTRL07, comp_ratio & 0x3f);
 
 }
+
 
 void OV5640_Set_NightMode(void)
 {
