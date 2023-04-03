@@ -50,11 +50,15 @@ DMA_HandleTypeDef hdma_dcmi;
 
 I2C_HandleTypeDef hi2c1;
 
+SD_HandleTypeDef hsd1;
+DMA_HandleTypeDef hdma_sdmmc1;
+
 TIM_HandleTypeDef htim3;
 
 PCD_HandleTypeDef hpcd_USB_OTG_HS;
 
 /* USER CODE BEGIN PV */
+static FRESULT fatfs_err;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -65,6 +69,7 @@ static void MX_I2C1_Init(void);
 static void MX_DCMI_Init(void);
 static void MX_USB_OTG_HS_PCD_Init(void);
 static void MX_TIM3_Init(void);
+static void MX_SDMMC1_SD_Init(void);
 /* USER CODE BEGIN PFP */
 
 /// @brief Dispatches an event to the relevant handler
@@ -148,6 +153,7 @@ int main(void)
   MX_USB_OTG_HS_PCD_Init();
   MX_TIM3_Init();
   MX_FATFS_Init();
+  MX_SDMMC1_SD_Init();
   /* USER CODE BEGIN 2 */
   printf("\nmain\n");
   CAM_Init(default_settings.img_format,
@@ -160,10 +166,29 @@ int main(void)
 
   BSP_CAMERA_ContinuousStart();
 
+  // Mount filesystem
+  fatfs_err = f_mount(&SDFatFS, SDPath, 1);
+  if (fatfs_err != FR_OK) {
+  printf("failed to mount card, code: %i.\n", fatfs_err);
+  if (fatfs_err != FR_NOT_READY) {
+    printf("exiting.\n");
+    exit(fatfs_err);
+  }
+  printf("continuing.\n");
+  }
+
+  // Open file
+  fatfs_err = f_open(&SDFile, "3885.mov", FA_WRITE | FA_CREATE_ALWAYS);
+  if (fatfs_err != FR_OK) {
+          printf("failed to open file, code: %i.\n", fatfs_err);
+          printf("exiting.\n");
+          exit(fatfs_err);
+  }
+
   container_set_frame_rate(default_settings.FPS);
   container_set_resolution(default_settings.x_res, default_settings.y_res);
   container_set_format(MuTFF_FOURCC('j', 'p', 'e', 'g'));
-  container_init(&USERFile);
+  container_init(&SDFile);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -324,6 +349,36 @@ static void MX_I2C1_Init(void)
 }
 
 /**
+  * @brief SDMMC1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_SDMMC1_SD_Init(void)
+{
+
+  /* USER CODE BEGIN SDMMC1_Init 0 */
+
+  /* USER CODE END SDMMC1_Init 0 */
+
+  /* USER CODE BEGIN SDMMC1_Init 1 */
+
+  /* USER CODE END SDMMC1_Init 1 */
+  hsd1.Instance = SDMMC1;
+  hsd1.Init.ClockEdge = SDMMC_CLOCK_EDGE_RISING;
+  hsd1.Init.ClockBypass = SDMMC_CLOCK_BYPASS_DISABLE;
+  hsd1.Init.ClockPowerSave = SDMMC_CLOCK_POWER_SAVE_DISABLE;
+  hsd1.Init.BusWide = SDMMC_BUS_WIDE_4B;
+  hsd1.Init.HardwareFlowControl = SDMMC_HARDWARE_FLOW_CONTROL_DISABLE;
+  hsd1.Init.ClockDiv = 0;
+  /* USER CODE BEGIN SDMMC1_Init 2 */
+  // FatFS sets the SD card to 4-bit mode in its own initialisation,
+  // so it should be left as 1-bit for now.
+  hsd1.Init.BusWide = SDMMC_BUS_WIDE_1B;
+  /* USER CODE END SDMMC1_Init 2 */
+
+}
+
+/**
   * @brief TIM3 Initialization Function
   * @param None
   * @retval None
@@ -431,6 +486,9 @@ static void MX_DMA_Init(void)
   /* DMA2_Stream1_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA2_Stream1_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA2_Stream1_IRQn);
+  /* DMA2_Stream3_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA2_Stream3_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA2_Stream3_IRQn);
 
 }
 
@@ -522,16 +580,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   GPIO_InitStruct.Alternate = GPIO_AF8_SPDIFRX;
   HAL_GPIO_Init(SPDIF_RX0_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : SDMMC_CK_Pin SDMMC_D3_Pin SDMMC_D2_Pin PC9
-                           PC8 */
-  GPIO_InitStruct.Pin = SDMMC_CK_Pin|SDMMC_D3_Pin|SDMMC_D2_Pin|GPIO_PIN_9
-                          |GPIO_PIN_8;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-  GPIO_InitStruct.Alternate = GPIO_AF12_SDMMC1;
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pin : ARDUINO_PWM_D9_Pin */
   GPIO_InitStruct.Pin = ARDUINO_PWM_D9_Pin;
@@ -697,14 +745,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(OTG_FS_OverCurrent_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : SDMMC_D0_Pin */
-  GPIO_InitStruct.Pin = SDMMC_D0_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-  GPIO_InitStruct.Alternate = GPIO_AF12_SDMMC1;
-  HAL_GPIO_Init(SDMMC_D0_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : TP3_Pin NC2_Pin */
   GPIO_InitStruct.Pin = TP3_Pin|NC2_Pin;

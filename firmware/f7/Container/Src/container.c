@@ -25,6 +25,7 @@ void container_init(FIL *target_file) {
   mutff_write_movie_atom(file, NULL, &container.movie);
   mutff_write_free_atom(file, NULL, &container.free[0]);
   mutff_write_movie_data_atom(file, NULL, &container.movie_data[0]);
+  f_sync(file);
 }
 
 void container_set_frame_rate(uint32_t rate) {
