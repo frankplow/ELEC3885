@@ -158,10 +158,10 @@ int main(void)
 					default_settings.FIFO_width,
 					default_settings.jpeg_comp_ratio);
 
-    BSP_CAMERA_ContinuousStart();
+  BSP_CAMERA_ContinuousStart();
 
-  container_set_frame_rate(15);
-  container_set_resolution(320, 240);
+  container_set_frame_rate(default_settings.FPS);
+  container_set_resolution(default_settings.x_res, default_settings.y_res);
   container_set_format(MuTFF_FOURCC('j', 'p', 'e', 'g'));
   container_init(&USERFile);
   /* USER CODE END 2 */

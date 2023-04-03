@@ -56,7 +56,6 @@ struct Cam_config {
 	uint16_t FB_size;
 	uint16_t FIFO_width;
 	uint8_t jpeg_comp_ratio; //1 - 63 lower = more compression
-
 };
 
 

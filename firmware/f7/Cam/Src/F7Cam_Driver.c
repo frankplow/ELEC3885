@@ -10,7 +10,7 @@
 uint8_t cam_fb[CAM_FB_SIZE];// __attribute__ ((section (".sdram"), aligned (4)));
 // uint8_t jpeg_search_buffer[CAM_FB_SIZE];
 uint8_t frameCounter = 0;
-uint8_t *cam_data_location;
+uint16_t *cam_data_location;
 uint8_t buffer_offset;
 uint8_t packetCounter = 0;
 
@@ -356,20 +356,18 @@ void HAL_DCMI_VsyncEventCallback(DCMI_HandleTypeDef *hdcmi)
 {        
   BSP_CAMERA_VsyncEventCallback();
   frameCounter++;
-
-  if (frameCounter > 20) {
-	  JPEG_search_Full_Frame();
-	  for (uint8_t i = 0; i < 20; i++) {
-		  printf("\n#: %i : Packet #: %i Fifo size : %i Hex Size ; %i difference %i \n",
-				  i, JPEG_PACKET_COUNT_BUFFER[i], JPEG_FIFO_SIZE_BUFFER[i], JPEG_HEX_SIZE_BUFFER[i],(JPEG_FIFO_SIZE_BUFFER[i] - JPEG_HEX_SIZE_BUFFER[i]) );
-	  }
-  }
-  JPEG_Size = packetCounter * FIFO_SIZE;
-  JPEG_FIFO_SIZE_BUFFER[frameCounter] = JPEG_Size;
-  JPEG_PACKET_COUNT_BUFFER[frameCounter - 1] = packetCounter;
-  packetCounter = 0;
-  JPEG_Size = 0;
-
+  // if (frameCounter > 20) {
+	//   //JPEG_search_Full_Frame();
+	//   for (uint8_t i = 0; i < 20; i++) {
+	// 	  printf("\n#: %i : Packet #: %i Fifo size : %i Hex Size ; %i difference %i \n",
+	// 			  i, JPEG_PACKET_COUNT_BUFFER[i], JPEG_FIFO_SIZE_BUFFER[i], JPEG_HEX_SIZE_BUFFER[i],(JPEG_FIFO_SIZE_BUFFER[i] - JPEG_HEX_SIZE_BUFFER[i]) );
+	//   }
+  // }
+  // JPEG_Size = packetCounter * FIFO_SIZE;
+  // JPEG_FIFO_SIZE_BUFFER[frameCounter] = JPEG_Size;
+  // JPEG_PACKET_COUNT_BUFFER[frameCounter - 1] = packetCounter;
+  // packetCounter = 0;
+  // JPEG_Size = 0;
 }
 
 /**
@@ -529,7 +527,10 @@ void DCMI_DMA_TRANSFER_COMPLETE(DMA_HandleTypeDef *hdma)
   //printf("\n FULL transfer complete\n");
   //JPEG_search();
   uint32_t tmp = 0;
-  //cam_data_location = &cam_fb;
+  cam_data_location = &cam_fb;
+  printf("cam pointer: = %i\n", cam_data_location);
+
+
  //buffer_offset = 0;//CAM_FB_SIZE / 2;
 
   DCMI_HandleTypeDef *hdcmi = (DCMI_HandleTypeDef *)((DMA_HandleTypeDef *)hdma)->Parent;
@@ -583,32 +584,11 @@ void DCMI_DMA_TRANSFER_COMPLETE(DMA_HandleTypeDef *hdma)
   }
 
 void DCMI_DMA_TRANSFER_HALF_COMPLETE(DMA_HandleTypeDef *hdma) {
-	//frame_packet_data_available1 = true;
-	  //cam_data_location = &cam_fb + (CAM_FB_SIZE /2);
+  //printf("HALF\n");
+	  cam_data_location = &(cam_fb) + CAM_FB_SIZE /2;
+   printf("cam pointer: = %i\n", cam_data_location);
 	  //printf("\n Half transfer complete\n");
 
-}
-
-//void Get_JPEG_Size(void) {
-//
-//}
-
-void JPEG_search_mini(void) {
-//	uint32_t i=0;
-//	for(i=0;i<(CAM_FB_SIZE/2);i++)//search for 0XFF 0XD8 and 0XFF 0XD9, get size of JPG
-//	{
-//		JPEG_counter = JPEG_counter + 1;
-//		if((jpeg_search_buffer[i] ==0XFF)&&((jpeg_search_buffer[i + 1])==0XD8))
-//		{
-//			//current_JPEG_size = JPEG_counter;
-//			printf("found JPEG\n");
-//			//JPEG_counter = 0;
-//
-//		} else {
-//			printf("done JPEG search\n");
-//			break;
-//		}
-//	}
 }
 
 void JPEG_search_Full_Frame(void) {
