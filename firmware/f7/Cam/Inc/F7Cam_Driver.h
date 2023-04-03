@@ -30,6 +30,7 @@
 #include "camera_I2C.h"
 #include "stm32f7xx_hal.h"
 #include "stm32f7xx_hal_dcmi.h"
+#include "events.h"
 //#include "Cam_settings.h"
 
 #define X_RES 320

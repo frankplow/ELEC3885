@@ -110,7 +110,7 @@ struct Cam_config default_settings =  {
 		.FPS = 7.5,
 		.FB_size = 320 * 40 * 2, // 25600
 		.FIFO_width = 40,
-		.jpeg_comp_ratio = 12
+		.jpeg_comp_ratio = 63 //check 
 };
 /* USER CODE END 0 */
 

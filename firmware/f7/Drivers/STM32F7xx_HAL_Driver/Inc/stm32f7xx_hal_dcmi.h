@@ -45,8 +45,6 @@ extern "C" {
 /**
   * @brief  HAL DCMI State structures definition
   */
-
-//extern unit8_t
 typedef enum
 {
   HAL_DCMI_STATE_RESET             = 0x00U,  /*!< DCMI not yet initialized or disabled  */
@@ -529,7 +527,7 @@ HAL_StatusTypeDef HAL_DCMI_UnRegisterCallback(DCMI_HandleTypeDef *hdcmi, HAL_DCM
  * @{
  */
 /* IO operation functions *****************************************************/
-__weak HAL_StatusTypeDef HAL_DCMI_Start_DMA(DCMI_HandleTypeDef *hdcmi, uint32_t DCMI_Mode, uint32_t pData, uint32_t Length);
+HAL_StatusTypeDef HAL_DCMI_Start_DMA(DCMI_HandleTypeDef *hdcmi, uint32_t DCMI_Mode, uint32_t pData, uint32_t Length);
 HAL_StatusTypeDef HAL_DCMI_Stop(DCMI_HandleTypeDef *hdcmi);
 HAL_StatusTypeDef HAL_DCMI_Suspend(DCMI_HandleTypeDef *hdcmi);
 HAL_StatusTypeDef HAL_DCMI_Resume(DCMI_HandleTypeDef *hdcmi);
@@ -538,8 +536,6 @@ void       HAL_DCMI_LineEventCallback(DCMI_HandleTypeDef *hdcmi);
 void       HAL_DCMI_FrameEventCallback(DCMI_HandleTypeDef *hdcmi);
 void       HAL_DCMI_VsyncEventCallback(DCMI_HandleTypeDef *hdcmi);
 void       HAL_DCMI_IRQHandler(DCMI_HandleTypeDef *hdcmi);
-__weak void DCMI_DMAXferCplt(DMA_HandleTypeDef *hdma);
-void       DCMI_DMAError(DMA_HandleTypeDef *hdma);
 /**
   * @}
   */

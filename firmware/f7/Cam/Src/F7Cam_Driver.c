@@ -4,23 +4,24 @@
 #include "stdbool.h"
 #include "stm32f7xx_hal.h"
 #include "stm32f7xx_hal_dcmi.h"
+#include "events.h"
 
 #define OV5640
 
 uint8_t cam_fb[CAM_FB_SIZE];// __attribute__ ((section (".sdram"), aligned (4)));
 // uint8_t jpeg_search_buffer[CAM_FB_SIZE];
 uint8_t frameCounter = 0;
-uint16_t *cam_data_location;
+uint32_t *cam_data_location;
 uint8_t buffer_offset;
 uint8_t packetCounter = 0;
 
 void DCMI_DMA_TRANSFER_HALF_COMPLETE(DMA_HandleTypeDef *hdma);
 void DCMI_DMA_TRANSFER_COMPLETE(DMA_HandleTypeDef *hdma);
 
+static void       DCMI_DMAError(DMA_HandleTypeDef *hdma);
+
 DCMI_HandleTypeDef  hDcmiHandler;
 CAMERA_DrvTypeDef   *camera_drv;
-/* Camera current resolution naming (QQVGA, VGA, ...) */
-static uint32_t CameraCurrentResolution;
 
 uint32_t JPEG_counter = 0;
 uint32_t current_JPEG_size = 0;
@@ -57,9 +58,9 @@ uint8_t CAM_Init(uint8_t format, uint16_t x_res, uint16_t y_res, uint16_t FPS, u
   phdcmi->Instance              = DCMI;
 
 
-    status = CAMERA_ERROR;
+  status = CAMERA_ERROR;
 	BSP_CAMERA_PwrDown();
-    BSP_CAMERA_PwrUp();
+  BSP_CAMERA_PwrUp();
 	HAL_Delay(1000);
   printf("\nCamera power Up\n");
   /* Read ID of Camera module via I2C */
@@ -80,7 +81,7 @@ uint8_t CAM_Init(uint8_t format, uint16_t x_res, uint16_t y_res, uint16_t FPS, u
 	    		}
 	    		case FMT_RGB565:
 	    		{
-	    			OV5640_Set_NightMode();
+	    			//OV5640_Set_NightMode();
 	    			ov5640_Init_RGB565(x_res, y_res);
 	    			break;
 	    		}
@@ -122,18 +123,10 @@ uint8_t BSP_CAMERA_DeInit(void)
   return CAMERA_OK;
 }
 
-
 void BSP_CAMERA_ContinuousStart()
 { 
   /* Start the camera capture */
   HAL_DCMI_Start_DMA2(&hDcmiHandler, DCMI_MODE_CONTINUOUS, (uint32_t)cam_fb, (CAM_FB_SIZE/4));//GetSize(CameraCurrentResolution)); //0x1900
-}
-
-
-void BSP_CAMERA_SnapshotStart(uint8_t *buff)
-{ 
-  /* Start the camera capture */
-  HAL_DCMI_Start_DMA(&hDcmiHandler, DCMI_MODE_SNAPSHOT, (uint32_t)buff, GetSize(CameraCurrentResolution));
 }
 
 
@@ -363,11 +356,25 @@ void HAL_DCMI_VsyncEventCallback(DCMI_HandleTypeDef *hdcmi)
 	// 			  i, JPEG_PACKET_COUNT_BUFFER[i], JPEG_FIFO_SIZE_BUFFER[i], JPEG_HEX_SIZE_BUFFER[i],(JPEG_FIFO_SIZE_BUFFER[i] - JPEG_HEX_SIZE_BUFFER[i]) );
 	//   }
   // }
-  // JPEG_Size = packetCounter * FIFO_SIZE;
+  JPEG_Size = packetCounter * FIFO_SIZE;
+  printf("\n\nFRAME: size = %i\n\n", JPEG_Size);
+  //push_event_queue(DCMIFrameCompleteEventData.size = JPEG_Size);
   // JPEG_FIFO_SIZE_BUFFER[frameCounter] = JPEG_Size;
   // JPEG_PACKET_COUNT_BUFFER[frameCounter - 1] = packetCounter;
-  // packetCounter = 0;
-  // JPEG_Size = 0;
+
+  DCMIFrameCompleteEventData frame_complete_payload = {
+    JPEG_Size
+  };
+
+  Event frame_event = {
+    DCMIFrameComplete,
+    &frame_complete_payload
+  };
+
+  push_event_queue(frame_event);
+
+  packetCounter = 0;
+  JPEG_Size = 0;
 }
 
 /**
@@ -434,100 +441,28 @@ printf("\n%i FPS\n", frameCounter);
 }
 
 
-HAL_StatusTypeDef HAL_DCMI_Start_DMA2(DCMI_HandleTypeDef *hdcmi, uint32_t DCMI_Mode, uint32_t pData, uint32_t Length)
-{
-  /* Initialize the second memory address */
-  uint32_t SecondMemAddress = 0;
-
-  /* Check function parameters */
-  assert_param(IS_DCMI_CAPTURE_MODE(DCMI_Mode));
-
-  /* Process Locked */
-  __HAL_LOCK(hdcmi);
-
-  /* Lock the DCMI peripheral state */
-  hdcmi->State = HAL_DCMI_STATE_BUSY;
-
-  /* Enable DCMI by setting DCMIEN bit */
-  __HAL_DCMI_ENABLE(hdcmi);
-
-  /* Configure the DCMI Mode */
-  hdcmi->Instance->CR &= ~(DCMI_CR_CM);
-  hdcmi->Instance->CR |= (uint32_t)(DCMI_Mode);
-
-  /* Set the DMA memory0 conversion complete callback */
-  hdcmi->DMA_Handle->XferCpltCallback = DCMI_DMA_TRANSFER_COMPLETE;
-  hdcmi->DMA_Handle->XferHalfCpltCallback = DCMI_DMA_TRANSFER_HALF_COMPLETE;
-
-
-  /* Set the DMA error callback */
-  hdcmi->DMA_Handle->XferErrorCallback = DCMI_DMAError;
-
-  /* Set the dma abort callback */
-  hdcmi->DMA_Handle->XferAbortCallback = NULL;
-
-  /* Reset transfer counters value */
-  hdcmi->XferCount = 0;
-  hdcmi->XferTransferNumber = 0;
-  hdcmi->XferSize = 0;
-  hdcmi->pBuffPtr = 0;
-
-  if (Length <= 0xFFFFU)
-  {
-    /* Enable the DMA Stream */
-    if (HAL_DMA_Start_IT(hdcmi->DMA_Handle, (uint32_t)&hdcmi->Instance->DR, (uint32_t)pData, Length) != HAL_OK)
-    {
-      return HAL_ERROR;
-    }
-  }
-  else /* DCMI_DOUBLE_BUFFER Mode */
-  {
-    /* Set the DMA memory1 conversion complete callback */
-    hdcmi->DMA_Handle->XferM1CpltCallback = DCMI_DMAXferCplt;
-
-    /* Initialize transfer parameters */
-    hdcmi->XferCount = 1;
-    hdcmi->XferSize = Length;
-    hdcmi->pBuffPtr = pData;
-
-    /* Get the number of buffer */
-    while (hdcmi->XferSize > 0xFFFFU)
-    {
-      hdcmi->XferSize = (hdcmi->XferSize / 2U);
-      hdcmi->XferCount = hdcmi->XferCount * 2U;
-    }
-
-    /* Update DCMI counter  and transfer number*/
-    hdcmi->XferCount = (hdcmi->XferCount - 2U);
-    hdcmi->XferTransferNumber = hdcmi->XferCount;
-
-    /* Update second memory address */
-    SecondMemAddress = (uint32_t)(pData + (4 * hdcmi->XferSize));
-
-    /* Start DMA multi buffer transfer */
-    if (HAL_DMAEx_MultiBufferStart_IT(hdcmi->DMA_Handle, (uint32_t)&hdcmi->Instance->DR, (uint32_t)pData, SecondMemAddress, hdcmi->XferSize) != HAL_OK)
-    {
-      return HAL_ERROR;
-    }
-  }
-
-  /* Enable Capture */
-  hdcmi->Instance->CR |= DCMI_CR_CAPTURE;
-
-  /* Release Lock */
-  __HAL_UNLOCK(hdcmi);
-
-  /* Return function status */
-  return HAL_OK;
-}
-
 
 void DCMI_DMA_TRANSFER_COMPLETE(DMA_HandleTypeDef *hdma)
 {
   //printf("\n FULL transfer complete\n");
+
+  cam_data_location = &cam_fb[0];
+  DCMIDataReadyEventData full_data_ready_payload = {
+    cam_data_location,
+    CAM_FB_SIZE / 2
+  };
+
+  Event data_ready_full_event = {
+    DCMIDataReady,
+    &full_data_ready_payload
+  };
+
+  push_event_queue(data_ready_full_event);
+
+
+
   //JPEG_search();
   uint32_t tmp = 0;
-  cam_data_location = &cam_fb;
   printf("cam pointer: = %i\n", cam_data_location);
 
 
@@ -584,10 +519,26 @@ void DCMI_DMA_TRANSFER_COMPLETE(DMA_HandleTypeDef *hdma)
   }
 
 void DCMI_DMA_TRANSFER_HALF_COMPLETE(DMA_HandleTypeDef *hdma) {
-  //printf("HALF\n");
-	  cam_data_location = &(cam_fb) + CAM_FB_SIZE /2;
-   printf("cam pointer: = %i\n", cam_data_location);
-	  //printf("\n Half transfer complete\n");
+  //printf("\n Half transfer complete\n");
+
+	cam_data_location = &cam_fb[0] + CAM_FB_SIZE /2;
+
+  //Camera data ready event
+
+  DCMIDataReadyEventData half_data_ready_payload = {
+    cam_data_location,
+    CAM_FB_SIZE / 2
+  };
+
+  Event data_ready_half_event = {
+    DCMIDataReady,
+    &half_data_ready_payload
+  };
+
+  push_event_queue(data_ready_half_event);
+
+
+  //printf("cam pointer: = %i\n", cam_data_location);
 
 }
 
@@ -637,4 +588,110 @@ void JPEG_search_Full_Frame(void) {
 	                //printf("jpgstart :  %d \r\n" , jpgstart);
 	        }
 }
+
+//============================================DCMI HAL Re-definitions ==================================================
+
+HAL_StatusTypeDef HAL_DCMI_Start_DMA2(DCMI_HandleTypeDef *hdcmi, uint32_t DCMI_Mode, uint32_t pData, uint32_t Length)
+{
+  /* Initialize the second memory address */
+  uint32_t SecondMemAddress = 0;
+
+  /* Check function parameters */
+  assert_param(IS_DCMI_CAPTURE_MODE(DCMI_Mode));
+
+  /* Process Locked */
+  __HAL_LOCK(hdcmi);
+
+  /* Lock the DCMI peripheral state */
+  hdcmi->State = HAL_DCMI_STATE_BUSY;
+
+  /* Enable DCMI by setting DCMIEN bit */
+  __HAL_DCMI_ENABLE(hdcmi);
+
+  /* Configure the DCMI Mode */
+  hdcmi->Instance->CR &= ~(DCMI_CR_CM);
+  hdcmi->Instance->CR |= (uint32_t)(DCMI_Mode);
+
+  /* Set the DMA memory0 conversion complete callback */
+  hdcmi->DMA_Handle->XferCpltCallback = DCMI_DMA_TRANSFER_COMPLETE;
+  hdcmi->DMA_Handle->XferHalfCpltCallback = DCMI_DMA_TRANSFER_HALF_COMPLETE;
+
+
+  /* Set the DMA error callback */
+  hdcmi->DMA_Handle->XferErrorCallback = DCMI_DMAError;
+
+  /* Set the dma abort callback */
+  hdcmi->DMA_Handle->XferAbortCallback = NULL;
+
+  /* Reset transfer counters value */
+  hdcmi->XferCount = 0;
+  hdcmi->XferTransferNumber = 0;
+  hdcmi->XferSize = 0;
+  hdcmi->pBuffPtr = 0;
+
+  if (Length <= 0xFFFFU)
+  {
+    /* Enable the DMA Stream */
+    if (HAL_DMA_Start_IT(hdcmi->DMA_Handle, (uint32_t)&hdcmi->Instance->DR, (uint32_t)pData, Length) != HAL_OK)
+    {
+      return HAL_ERROR;
+    }
+  }
+  else /* DCMI_DOUBLE_BUFFER Mode */
+  {
+    /* Set the DMA memory1 conversion complete callback */
+    hdcmi->DMA_Handle->XferM1CpltCallback = DCMI_DMA_TRANSFER_COMPLETE;
+
+    /* Initialize transfer parameters */
+    hdcmi->XferCount = 1;
+    hdcmi->XferSize = Length;
+    hdcmi->pBuffPtr = pData;
+
+    /* Get the number of buffer */
+    while (hdcmi->XferSize > 0xFFFFU)
+    {
+      hdcmi->XferSize = (hdcmi->XferSize / 2U);
+      hdcmi->XferCount = hdcmi->XferCount * 2U;
+    }
+
+    /* Update DCMI counter  and transfer number*/
+    hdcmi->XferCount = (hdcmi->XferCount - 2U);
+    hdcmi->XferTransferNumber = hdcmi->XferCount;
+
+    /* Update second memory address */
+    SecondMemAddress = (uint32_t)(pData + (4 * hdcmi->XferSize));
+
+    /* Start DMA multi buffer transfer */
+    if (HAL_DMAEx_MultiBufferStart_IT(hdcmi->DMA_Handle, (uint32_t)&hdcmi->Instance->DR, (uint32_t)pData, SecondMemAddress, hdcmi->XferSize) != HAL_OK)
+    {
+      return HAL_ERROR;
+    }
+  }
+
+  /* Enable Capture */
+  hdcmi->Instance->CR |= DCMI_CR_CAPTURE;
+
+  /* Release Lock */
+  __HAL_UNLOCK(hdcmi);
+
+  /* Return function status */
+  return HAL_OK;
+}
+static void DCMI_DMAError(DMA_HandleTypeDef *hdma)
+{
+  DCMI_HandleTypeDef *hdcmi = (DCMI_HandleTypeDef *)((DMA_HandleTypeDef *)hdma)->Parent;
+
+  if (hdcmi->DMA_Handle->ErrorCode != HAL_DMA_ERROR_FE)
+  {
+    /* Initialize the DCMI state*/
+    hdcmi->State = HAL_DCMI_STATE_READY;
+
+    /* Set DCMI Error Code */
+    hdcmi->ErrorCode |= HAL_DCMI_ERROR_DMA;
+  }
+} 
+
+//======================================================================================================================
+
+
 
