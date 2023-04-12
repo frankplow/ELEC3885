@@ -3,7 +3,6 @@
  *
  * This file defines a bare-bones QTFF file. It is set up with a single track of uncompressed video
  * with the following parameters:
- * - 12fps
  *
  * Many of the fields in this template will need to be modified at run-time, for example the creation
  * time should be taken from the RTC.
@@ -15,6 +14,12 @@
  *  ├─ moov
  *  │   ╷
  *  │   ├─ mvhd
+ *  │   │
+ *  │   ├─ mvex
+ *  │   │   ╷
+ *  │   │   ├─ mehd
+ *  │   │   │
+ *  │   │   └─ trex
  *  │   │
  *  │   └─ trak
  *  │       ╷
@@ -46,6 +51,7 @@
 
 // library includes
 #include "mutff.h"
+#include "mutff_default.h"
 
 // project includes
 #include "container.h"
@@ -89,26 +95,15 @@ const MuTFFSampleDescriptionAtom stsd_template = {
 const MuTFFTimeToSampleAtom stts_template = {
     0,                         // Version
     0,                         // Flags
-    1,                         // Number of entries
-    {                          // Entries
-        {
-            0,                 // Sample count
-            1                  // Sample duration
-        }
-    }
+    0,                         // Number of entries
+    {}                         // Entries
 };
 
 const MuTFFSampleToChunkAtom stsc_template = {
     0,  // Version
     0,  // Flags
-    1,  // Number of entries
-    {
-        {
-            1,         // First chunk
-            0,         // Samples per chunk
-            1          // Sample description ID
-        }
-    }
+    0,  // Number of entries
+    {}  // Entries
 };
 
 const MuTFFSampleSizeAtom stsz_template = {
@@ -122,10 +117,8 @@ const MuTFFSampleSizeAtom stsz_template = {
 const MuTFFChunkOffsetAtom stco_template = {
     0,  // Version
     0,  // Flags
-    1,  // Number of entries
-    {   // Entries
-        0
-    }
+    0,  // Number of entries
+    {}  // Entries
 };
 
 const MuTFFSampleTableAtom stbl_template = {
@@ -242,7 +235,7 @@ const MuTFFTrackHeaderAtom tkhd_template = {
     0,                          // Flags
     0,                          // Creation time
     0,                          // Modification time
-    0,                          // Track ID
+    1,                          // Track ID
     0,                          // Duration
     0,                          // Layer
     0,                          // Alternate group
@@ -302,6 +295,25 @@ const MuTFFMovieHeaderAtom mvhd_template = {
     0                            // Next track ID
 };
 
+const MuTFFTrackExtendsAtom trex_template = {
+    0,  // version
+    0,  // flags
+    1,  // track ID
+    1,  // default sample description index
+    1,  // default sample duration
+    0,  // default sample size
+    0,  // default sample flags
+};
+
+const MuTFFMovieExtendsAtom mvex_template = {
+    false,
+    (MuTFFMovieExtendsHeaderAtom) {1, 0, 0},
+    1,
+    {
+        trex_template,
+    }
+};
+
 const MuTFFMovieAtom moov_template = {
     mvhd_template,          // mvhd
     1,                      // trak count
@@ -313,15 +325,16 @@ const MuTFFMovieAtom moov_template = {
     false,                  // ctab present
     {},                     // ctab
     false,                  // udta present
-    {}                      // udta
+    {},                      // udta
+    true,
+    mvex_template,
 };
 
 const MuTFFFileTypeAtom ftyp_template = {
-    MuTFF_FOURCC('q', 't', ' ', ' '),          // Major brand
+    MuTFF_FOURCC('m', 'p', '4', '1'),          // Major brand
     MuTFF_FOURCC(20, 16, 9, 0),                // Minor version
-    1,                                         // Compatible brands count
+    0,                                         // Compatible brands count
     {                           // Compatible brands
-        MuTFF_FOURCC('q', 't', ' ', ' '),  // Compatible brands[0]
     }
 };
 
@@ -329,19 +342,12 @@ const MuTFFMovieFile file_template = {
     true,           // ftyp present
     ftyp_template,  // ftyp
     moov_template,  // moov
-    1,              // mdat count
-    {               // mdat
-        {
-            0,
-            0
-        }
-    },
-    1,              // free count
-    {               // free
-        {
-            MAX_FRAMES * 4,
-        }
-    },
+    0,              // mdat count
+    {},             // mdat
+    0,              // moof count
+    {},             // moof
+    0,              // free count
+    {},             // free
     0,              // skip count
     {},             // skip
     0,              // wide count

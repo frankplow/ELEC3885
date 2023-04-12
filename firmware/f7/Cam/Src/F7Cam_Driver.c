@@ -1,17 +1,19 @@
 #include "F7Cam_Driver.h"
+
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "camera_I2C.h"
-#include "stdio.h"
-#include "stdbool.h"
+#include "events.h"
 #include "stm32f7xx_hal.h"
 #include "stm32f7xx_hal_dcmi.h"
-#include "events.h"
 
 #define OV5640
 
-uint8_t cam_fb[CAM_FB_SIZE];// __attribute__ ((section (".sdram"), aligned (4)));
+char cam_fb[CAM_FB_SIZE];// __attribute__ ((section (".sdram"), aligned (4)));
 // uint8_t jpeg_search_buffer[CAM_FB_SIZE];
 uint8_t frameCounter = 0;
-uint32_t *cam_data_location;
 uint8_t buffer_offset;
 uint8_t packetCounter = 0;
 
@@ -50,18 +52,15 @@ uint8_t CAM_Init(uint8_t format, uint16_t x_res, uint16_t y_res, uint16_t FPS, u
   phdcmi->Init.PCKPolarity      = DCMI_PCKPOLARITY_RISING;
    if (format == FMT_JPEG) {
 	   phdcmi->Init.JPEGMode 		  = DCMI_JPEG_ENABLE;
-	   printf("enabled JPEG\n");
    }
   phdcmi->Instance              = DCMI;
   status = CAMERA_ERROR;
 	BSP_CAMERA_PwrDown();
   BSP_CAMERA_PwrUp();
 	HAL_Delay(1000);
-  printf("\nCamera power Up\n");
   /* Read ID of Camera module via I2C */
   if(ov5640_ReadID(CAMERA_I2C_ADDRESS_OV5640) == OV5640_ID)
   {
-	printf("\nread ID correct\n");
     /* Initialize the camera driver structure */
     //camera_drv = &ov5640_drv;
     //CameraHwAddress = CAMERA_I2C_ADDRESS_OV5640;
@@ -342,7 +341,6 @@ __weak void BSP_CAMERA_LineEventCallback(void)
   */
 void HAL_DCMI_VsyncEventCallback(DCMI_HandleTypeDef *hdcmi)
 {        
-  //printf("\nFrame!\n");
   BSP_CAMERA_VsyncEventCallback();
   frameCounter++;
   //printf("\nFrame!\n");
@@ -358,15 +356,15 @@ void HAL_DCMI_VsyncEventCallback(DCMI_HandleTypeDef *hdcmi)
   // JPEG_FIFO_SIZE_BUFFER[frameCounter] = JPEG_Size;
   // JPEG_PACKET_COUNT_BUFFER[frameCounter - 1] = packetCounter;
 
-  DCMIFrameCompleteEventData frame_complete_payload = {
-    JPEG_Size
-  };
+  DCMIFrameCompleteEventData *frame_complete_payload = malloc(sizeof(DCMIFrameCompleteEventData));
+  frame_complete_payload->size = JPEG_Size;
 
   Event frame_event = {
     DCMIFrameComplete,
-    &frame_complete_payload
+    frame_complete_payload
   };
 
+  printf("[%lu] Pushing DCMIFrameComplete\n", HAL_GetTick());
   push_event_queue(frame_event);
 
   packetCounter = 0;
@@ -432,7 +430,6 @@ __weak void BSP_CAMERA_ErrorCallback(void)
   
 
 void FPSCalculate(void) {
-printf("\n%i FPS\n", frameCounter);
 	frameCounter = 0;
 }
 
@@ -442,17 +439,16 @@ void DCMI_DMA_TRANSFER_COMPLETE(DMA_HandleTypeDef *hdma)
 {
   //printf("\n FULL transfer complete\n");
 
-  cam_data_location = &cam_fb[0];
-  DCMIDataReadyEventData full_data_ready_payload = {
-    cam_data_location,
-    CAM_FB_SIZE / 2
-  };
+  DCMIDataReadyEventData *full_data_ready_payload = malloc(sizeof(DCMIDataReadyEventData));
+  full_data_ready_payload->data = cam_fb + CAM_FB_SIZE / 2;
+  full_data_ready_payload->size = CAM_FB_SIZE / 2;
 
   Event data_ready_full_event = {
     DCMIDataReady,
-    &full_data_ready_payload
+    full_data_ready_payload
   };
 
+  printf("[%lu] Pushing DCMIDataReady\n", HAL_GetTick());
   push_event_queue(data_ready_full_event);
 
 
@@ -517,20 +513,18 @@ void DCMI_DMA_TRANSFER_COMPLETE(DMA_HandleTypeDef *hdma)
 void DCMI_DMA_TRANSFER_HALF_COMPLETE(DMA_HandleTypeDef *hdma) {
   //printf("\n Half transfer complete\n");
 
-	cam_data_location = &cam_fb[0] + CAM_FB_SIZE /2;
-
   //Camera data ready event
 
-  DCMIDataReadyEventData half_data_ready_payload = {
-    cam_data_location,
-    CAM_FB_SIZE / 2
-  };
+  DCMIDataReadyEventData *half_data_ready_payload = malloc(sizeof(DCMIDataReadyEventData));
+  half_data_ready_payload->data = cam_fb;
+  half_data_ready_payload->size = CAM_FB_SIZE / 2;
 
   Event data_ready_half_event = {
     DCMIDataReady,
-    &half_data_ready_payload
+    half_data_ready_payload
   };
 
+  printf("[%lu] Pushing DCMIDataReady\n", HAL_GetTick());
   push_event_queue(data_ready_half_event);
 
 

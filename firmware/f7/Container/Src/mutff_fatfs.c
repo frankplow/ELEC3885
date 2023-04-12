@@ -30,3 +30,10 @@ MuTFFError mutff_tell_fatfs(mutff_file_t *file, unsigned int *location) {
 MuTFFError mutff_seek_fatfs(mutff_file_t *file, long delta) {
 	return MuTFFErrorIOError;
 }
+
+MuTFFIODriver mutff_fatfs_driver = {
+	mutff_read_fatfs,
+	mutff_write_fatfs,
+	mutff_tell_fatfs,
+	mutff_seek_fatfs
+};

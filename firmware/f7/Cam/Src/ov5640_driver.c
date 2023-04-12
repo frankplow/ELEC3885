@@ -79,23 +79,19 @@ void ov5640_Init_JPEG(uint16_t x_res, uint16_t y_res)
 
   tmp = CAMERA_IO_Read_OV5640(OV5640_I2C_ADDRESS,OV5640_TIMING_TC_REG21);
   tmp |= (1 << 5);
-  printf("\ntemp for OV5640_TIMING_TC_REG21 = %i\n",tmp);
   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_TIMING_TC_REG21, tmp);
 
   tmp = CAMERA_IO_Read_OV5640(OV5640_I2C_ADDRESS,OV5640_SYSREM_RESET02);
   tmp &= ~((1 << 4) | (1 << 3) | (1 << 2));
-  printf("\ntemp for OV5640_SYSREM_RESET02 = %i\n",tmp);
   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SYSREM_RESET02, tmp);
 
 
   tmp = CAMERA_IO_Read_OV5640(OV5640_I2C_ADDRESS,OV5640_CLOCK_ENABLE02);
   tmp |= ((1 << 5) | (1 << 3));
-  printf("\ntemp for OV5640_CLOCK_ENABLE02 = %i\n",tmp);
   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_CLOCK_ENABLE02, tmp);
   //set polaratis
 
   tmp = (uint8_t)(OV5640_POLARITY_PCLK_HIGH << 5U) | (OV5640_POLARITY_HREF_HIGH << 1U) | OV5640_POLARITY_VSYNC_HIGH;
-  printf("\ntemp for OV5640_POLARITY_CTRL = %i\n",tmp);
   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_POLARITY_CTRL, tmp);
 
 

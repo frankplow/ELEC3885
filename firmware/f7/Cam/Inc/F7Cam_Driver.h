@@ -38,7 +38,7 @@
 #define CAM_FB_SIZE X_RES * Y_RES * 2
 #define FIFO_SIZE 40
 
-extern uint8_t cam_fb[CAM_FB_SIZE]; //[CAM_FB_SIZE];
+extern char cam_fb[CAM_FB_SIZE]; //[CAM_FB_SIZE];
 
 
 typedef enum 

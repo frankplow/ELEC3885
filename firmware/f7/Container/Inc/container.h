@@ -12,8 +12,6 @@
 #include "events.h"
 #include "fatfs.h"
 
-#define MAX_FRAMES 8 * 60 * 60 * 30
-
 void container_init(FIL *file);
 
 void container_set_frame_rate(uint32_t rate);
