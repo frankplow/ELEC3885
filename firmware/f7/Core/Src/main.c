@@ -112,10 +112,10 @@ struct Cam_config default_settings =  {
 		.img_format = FMT_JPEG,
 		.x_res = 320,
 		.y_res = 240,
-		.FPS = 7.5,
-		.FB_size = 320 * 40 * 2, // 25600
+		.FPS = 9,
+		.FB_size = 320 * 240 * 2, // 25600
 		.FIFO_width = 40,
-		.jpeg_comp_ratio = 63 //check 
+		.jpeg_comp_ratio = 12 //check 
 };
 /* USER CODE END 0 */
 
@@ -155,6 +155,12 @@ int main(void)
   MX_FATFS_Init();
   MX_SDMMC1_SD_Init();
   /* USER CODE BEGIN 2 */
+    if (HAL_TIM_Base_Start_IT(&htim3) != HAL_OK)
+  {
+    /* Starting Error */
+    Error_Handler();
+  }
+
   printf("\nmain\n");
   CAM_Init(default_settings.img_format,
     			default_settings.x_res,
@@ -166,7 +172,7 @@ int main(void)
 
   BSP_CAMERA_ContinuousStart();
 
-  // Mount filesystem
+  //Mount filesystem
   fatfs_err = f_mount(&SDFatFS, SDPath, 1);
   if (fatfs_err != FR_OK) {
   printf("failed to mount card, code: %i.\n", fatfs_err);
