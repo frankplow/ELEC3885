@@ -21,17 +21,21 @@ void DCMI_DMA_TRANSFER_HALF_COMPLETE(DMA_HandleTypeDef *hdma);
 void DCMI_DMA_TRANSFER_COMPLETE(DMA_HandleTypeDef *hdma);
 static void DCMI_DMAError(DMA_HandleTypeDef *hdma);
 
+bool LoadedFlag = false;
+uint8_t loadingCounter = 0;
+
 DCMI_HandleTypeDef  hDcmiHandler;
 CAMERA_DrvTypeDef   *camera_drv;
 
 uint32_t JPEG_counter = 0;
+uint32_t printFrameCounter = 0;
 uint32_t current_JPEG_size = 0;
 uint8_t bufferblockcounter;
 
 uint16_t JPEG_Size = 0;
-// uint16_t JPEG_FIFO_SIZE_BUFFER[20];
-// uint16_t JPEG_HEX_SIZE_BUFFER[20];
-// uint16_t JPEG_PACKET_COUNT_BUFFER[20];
+uint16_t JPEG_FIFO_SIZE_BUFFER[20];
+uint16_t JPEG_HEX_SIZE_BUFFER[20];
+uint16_t JPEG_PACKET_COUNT_BUFFER[20];
 
 #ifdef OV5640
 uint8_t CAM_Init(uint8_t format, uint16_t x_res, uint16_t y_res, uint16_t FPS, uint16_t FB_size, uint16_t FIFO_width, uint8_t jpeg_comp_ratio)
@@ -70,7 +74,7 @@ uint8_t CAM_Init(uint8_t format, uint16_t x_res, uint16_t y_res, uint16_t FPS, u
 	    		{
 	    			ov5640_Init_JPEG(x_res, y_res);
 	    			OV5640_Set_Comp_Ratio(jpeg_comp_ratio);
-	    			OV5640_Set_FIFO_Width(FIFO_width);
+	    			OV5640_Set_FIFO_Width(FIFO_SIZE);
 	    			break;
 	    		}
 	    		case FMT_RGB565:
@@ -87,13 +91,16 @@ uint8_t CAM_Init(uint8_t format, uint16_t x_res, uint16_t y_res, uint16_t FPS, u
 
     /* DCMI Initialization */
     BSP_CAMERA_MspInit(&hDcmiHandler, NULL);
-    HAL_DCMI_Init(phdcmi);
-    HAL_DCMI_DisableCROP(phdcmi);
 
-    /*USER ADD CONFIG ====== */
+    //HAL_DCMI_Start_DMA2(&hDcmiHandler, DCMI_MODE_CONTINUOUS, (uint32_t)cam_fb, (CAM_FB_SIZE / 4));//GetSize(CameraCurrentResolution)); //0x1900 /4
+
+    HAL_DCMI_Init(phdcmi); // ENABLED VSYNC INTERRUPTS
+    HAL_DCMI_DisableCROP(phdcmi);
+  
+
+
     //OV5640_SetLightMode(CAMERA_I2C_ADDRESS_OV5640, OV5640_LIGHT_AUTO);
     //OV5640_MirrorFlipConfig(CAMERA_I2C_ADDRESS_OV5640, OV5640_FLIP);
-    /*USER ADD CONFIG ====== */
     status = CAMERA_OK;
   }
   else
@@ -120,7 +127,7 @@ uint8_t BSP_CAMERA_DeInit(void)
 void BSP_CAMERA_ContinuousStart()
 { 
   /* Start the camera capture */
-  HAL_DCMI_Start_DMA2(&hDcmiHandler, DCMI_MODE_CONTINUOUS, (uint32_t)cam_fb, (CAM_FB_SIZE/4));//GetSize(CameraCurrentResolution)); //0x1900
+  HAL_DCMI_Start_DMA2(&hDcmiHandler, DCMI_MODE_CONTINUOUS, (uint32_t)cam_fb, CAM_FB_SIZE / 4);//(CAM_FB_SIZE / 2));//GetSize(CameraCurrentResolution)); //0x1900 /4
 }
 
 
@@ -263,6 +270,7 @@ __weak void BSP_CAMERA_MspInit(DCMI_HandleTypeDef *hdcmi, void *Params)
   hdma_handler.Init.PeriphDataAlignment = DMA_PDATAALIGN_WORD;
   hdma_handler.Init.MemDataAlignment    = DMA_MDATAALIGN_WORD;
   hdma_handler.Init.Mode                = DMA_CIRCULAR;
+  hdma_handler.Init.Mode                = DMA_NORMAL;
   hdma_handler.Init.Priority            = DMA_PRIORITY_HIGH;
   hdma_handler.Init.FIFOMode            = DMA_FIFOMODE_DISABLE;
   hdma_handler.Init.FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL;
@@ -343,7 +351,13 @@ void HAL_DCMI_VsyncEventCallback(DCMI_HandleTypeDef *hdcmi)
 {        
   BSP_CAMERA_VsyncEventCallback();
   frameCounter++;
-  //printf("\nFrame!\n");
+  loadingCounter++;
+  
+
+  // if(loadingCounter > 70)  {
+  //   LoadedFlag = true;
+  //   //printf("Loaded\n");
+  // }
   // if (frameCounter > 20) {
 	//   JPEG_search_Full_Frame();
 	//   for (uint8_t i = 0; i < 20; i++) {
@@ -351,24 +365,37 @@ void HAL_DCMI_VsyncEventCallback(DCMI_HandleTypeDef *hdcmi)
 	// 			  i, JPEG_PACKET_COUNT_BUFFER[i], JPEG_FIFO_SIZE_BUFFER[i], JPEG_HEX_SIZE_BUFFER[i],(JPEG_FIFO_SIZE_BUFFER[i] - JPEG_HEX_SIZE_BUFFER[i]) );
 	//   }
   // }
+    //if (loadingCounter != 2) {
+       JPEG_Size = (packetCounter * FIFO_SIZE);
+      //printf("cut\n");
+//   } else {
+//      JPEG_Size = (packetCounter * FIFO_SIZE) - 2;
+//         printf("Normal");
 
-  JPEG_Size = packetCounter * FIFO_SIZE;
+//  }
   // JPEG_FIFO_SIZE_BUFFER[frameCounter] = JPEG_Size;
   // JPEG_PACKET_COUNT_BUFFER[frameCounter - 1] = packetCounter;
 
   DCMIFrameCompleteEventData *frame_complete_payload = malloc(sizeof(DCMIFrameCompleteEventData));
   frame_complete_payload->size = JPEG_Size;
 
+
   Event frame_event = {
     DCMIFrameComplete,
     frame_complete_payload
   };
 
-  printf("[%lu] Pushing DCMIFrameComplete\n", HAL_GetTick());
-  push_event_queue(frame_event);
-
+  if (loadingCounter >= 2) {
+    //printf("\n[%lu] Pushing DCMIFrameComplete\n", HAL_GetTick());
+    push_event_queue(frame_event);
+    printf("[%i] JPEG SIZE: %i\n", loadingCounter, JPEG_Size);
+  }
+  LoadedFlag = true;
   packetCounter = 0;
   JPEG_Size = 0;
+
+
+
 }
 
 /**
@@ -430,7 +457,8 @@ __weak void BSP_CAMERA_ErrorCallback(void)
   
 
 void FPSCalculate(void) {
-	frameCounter = 0;
+  // printf("\nFPS:%i\n",frameCounter);
+	// frameCounter = 0;
 }
 
 
@@ -448,9 +476,10 @@ void DCMI_DMA_TRANSFER_COMPLETE(DMA_HandleTypeDef *hdma)
     full_data_ready_payload
   };
 
-  printf("[%lu] Pushing DCMIDataReady\n", HAL_GetTick());
-  push_event_queue(data_ready_full_event);
-
+   //printf("[%lu] Pushing DCMIDataReady\n", HAL_GetTick());
+   //if (loadingCounter > 2) {
+    push_event_queue(data_ready_full_event);
+ //}
 
 
   //JPEG_search();
@@ -512,7 +541,6 @@ void DCMI_DMA_TRANSFER_COMPLETE(DMA_HandleTypeDef *hdma)
 
 void DCMI_DMA_TRANSFER_HALF_COMPLETE(DMA_HandleTypeDef *hdma) {
   //printf("\n Half transfer complete\n");
-
   //Camera data ready event
 
   DCMIDataReadyEventData *half_data_ready_payload = malloc(sizeof(DCMIDataReadyEventData));
@@ -524,60 +552,61 @@ void DCMI_DMA_TRANSFER_HALF_COMPLETE(DMA_HandleTypeDef *hdma) {
     half_data_ready_payload
   };
 
-  printf("[%lu] Pushing DCMIDataReady\n", HAL_GetTick());
-  push_event_queue(data_ready_half_event);
-
+  //printf("[%lu] Pushing DCMIDataReady\n", HAL_GetTick());
+  //if (loadingCounter > 2) {
+    push_event_queue(data_ready_half_event);
+  //}
 
   //printf("cam pointer: = %i\n", cam_data_location);
 
 }
 
-// void JPEG_search_Full_Frame(void) {
-// 			printf("\nsearching frame\n");
-// 			//uint8_t *p;
-// 	        uint32_t i=0,jpgstart=0,jpglen=0, padding_counter = 0;
-// 	        uint8_t  head=0;
-// 	        uint8_t found_jpeg_footer = 0;
-// 	        uint8_t jpeg_frame_counter = 1;
+void JPEG_search_Full_Frame(void) {
+			printf("\nsearching frame\n");
+			//uint8_t *p;
+	        uint32_t i=0,jpgstart=0,jpglen=0, padding_counter = 0;
+	        uint8_t  head=0;
+	        uint8_t found_jpeg_footer = 0;
+	        uint8_t jpeg_frame_counter = 1;
 
-// 	        HAL_DCMI_Stop(&hDcmiHandler);
+	        HAL_DCMI_Stop(&hDcmiHandler);
 
-// 	        //p=(uint8_t*)cam_fb;
+	        //p=(uint8_t*)cam_fb;
 
-// 	        for(i=0;i<CAM_FB_SIZE; i++)//search for 0XFF 0XD8 and 0XFF 0XD9, get size of JPG
-// 	        {
-// 	                if((cam_fb[i]==0XFF)&&(cam_fb[i+1]==0XD8))
-// 	                {
-// 	                		found_jpeg_footer = 0;
-// 	                		//printf("%i, total size: %d \r\n", jpeg_frame_counter, (jpglen + padding_counter)); //+ offset
-// 	                		JPEG_HEX_SIZE_BUFFER[jpeg_frame_counter] = jpglen + padding_counter;
-// 	                		padding_counter = 0;
-// 	                		jpeg_frame_counter++;
+	        for(i=0;i<CAM_FB_SIZE; i++)//search for 0XFF 0XD8 and 0XFF 0XD9, get size of JPG
+	        {
+	                if((cam_fb[i]==0XFF)&&(cam_fb[i+1]==0XD8))
+	                {
+	                		found_jpeg_footer = 0;
+	                		//printf("%i, total size: %d \r\n", jpeg_frame_counter, (jpglen + padding_counter)); //+ offset
+	                		JPEG_HEX_SIZE_BUFFER[jpeg_frame_counter + 1] = jpglen + padding_counter + 1;
+	                		padding_counter = 0;
+	                		jpeg_frame_counter++;
 
 
 
-// 	                        jpgstart=i;
-// 	                        head=1;	// Already found  FF D8
-// 	                        printf("\nfound header\n");
-// 	                }
-// 	                if((cam_fb[i]==0XFF)&&(cam_fb[i+1]==0XD9)&&head) //search for FF D9
-// 	                {
-//                         	printf("\nfound footer\n");
-// 	                        jpglen=i-jpgstart+2;
-// 	                        found_jpeg_footer = 1;
-// 	                }
-// 	                if(((found_jpeg_footer == 1) && (cam_fb[i] == 0x00)) && (cam_fb[i+1]!=0XFF)&&(cam_fb[i+2]!=0XD8)) {
-// 	                	padding_counter++;
-// 	                }
+	                        jpgstart=i;
+	                        head=1;	// Already found  FF D8
+	                        printf("\nfound header\n");
+	                }
+	                if((cam_fb[i]==0XFF)&&(cam_fb[i+1]==0XD9)&&head) //search for FF D9
+	                {
+                        	printf("\nfound footer\n");
+	                        jpglen=i-jpgstart+2;
+	                        found_jpeg_footer = 1;
+	                }
+	                if(((found_jpeg_footer == 1) && (cam_fb[i] == 0x00)) && (cam_fb[i+1]!=0XFF)&&(cam_fb[i+2]!=0XD8)) {
+	                	padding_counter++;
+	                }
 
-// 	        }
-// 	        if(jpglen)
-// 	        {
+	        }
+	        if(jpglen)
+	        {
 
-// 	                printf("padding :  %d \r\n" , padding_counter);
-// 	                //printf("jpgstart :  %d \r\n" , jpgstart);
-// 	        }
-// }
+	                printf("padding :  %d \r\n" , padding_counter);
+	                //printf("jpgstart :  %d \r\n" , jpgstart);
+	        }
+}
 
 //============================================DCMI HAL Re-definitions ==================================================
 
@@ -605,7 +634,6 @@ HAL_StatusTypeDef HAL_DCMI_Start_DMA2(DCMI_HandleTypeDef *hdcmi, uint32_t DCMI_M
   /* Set the DMA memory0 conversion complete callback */
   hdcmi->DMA_Handle->XferCpltCallback = DCMI_DMA_TRANSFER_COMPLETE;
   hdcmi->DMA_Handle->XferHalfCpltCallback = DCMI_DMA_TRANSFER_HALF_COMPLETE;
-
 
   /* Set the DMA error callback */
   hdcmi->DMA_Handle->XferErrorCallback = DCMI_DMAError;

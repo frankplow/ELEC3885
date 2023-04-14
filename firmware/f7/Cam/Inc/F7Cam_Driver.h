@@ -33,10 +33,12 @@
 #include "events.h"
 //#include "Cam_settings.h"
 
-#define X_RES 320
-#define Y_RES 240
-#define CAM_FB_SIZE X_RES * Y_RES * 2
-#define FIFO_SIZE 40
+
+#define CAM_FB_SIZE 100 * 1024
+#define FIFO_SIZE 1 * 1024 
+
+// #define CAM_FB_SIZE //X_RES * Y_RES * 2
+// #define FIFO_SIZE 1 * 1024 //1024
 
 extern char cam_fb[CAM_FB_SIZE]; //[CAM_FB_SIZE];
 

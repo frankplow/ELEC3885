@@ -55,6 +55,8 @@ I2C_HandleTypeDef hi2c1;
 SD_HandleTypeDef hsd1;
 DMA_HandleTypeDef hdma_sdmmc1;
 
+TIM_HandleTypeDef htim3;
+
 PCD_HandleTypeDef hpcd_USB_OTG_HS;
 
 /* USER CODE BEGIN PV */
@@ -69,6 +71,7 @@ static void MX_I2C1_Init(void);
 static void MX_DCMI_Init(void);
 static void MX_USB_OTG_HS_PCD_Init(void);
 static void MX_SDMMC1_SD_Init(void);
+static void MX_TIM3_Init(void);
 /* USER CODE BEGIN PFP */
 
 /// @brief Dispatches an event to the relevant handler
@@ -81,20 +84,20 @@ void handle_event(Event event);
 void handle_event(Event event) {
     switch (event.type) {
       case DCMIFrameComplete: {
-          printf("[%lu] Handling DCMIFrameComplete\n", HAL_GetTick());
+          //printf("[%lu] Handling DCMIFrameComplete\n", HAL_GetTick());
           const DCMIFrameCompleteEventData event_data =
                   *((DCMIFrameCompleteEventData*) event.data);
           container_on_dcmi_frame_complete(event_data);
           free(event.data);
-          printf("[%lu] Done handling DCMIFrameComplete\n", HAL_GetTick());
+          //printf("[%lu] Done handling DCMIFrameComplete\n", HAL_GetTick());
           break;
       }
       case DCMIDataReady: {
-          printf("[%lu] Handling DCMIDataReady\n", HAL_GetTick());
+          //printf("[%lu] Handling DCMIDataReady\n", HAL_GetTick());
           const DCMIDataReadyEventData event_data =
                   *((DCMIDataReadyEventData*) event.data);
           container_on_dcmi_data_ready(event_data);
-          printf("[%lu] Done handling DCMIDataReady\n", HAL_GetTick());
+          //printf("[%lu] Done handling DCMIDataReady\n", HAL_GetTick());
           free(event.data);
           break;
       }
@@ -117,9 +120,9 @@ struct Cam_config default_settings =  {
         .img_format = FMT_JPEG,
         .x_res = 320,
         .y_res = 240,
-        .FPS = 9,
-        .FB_size = 320 * 240 * 2, // 25600
-        .FIFO_width = 40,
+        .FPS = 8,
+        .FB_size =  4096,//320 * 240 * 2, // 25600
+        .FIFO_width = 1024, // must be a whole factor of x_res (or frame buffer??)
         .jpeg_comp_ratio = 12 //check 
 };
 /* USER CODE END 0 */
@@ -158,7 +161,14 @@ int main(void)
   MX_USB_OTG_HS_PCD_Init();
   MX_FATFS_Init();
   MX_SDMMC1_SD_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
+//start FPS counter
+    if (HAL_TIM_Base_Start_IT(&htim3) != HAL_OK)
+  {
+    /* Starting Error */
+    Error_Handler();
+  }
   //Mount filesystem
   fatfs_err = f_mount(&SDFatFS, SDPath, 1);
   if (fatfs_err != FR_OK) {
@@ -383,6 +393,65 @@ static void MX_SDMMC1_SD_Init(void)
 }
 
 /**
+  * @brief TIM3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM3_Init(void)
+{
+
+  /* USER CODE BEGIN TIM3_Init 0 */
+
+  /* USER CODE END TIM3_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+  TIM_OC_InitTypeDef sConfigOC = {0};
+
+  /* USER CODE BEGIN TIM3_Init 1 */
+
+  /* USER CODE END TIM3_Init 1 */
+  htim3.Instance = TIM3;
+  htim3.Init.Prescaler = 9999;
+  htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim3.Init.Period = 10000;
+  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim3, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_PWM_Init(&htim3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sConfigOC.OCMode = TIM_OCMODE_PWM1;
+  sConfigOC.Pulse = 0;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM3_Init 2 */
+
+  /* USER CODE END TIM3_Init 2 */
+  HAL_TIM_MspPostInit(&htim3);
+
+}
+
+/**
   * @brief USB_OTG_HS Initialization Function
   * @param None
   * @retval None
@@ -517,14 +586,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
   GPIO_InitStruct.Alternate = GPIO_AF12_FMC;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : ARDUINO_PWM_D3_Pin */
-  GPIO_InitStruct.Pin = ARDUINO_PWM_D3_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  GPIO_InitStruct.Alternate = GPIO_AF2_TIM3;
-  HAL_GPIO_Init(ARDUINO_PWM_D3_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : SPDIF_RX0_Pin */
   GPIO_InitStruct.Pin = SPDIF_RX0_Pin;
