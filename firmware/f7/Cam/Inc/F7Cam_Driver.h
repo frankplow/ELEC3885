@@ -33,9 +33,9 @@
 #include "events.h"
 //#include "Cam_settings.h"
 
-
-#define CAM_FB_SIZE 100 * 1024
-#define FIFO_SIZE 1 * 1024 
+#define FIFO_SIZE 1 * 1024 //1024 
+#define CAM_FB_SIZE 80 * FIFO_SIZE
+#define PACKET_COUNT 20
 
 // #define CAM_FB_SIZE //X_RES * Y_RES * 2
 // #define FIFO_SIZE 1 * 1024 //1024

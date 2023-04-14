@@ -66,9 +66,9 @@ void ov5640_Init_JPEG(uint16_t x_res, uint16_t y_res)
   //uint8_t redreg = 0;
   //send initial config
 
-  ov5640_Init();
-  CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x3035, 0X41); // slow down OV5640 clocks
-  CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x3036, 0x79);
+  ov5640_Init(); 
+  // CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x3035, 0X41); // slow down OV5640 clocks //Turned off --> TURN BACK ON?
+  // CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x3036, 0x79);
 
   OV5640_Set_Size(4, 0, x_res, y_res);
   ov5640_Set_JPEG();
@@ -284,15 +284,30 @@ uint8_t OV5640_Set_Size(uint16_t offx,uint16_t offy,uint16_t width,uint16_t heig
 //
 //}
 
-void OV5640_Set_FIFO_Width(uint16_t fifo_width)
+void OV5640_Config_FIFO(uint16_t fifo_width, uint16_t packet_count)
  {
-	 uint16_t left_byte, right_byte, bit_swapped;
 
-	 left_byte	= fifo_width >> 8;
-	 right_byte = fifo_width << 8;
-	 bit_swapped = right_byte | left_byte;
+	CAMERA_IO_Write_OV5640_16(OV5640_I2C_ADDRESS, VFIFO_X_SIZE_H, fifo_width);
 
-	 CAMERA_IO_Write_OV5640_16(OV5640_I2C_ADDRESS, VFIFO_X_SIZE_H, bit_swapped);
+  
+  //set to fifo size to fixed number of bits
+  uint8_t temp =  CAMERA_IO_Read_OV5640(OV5640_I2C_ADDRESS, OV5640_VFIFO_CTRL00);
+  temp |= (1 << 5);
+  CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_VFIFO_CTRL00, temp);
+
+
+  //set FIFO height 
+  CAMERA_IO_Write_OV5640_16(OV5640_I2C_ADDRESS, VFIFO_Y_SIZE_H, packet_count);
+  uint16_t read_height = CAMERA_IO_Read_OV5640_16(OV5640_I2C_ADDRESS, VFIFO_Y_SIZE_H);
+
+  printf("\n\nREAD_Height = :%i\n\n", read_height);
+
+  //printf f
+
+  printf("\nVFIFO control = :%i\n", temp);
+
+  printf("\nVFIFO control set bit = :%i\n", temp & (1 << 4));
+
 }
 
 void OV5640_Set_Comp_Ratio(uint16_t comp_ratio) {

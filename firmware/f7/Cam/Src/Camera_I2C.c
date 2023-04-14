@@ -43,8 +43,14 @@ void CAMERA_IO_Write_OV5640(uint16_t Addr, uint16_t Reg, uint8_t value)
 void CAMERA_IO_Write_OV5640_16(uint16_t Addrup, uint16_t Reg, uint16_t value)
 {
 
+   uint16_t left_byte, right_byte, bit_swapped;
 
-  I2Cx_WriteMultiple(&hI2cExtHandler, Addrup, (uint16_t)Reg, I2C_MEMADD_SIZE_16BIT,(uint16_t*)&value, 2);
+	 left_byte	= value >> 8;
+	 right_byte = value << 8;
+	 bit_swapped = right_byte | left_byte;
+
+
+  I2Cx_WriteMultiple(&hI2cExtHandler, Addrup, (uint16_t)Reg, I2C_MEMADD_SIZE_16BIT,(uint16_t*)&bit_swapped, 2);
 
   //I2Cx_WriteMultiple(&hI2cExtHandler, Addrlow, (uint16_t)Reg, I2C_MEMADD_SIZE_16BIT,(uint8_t*)&lower, 1);
 }
@@ -59,8 +65,15 @@ uint8_t CAMERA_IO_Read_OV5640(uint16_t Addr, uint16_t Reg)
 uint16_t CAMERA_IO_Read_OV5640_16(uint16_t Addr, uint16_t Reg)
 {
   uint16_t read_value = 0;
+  uint16_t left_byte, right_byte, bit_swapped;
+
   I2Cx_ReadMultiple(&hI2cExtHandler, Addr, Reg, I2C_MEMADD_SIZE_16BIT, (uint16_t*)&read_value, 2);
-  return read_value;
+
+
+	 left_byte	= read_value >> 8;
+	 right_byte = read_value << 8;
+	 bit_swapped = right_byte | left_byte;
+  return bit_swapped;
 }
 
 //=====================================================================================================

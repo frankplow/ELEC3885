@@ -74,7 +74,7 @@ uint8_t CAM_Init(uint8_t format, uint16_t x_res, uint16_t y_res, uint16_t FPS, u
 	    		{
 	    			ov5640_Init_JPEG(x_res, y_res);
 	    			OV5640_Set_Comp_Ratio(jpeg_comp_ratio);
-	    			OV5640_Set_FIFO_Width(FIFO_SIZE);
+	    			OV5640_Config_FIFO(FIFO_SIZE, PACKET_COUNT);
 	    			break;
 	    		}
 	    		case FMT_RGB565:

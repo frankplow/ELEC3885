@@ -192,8 +192,7 @@ uint8_t OV5640_Set_Size(uint16_t offx, uint16_t offy, uint16_t width, uint16_t h
 void OV5640_Set_NightMode(void);
 int32_t OV5640_SetPCLK(uint32_t ClockValue);
 
-
-void OV5640_Set_FIFO_Width(uint16_t fifo_width);
+void OV5640_Config_FIFO(uint16_t fifo_width, uint16_t packet_count);
 void OV5640_Set_Comp_Ratio(uint16_t comp_ratio);
 
 void  OV5640_MirrorFlipConfig1(uint8_t Config);
