@@ -24,53 +24,42 @@ MuTFFMovieDataAtom tail_mdat = {0, 0};
 FSIZE_t tail_mdat_offset;
 
 MuTFFMovieFragmentAtom moof = {
-  {       // Movie fragment header
-    0,      // Version
-    0,      // Flags
-    0,      // Sequence number
+  .movie_fragment_header = {
+    .version = 0,
+    .flags = 0,
+    .sequence_number = 0,
   },
-  1,      // Track fragment count
-  {       // Track fragments
-    {       // Track fragments[0]
-      {       // Track fragment header
-        1,      // Track ID
-        false,  // Duration is empty
-        false,  // Default base is moof
-        false,  // Base data offset present
-        0,      // Base data offset
-        false,  // Sample description index present
-        0,      // Sample description index
-        false,  // Default sample duration present
-        0,      // Default sample duration
-        false,  // Default sample size present
-        0,      // Default sample size
-        false,  // Default sample flags present
-        0,      // Default sample flags
+  .track_fragment_count = 1,
+  .track_fragment = {
+    {
+      .track_fragment_header = {
+        .track_id = 1,
+        .duration_is_empty = false,
+        .default_base_is_moof = false,
+        .base_data_offset_present = false,
+        .sample_description_index_present = false,
+        .default_sample_duration_present = false,
+        .default_sample_size_present = false,
+        .default_sample_flags_present = false,
       },
-      1,      // Track fragment run count
-      {       // Track fragment runs
-        {       // Track fragment runs[0]
-          0,      // Version
-          false,  // Data offset present
-          0,      // Data offset
-          false,  // First sample flags present
-          0,      // First sample flags
-          false,  // Sample duration present
-          true,   // Sample size present
-          false,  // Sample flags present
-          false,  // Sample composition time offset present
-          FRAGMENT_SIZE,  // Sample count
-          {}      // Samples
+      .track_fragment_run_count = 1,
+      .track_fragment_run = {
+        {
+          .version = 0,
+          .data_offset_present = false,
+          .first_sample_flags_present = false,
+          .sample_duration_present = false,
+          .sample_size_present = true,
+          .sample_flags_present = false,
+          .sample_composition_time_offset_present = false,
+          .sample_count = FRAGMENT_SIZE,
         }
       },
-      false,  // Track fragment decode time present
-      {},     // Track fragment decode time
-      false,  // User data present
-      {}      // User data
+      .track_fragment_decode_time_present = false,
+      .user_data_present = false,
     }
   },
-  false,  // User data present
-  {}      // User data
+  .user_data_present = false,
 };
 
 uint32_t sample_idx = 0;
@@ -88,15 +77,6 @@ void container_init(FIL *target_file) {
 void container_set_frame_rate(uint32_t rate) {
   container.movie.movie_header.time_scale = rate;
   container.movie.track->media.media_header.time_scale = rate;
-}
-
-void container_set_duration(uint32_t duration) {
-  sample_table->time_to_sample.time_to_sample_table[0].sample_count = duration;
-  sample_table->sample_to_chunk.sample_to_chunk_table[0].samples_per_chunk = duration;
-  media->media_header.duration = duration;
-  track->track_header.duration = duration;
-  movie->movie_header.duration = duration;
-  movie->movie_extends.movie_extends_header.fragment_duration = duration;
 }
 
 void container_set_resolution(uint16_t x, uint16_t y) {
@@ -151,14 +131,6 @@ void container_on_dcmi_frame_complete(DCMIFrameCompleteEventData data) {
 
   if (sample_idx >= FRAGMENT_SIZE) {
     FSIZE_t file_end = f_tell((FIL *) ctx.file);
-
-    // Update duration
-    // @TODO: it may be possible to avoid this
-    //        supposedly duration is inferred if mehd is not present
-    /* duration += FRAGMENT_SIZE; */
-    /* container_set_duration(duration); */
-    /* f_lseek(ctx.file, 0); */
-    /* mutff_write_movie_file(&ctx, NULL, &container); */
 
     // Finish tailing mdat
     f_lseek(ctx.file, tail_mdat_offset);
