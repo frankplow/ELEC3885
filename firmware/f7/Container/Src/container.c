@@ -8,7 +8,7 @@
 #include "mutff_fatfs.h"
 #include <stdint.h>
 
-#define FRAGMENT_SIZE 15
+#define FRAGMENT_SIZE 16
 
 static MuTFFContext ctx;
 static MuTFFMovieFile container = file_template;
@@ -36,7 +36,7 @@ MuTFFMovieFragmentAtom moof = {
         .track_id = 1,
         .duration_is_empty = false,
         .default_base_is_moof = false,
-        .base_data_offset_present = false,
+        .base_data_offset_present = true,
         .sample_description_index_present = false,
         .default_sample_duration_present = false,
         .default_sample_size_present = false,
@@ -140,9 +140,11 @@ void container_on_dcmi_frame_complete(DCMIFrameCompleteEventData data) {
 
     // Write moof
     moof.movie_fragment_header.sequence_number++;
+    moof.track_fragment->track_fragment_header.base_data_offset = tail_mdat_offset;
     mutff_write_movie_fragment_atom(&ctx, NULL, &moof);
     sample_idx = 0;
 
+    // Start next mdat
     tail_mdat_offset = f_tell((FIL *) ctx.file);
     mutff_write_movie_data_atom(&ctx, NULL, &tail_mdat);
 
