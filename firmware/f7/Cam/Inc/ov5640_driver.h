@@ -29,6 +29,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "camera_I2C.h"
 #include "stdio.h"
+#include "stdbool.h"
 //#include "./camera_I2C.h"
 /** @addtogroup BSP
   * @{
@@ -187,6 +188,8 @@ void ov5640_Init_RGB565(uint16_t x_res, uint16_t y_res);
 uint8_t OV5640_Set_Size(uint16_t offx, uint16_t offy, uint16_t width, uint16_t height);
 
 //void OV5640_JPEG_Config(uint16_t quality, uint16_t width, uint16_t height);
+void set_pll(bool bypass, uint8_t multiplier, uint8_t sys_div, uint8_t pre_div, bool root_2x, uint8_t pclk_root_div, bool pclk_manual, uint8_t pclk_div);
+
 
 
 void OV5640_Set_NightMode(void);

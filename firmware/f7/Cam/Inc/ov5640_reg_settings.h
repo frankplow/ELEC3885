@@ -795,17 +795,17 @@ const uint16_t format_jpeg[][2] = {
 
 //set resolution
 
-	{OV5640_TIMING_DVPHO_HIGH, 0x02},
-    {OV5640_TIMING_DVPHO_LOW, 0x80},
-    {OV5640_TIMING_DVPVO_HIGH, 0x01},
-    {OV5640_TIMING_DVPVO_LOW, 0xE0},
+	// {OV5640_TIMING_DVPHO_HIGH, 0x02},
+    // {OV5640_TIMING_DVPHO_LOW, 0x80},
+    // {OV5640_TIMING_DVPVO_HIGH, 0x01},
+    // {OV5640_TIMING_DVPVO_LOW, 0xE0},
 
 // Set pixel fomat to JPEG
 	    {OV5640_FORMAT_CTRL00, 0x30},
 	    {OV5640_FORMAT_MUX_CTRL, 0x00},
-		// {0x3002, 0x00},//0x1c to 0x00 !!!
-    	// {0x3006, 0xff},//0xc3 to 0xff !!!
-    	// {0x471c, 0x50},//0xd0 to 0x50
+		{0x3002, 0x00},//0x1c to 0x00 !!!
+    	{0x3006, 0xff},//0xc3 to 0xff !!!
+    	{0x471c, 0x50},//0xd0 to 0x50
 	
 
 };
@@ -822,6 +822,7 @@ const  uint16_t format_rgb565[][2] = {
 
 		{OV5640_SC_PLL_CONTRL1, 0x41}, // PLL
 		{OV5640_SC_PLL_CONTRL2, 0x69}, // PLL
+
 
 		{OV5640_LIGHTMETER1_TH_LOW, 0x07}, // lightmeter 1 threshold[7:0]
 		{OV5640_TIMING_TC_REG20, 0x46}, // flip

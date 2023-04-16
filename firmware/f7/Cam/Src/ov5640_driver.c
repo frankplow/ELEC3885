@@ -61,17 +61,25 @@ void ov5640_Set_RGB565(void) {
 
 void ov5640_Init_JPEG(uint16_t x_res, uint16_t y_res, uint16_t FifoWidth, uint16_t packetNumber, uint8_t compRatio)
 {
-  //uint32_t index = 0;
+
   uint8_t tmp = 0;
-  //uint8_t redreg = 0;
-  //send initial config
 
+//1. set default register values
   ov5640_Init(); 
-  //CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x3035, 0X41); // slow down OV5640 clocks //Turned off --> TURN BACK ON?
-  //CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x3036, 0x79);
 
-  //OV5640_Set_Size(4, 0, x_res, y_res);
+
+  //
+
+//2. set pixel format
   ov5640_Set_JPEG();
+  
+//3. Set output size (pixel format)
+  OV5640_Set_Size(4, 0, x_res, y_res);
+
+//4. configure timings for the output size
+ uint8_t sys_mul = 160;
+ //set_pll(false, sys_mul, 4, 2, false, 2, true, 4);
+
 
   //set timings
 
@@ -94,15 +102,36 @@ void ov5640_Init_JPEG(uint16_t x_res, uint16_t y_res, uint16_t FifoWidth, uint16
   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_POLARITY_CTRL, tmp);
 
 
-  OV5640_SetPCLK(OV5640_PCLK_24M);
+  OV5640_SetPCLK(OV5640_PCLK_23FPS);
   OV5640_Set_Comp_Ratio(compRatio);
   OV5640_Config_FIFO(FifoWidth, packetNumber);
+
+    //CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x3035, 0X41); // slow down OV5640 clocks //Turned off --> TURN BACK ON?
+  //CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x3036, 0x79);
 
 
   
 
 
 }
+
+void set_pll(bool bypass, uint8_t multiplier, uint8_t sys_div, uint8_t pre_div, bool root_2x, uint8_t pclk_root_div, bool pclk_manual, uint8_t pclk_div)
+{
+   //int ret = 0;
+
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL5, bypass?0x80:0x00);
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL0, 0x1A);
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL1, 0x01 | ((sys_div & 0x0f) << 4));
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL2, multiplier & 0xff);
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL3, (pre_div & 0xf) | (root_2x?0x10:0x00));
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SYSTEM_ROOT_DIVIDER, (pclk_root_div & 0x3) << 4 | 0x06);
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, PCLK_RATIO, pclk_div & 0x1f);
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, VFIFO_CTRL0C, pclk_manual?0x22:0x20);
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SCCB_SYSTEM_CTRL1, 0x13);
+}
+
+
+
 
 int32_t OV5640_SetPCLK(uint32_t ClockValue)
 {
@@ -114,10 +143,8 @@ int32_t OV5640_SetPCLK(uint32_t ClockValue)
   case OV5640_PCLK_7M:
     tmp = 0x38;
     CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL2, tmp);
-
     tmp = 0x16;
     CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL3, tmp);
-
     break;
   case OV5640_PCLK_8M:
     tmp = 0x40;
@@ -147,10 +174,25 @@ int32_t OV5640_SetPCLK(uint32_t ClockValue)
     CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL3, tmp);
     break;
 
+  case OV5640_PCLK_23FPS:
+    tmp = 0x60;
+    CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL2, tmp);
+
+    tmp = 0x12;
+    CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL3, tmp);
+    break;
+
     //return ret;
 
   }
 }
+// tmp = 0x60;
+//     CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL2, tmp);
+
+//     tmp = 0x10;
+//     CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL3, tmp);
+//     break;
+
 
 
 void ov5640_Init_RGB565(uint16_t x_res, uint16_t y_res)
@@ -210,35 +252,7 @@ uint8_t OV5640_Set_Size(uint16_t offx,uint16_t offy,uint16_t width,uint16_t heig
 		//CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, FORMAT_CTRL00, 0x6F);
 		CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, CLOCK_POL_CONTROL, 0x22);
 
-        if(width==jpeg_size_tbl[QQVGA_160_120][0] && height==jpeg_size_tbl[QQVGA_160_120][1])
-        {
-                jpeg_buf_size = jpeg_buf_max_size[QQVGA_160_120];
-        }
-        else if(width==jpeg_size_tbl[QCIF_176_144][0] && height==jpeg_size_tbl[QCIF_176_144][1])
-        {
-                jpeg_buf_size = jpeg_buf_max_size[QCIF_176_144];
-        }
-        else if(width==jpeg_size_tbl[QVGA_320_240][0] && height==jpeg_size_tbl[QVGA_320_240][1])
-        {
-                jpeg_buf_size = jpeg_buf_max_size[QVGA_320_240];
-        }
-        else if(width==jpeg_size_tbl[WQVGA_400_240][0] && height==jpeg_size_tbl[WQVGA_400_240][1])
-        {
-                jpeg_buf_size = jpeg_buf_max_size[WQVGA_400_240];
-        }
-        else if(width==jpeg_size_tbl[CIF_352_288][0] && height==jpeg_size_tbl[CIF_352_288][1])
-        {
-                jpeg_buf_size = jpeg_buf_max_size[CIF_352_288];
-        }
-        else if(width==jpeg_size_tbl[VGA_640_480][0] && height==jpeg_size_tbl[VGA_640_480][1])
-        {
-                jpeg_buf_size = jpeg_buf_max_size[VGA_640_480];
-        }
-        else if(width==jpeg_size_tbl[SVGA_800_600][0] && height==jpeg_size_tbl[SVGA_800_600][1])
-        {
-                jpeg_buf_size = jpeg_buf_max_size[SVGA_800_600];
-        }
-
+        
         return 0;
 }
 

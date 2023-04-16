@@ -38,7 +38,7 @@ uint16_t JPEG_HEX_SIZE_BUFFER[20];
 uint16_t JPEG_PACKET_COUNT_BUFFER[20];
 
 #ifdef OV5640
-uint8_t CAM_Init(uint8_t format, uint16_t x_res, uint16_t y_res, uint16_t FPS, uint16_t FB_size, uint16_t FIFO_width, uint8_t jpeg_comp_ratio)
+uint8_t CAM_Init(uint8_t format, uint16_t x_res, uint16_t y_res, uint8_t FPS, uint16_t FB_size, uint16_t FIFO_width, uint8_t jpeg_comp_ratio)
 {
   DCMI_HandleTypeDef *phdcmi;
   uint8_t status = CAMERA_ERROR;
@@ -68,11 +68,13 @@ uint8_t CAM_Init(uint8_t format, uint16_t x_res, uint16_t y_res, uint16_t FPS, u
     /* Initialize the camera driver structure */
     //camera_drv = &ov5640_drv;
     //CameraHwAddress = CAMERA_I2C_ADDRESS_OV5640;
+  
 	    switch (format)
 	        {
 	    		case FMT_JPEG:
 	    		{
 	    			ov5640_Init_JPEG(x_res, y_res, FIFO_SIZE, PACKET_COUNT, jpeg_comp_ratio);
+            OV5640_SetPCLK(FPS);
 	    			//OV5640_Set_Comp_Ratio(jpeg_comp_ratio);
 	    			//OV5640_Config_FIFO(FIFO_SIZE, PACKET_COUNT);
 	    			break;

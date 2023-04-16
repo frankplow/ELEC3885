@@ -59,7 +59,7 @@ typedef enum
 #define BSP_CAMERA_IRQHandler      DCMI_IRQHandler
 #define BSP_CAMERA_DMA_IRQHandler  DMA2_Stream1_IRQHandler  
 
-uint8_t CAM_Init(uint8_t format, uint16_t x_res, uint16_t y_res, uint16_t FPS, uint16_t FB_size, uint16_t FIFO_width, uint8_t jpeg_comp_ratio);
+uint8_t CAM_Init(uint8_t format, uint16_t x_res, uint16_t y_res, uint8_t FPS, uint16_t FB_size, uint16_t FIFO_width, uint8_t jpeg_comp_ratio);
 uint8_t BSP_CAMERA_DeInit(void);
 void    BSP_CAMERA_ContinuousStart();
 void    BSP_CAMERA_SnapshotStart(uint8_t *buff);
