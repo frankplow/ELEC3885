@@ -67,12 +67,12 @@ void ov5640_Init_JPEG(uint16_t x_res, uint16_t y_res)
   //send initial config
 
   ov5640_Init(); 
-  // CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x3035, 0X41); // slow down OV5640 clocks //Turned off --> TURN BACK ON?
-  // CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x3036, 0x79);
+  //CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x3035, 0X41); // slow down OV5640 clocks //Turned off --> TURN BACK ON?
+  //CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x3036, 0x79);
 
   OV5640_Set_Size(4, 0, x_res, y_res);
   ov5640_Set_JPEG();
-  //OV5640_SetPCLK(OV5640_PCLK_24M);
+  OV5640_SetPCLK(OV5640_PCLK_24M);
 
 
   //set timings

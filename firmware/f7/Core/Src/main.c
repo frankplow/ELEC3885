@@ -118,12 +118,12 @@ void handle_event(Event event) {
 
 struct Cam_config default_settings =  {
         .img_format = FMT_JPEG,
-        .x_res = 320,
-        .y_res = 240,
+        .x_res = 640,
+        .y_res = 480,
         .FPS = 15,
         .FB_size =  4096,//320 * 240 * 2, // 25600
         .FIFO_width = 1024, // must be a whole factor of x_res (or frame buffer??)
-        .jpeg_comp_ratio = 12 //check 
+        .jpeg_comp_ratio = 4 //check 
 };
 /* USER CODE END 0 */
 

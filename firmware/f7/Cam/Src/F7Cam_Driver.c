@@ -272,7 +272,7 @@ __weak void BSP_CAMERA_MspInit(DCMI_HandleTypeDef *hdcmi, void *Params)
   hdma_handler.Init.Mode                = DMA_CIRCULAR;
   hdma_handler.Init.Mode                = DMA_NORMAL;
   hdma_handler.Init.Priority            = DMA_PRIORITY_HIGH;
-  hdma_handler.Init.FIFOMode            = DMA_FIFOMODE_DISABLE;
+  hdma_handler.Init.FIFOMode            = DMA_FIFOMODE_DISABLE; //was disable
   hdma_handler.Init.FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL;
   hdma_handler.Init.MemBurst            = DMA_MBURST_SINGLE;
   hdma_handler.Init.PeriphBurst         = DMA_PBURST_SINGLE; 
@@ -353,6 +353,7 @@ void HAL_DCMI_VsyncEventCallback(DCMI_HandleTypeDef *hdcmi)
   frameCounter++;
   loadingCounter++;
   
+  
 
   // if(loadingCounter > 70)  {
   //   LoadedFlag = true;
@@ -377,7 +378,7 @@ void HAL_DCMI_VsyncEventCallback(DCMI_HandleTypeDef *hdcmi)
   // JPEG_PACKET_COUNT_BUFFER[frameCounter - 1] = packetCounter;
 
   DCMIFrameCompleteEventData *frame_complete_payload = malloc(sizeof(DCMIFrameCompleteEventData));
-  frame_complete_payload->size = JPEG_Size;
+  frame_complete_payload->size = FRAME_SIZE; //FRAME_SIZE; //JPEG_Size;
 
 
   Event frame_event = {
@@ -457,8 +458,8 @@ __weak void BSP_CAMERA_ErrorCallback(void)
   
 
 void FPSCalculate(void) {
-  // printf("\nFPS:%i\n",frameCounter);
-	// frameCounter = 0;
+  printf("\nFPS:%i\n",frameCounter);
+	frameCounter = 0;
 }
 
 
@@ -649,6 +650,7 @@ HAL_StatusTypeDef HAL_DCMI_Start_DMA2(DCMI_HandleTypeDef *hdcmi, uint32_t DCMI_M
 
   if (Length <= 0xFFFFU)
   {
+    printf("\nSTARTED DMA STREAM SMALL\n");
     /* Enable the DMA Stream */
     if (HAL_DMA_Start_IT(hdcmi->DMA_Handle, (uint32_t)&hdcmi->Instance->DR, (uint32_t)pData, Length) != HAL_OK)
     {

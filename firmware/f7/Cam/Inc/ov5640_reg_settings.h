@@ -726,64 +726,72 @@ const uint16_t OV5640_default_reg_settings[][2] =
 
 
 //output formats
+//SORT DUMMMY DATA PAD SPEED
 
 const uint16_t format_jpeg[][2] = {
+	
 		// {OV5640_FORMAT_CTRL00, 0x30}, // YUV 422, YUYV --> DIFF!
 		// {OV5640_FORMAT_MUX_CTRL, 0x00}, // YUV 422 --> DIFF!
 
-		// // // Input clo}ck = 24Mhz
-		// {OV5640_SC_PLL_CONTRL1, 0x21}, // PLL (PLL) --> DIFF!
-		// {OV5640_SC_PLL_CONTRL2, 0x69}, // PLL (PLL)
+		// // // // Input clo}ck = 24Mhz
+		// // {OV5640_SC_PLL_CONTRL1, 0x21}, // PLL (PLL) --> DIFF!
+		// // {OV5640_SC_PLL_CONTRL2, 0x69}, // PLL (PLL)
 
 		// {OV5640_LIGHTMETER1_TH_LOW, 0x07}, // lightmeter 1 threshold[7:0]
 		// {OV5640_TIMING_TC_REG20, 0x46}, // flip
 		// {OV5640_TIMING_TC_REG21, 0x20}, // mirror --> DIFF!
+
+		// //TIMINGS
 		// {OV5640_TIMING_X_INC, 0x11}, // timing X inc --> DIFF!
 		// {OV5640_TIMING_Y_INC, 0x11}, // timing Y inc --> DIFF!
-		// {X_ADDR_ST_H, 0x00}, // HS
-		// {0x3801, 0x00}, // HS
-		// {0x3802, 0x00}, // VS
-		// {0x3803, 0x00}, // VS
-		// {0x3804, 0x0a}, // HW (HE)
-		// {0x3805, 0x3f}, // HW (HE)
-		// {0x3806, 0x07}, // VH (VE) --> DIFF!
-		// {0x3807, 0x9f}, // VH (VE) --> DIFF!
+		// {OV5640_TIMING_HS_HIGH, 0x00}, // HS
+		// {OV5640_TIMING_HS_LOW, 0x00}, // HS
+		// {OV5640_TIMING_VS_HIGH, 0x00}, // VS
+		// {OV5640_TIMING_VS_LOW, 0x00}, // VS
+		// {OV5640_TIMING_HW_HIGH, 0x0a}, // HW (HE)
+		// {OV5640_TIMING_VH_HIGH, 0x3f}, // HW (HE)
+		// {OV5640_TIMING_VH_HIGH, 0x07}, // VH (VE) --> DIFF!
+		// {OV5640_TIMING_VH_LOW, 0x9f}, // VH (VE) --> DIFF!
 
-		// {0x3808, 0x02}, // DVPHO --> DIFF!
-		// {0x3809, 0x80}, // DVPHO --> DIFF!
-		// {0x380a, 0x01}, // DVPVO --> DIFF!
-		// {0x380b, 0xe0}, // DVPVO --> DIFF!
 
-		// {0x380c, 0x0b}, // HTS 		// --> DIFF!
-		// {0x380d, 0x1c}, // HTS--> DIFF!
-		// {0x380e, 0x07}, // VTS 		//--> DIFF!
-		// {0x380f, 0xb0}, // VTS--> DIFF!
-		// {0x3813, 0x04}, // timing V offset   04
+		// {X_OUTPUT_SIZE_H, 0x02}, // DVPHO --> DIFF! HORIZONTAL WIDTH TIMING
+		// {X_OUTPUT_SIZE_L, 0x80}, // DVPHO --> DIFF!
+		// {Y_OUTPUT_SIZE_H, 0x01}, // DVPVO --> DIFF!
+		// {Y_OUTPUT_SIZE_H, 0xe0}, // DVPVO --> DIFF!
+
+		// {X_TOTAL_SIZE_H, 0x0b}, // HTS 		// --> DIFF!
+		// {X_TOTAL_SIZE_L, 0x1c}, // HTS--> DIFF!
+		// {Y_TOTAL_SIZE_H, 0x07}, // VTS 		//--> DIFF!
+		// {Y_TOTAL_SIZE_L, 0xb0}, // VTS--> DIFF!
+		// {Y_OFFSET_L, 0x04}, // timing V offset   04
+
+		// // NO CLUE
 		// {0x3618, 0x04},// --> DIFF!
 		// {0x3612, 0x2b},//--> DIFF!
 		// {0x3709, 0x12},// --> DIFF!
 		// {0x370c, 0x00},//--> DIFF!
 
-	    // {0x3a02, 0x02}, // 60Hz max exposure
-		// {0x3a03, 0xe0}, // 60Hz max exposure
-		// {0x3a14, 0x02}, // 50Hz max exposure
-		// {0x3a15, 0xe0}, // 50Hz max exposure
+	    // {OV5640_AEC_CTRL02, 0x02}, // 60Hz max exposure
+		// {OV5640_AEC_CTRL03, 0xe0}, // 60Hz max exposure
+		// {OV5640_AEC_MAX_EXPO_HIGH, 0x02}, // 50Hz max exposure
+		// {OV5640_AEC_MAX_EXPO_LOW, 0xe0}, // 50Hz max exposure
 
 		// {OV5640_BLC_CTRL04, 0x06}, // BLC line number --> --> DIFF!
 		// {OV5640_SYSREM_RESET02, 0x00}, // enable JFIFO, SFIFO, JPG  --> DIFF!
 		// {OV5640_CLOCK_ENABLE02, 0xff}, // enable clock of JPEG2x, JPEG --> DIFF!
 		// {JPG_MODE_SELECT, 0x02}, // JPEG mode 2
-		// //Can set 4600[5] to fixed to ensure no variable line width
 		// {COMPRESSION_CTRL07, 0x01}, // Quantization sacle set to 1
 		// {0x460b, 0x35}, //--> DIFF! DEBUG MODE
 		// {VFIFO_CTRL0C, 0x22}, //Speed and JPEG footer disable
 		// {OV5640_VFIFO_CTRL0D, 0x00}, // set padding to zero 
-		// {OV5640_PCLK_PERIOD, 0x16}, // MIPI global timing
-		// {PCLK_RATIO, 0x02}, // PCLK manual divider --> DIFF!
+		// //{OV5640_PCLK_PERIOD, 0x16}, // MIPI global timing
+		// //{PCLK_RATIO, 0x02}, // PCLK manual divider --> DIFF!
 		// {OV5640_ISP_CONTROL01, 0xA3}, // SDE on, Scaling on, CMX on, AWB on --> DIFF!
 		// {AEC_PK_MANUAL, 0x00},// --> DIFF!
 
-				
+			
+
+
 
 //set resolution
 //	    {OV5640_TIMING_DVPHO_HIGH, 0x01},
@@ -794,6 +802,9 @@ const uint16_t format_jpeg[][2] = {
 // Set pixel fomat to JPEG
 	    {OV5640_FORMAT_CTRL00, 0x30},
 	    {OV5640_FORMAT_MUX_CTRL, 0x00},
+		{0x3002, 0x00},//0x1c to 0x00 !!!
+    	{0x3006, 0xff},//0xc3 to 0xff !!!
+    	{0x471c, 0x50},//0xd0 to 0x50
 
 
 //Write timings

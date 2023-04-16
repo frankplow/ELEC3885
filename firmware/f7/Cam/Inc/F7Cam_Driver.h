@@ -31,14 +31,17 @@
 #include "stm32f7xx_hal.h"
 #include "stm32f7xx_hal_dcmi.h"
 #include "events.h"
-//#include "Cam_settings.h"
+// #define FIFO_SIZE 1 * 1024
+// #define CAM_FB_SIZE 128 * FIFO_SIZE //4 4x the frame size
+// #define PACKET_COUNT 32
+
+
+
+#define FRAME_SIZE PACKET_COUNT * FIFO_SIZE
 
 #define FIFO_SIZE 1 * 1024 //1024 
 #define CAM_FB_SIZE 80 * FIFO_SIZE
 #define PACKET_COUNT 20
-
-// #define CAM_FB_SIZE //X_RES * Y_RES * 2
-// #define FIFO_SIZE 1 * 1024 //1024
 
 extern char cam_fb[CAM_FB_SIZE]; //[CAM_FB_SIZE];
 
