@@ -131,7 +131,7 @@ uint8_t BSP_CAMERA_DeInit(void)
 void BSP_CAMERA_ContinuousStart()
 { 
   /* Start the camera capture */
-  HAL_DCMI_Start_DMA2(&hDcmiHandler, DCMI_MODE_CONTINUOUS, (uint32_t)cam_fb, CAM_FB_SIZE / 4);//(CAM_FB_SIZE / 2));//GetSize(CameraCurrentResolution)); //0x1900 /4
+  HAL_DCMI_Start_DMA2(&hDcmiHandler, DCMI_MODE_CONTINUOUS, (uintptr_t) cam_fb, CAM_FB_SIZE);
 }
 
 
@@ -470,29 +470,7 @@ void FPSCalculate(void) {
 
 void DCMI_DMA_TRANSFER_COMPLETE(DMA_HandleTypeDef *hdma)
 {
-  //printf("\n FULL transfer complete\n");
-
-  DCMIDataReadyEventData *full_data_ready_payload = malloc(sizeof(DCMIDataReadyEventData));
-  full_data_ready_payload->data = cam_fb + CAM_FB_SIZE / 2;
-  full_data_ready_payload->size = CAM_FB_SIZE / 2;
-
-  Event data_ready_full_event = {
-    DCMIDataReady,
-    full_data_ready_payload
-  };
-
-   //printf("[%lu] Pushing DCMIDataReady\n", HAL_GetTick());
-   //if (loadingCounter > 2) {
-    push_event_queue(data_ready_full_event);
- //}
-
-
-  //JPEG_search();
   uint32_t tmp = 0;
-  //printf("cam pointer: = %i\n", cam_data_location);
-
-
- //buffer_offset = 0;//CAM_FB_SIZE / 2;
 
   DCMI_HandleTypeDef *hdcmi = (DCMI_HandleTypeDef *)((DMA_HandleTypeDef *)hdma)->Parent;
 
@@ -533,16 +511,39 @@ void DCMI_DMA_TRANSFER_COMPLETE(DMA_HandleTypeDef *hdma)
   /* Check if the frame is transferred */
   if (hdcmi->XferCount == hdcmi->XferTransferNumber)
   {
-	__HAL_DCMI_ENABLE_IT(hdcmi, DCMI_IT_FRAME);
+    __HAL_DCMI_ENABLE_IT(hdcmi, DCMI_IT_FRAME);
 
-	}
+    DCMIDataReadyEventData *full_data_ready_payload = malloc(sizeof(DCMIDataReadyEventData));
+    full_data_ready_payload->data = cam_fb + CAM_FB_SIZE / 2;
+    full_data_ready_payload->size = CAM_FB_SIZE / 2;
 
-    /* When snapshot mode, set dcmi state to ready */
-    if ((hdcmi->Instance->CR & DCMI_CR_CM) == DCMI_MODE_SNAPSHOT)
-    {
-      hdcmi->State = HAL_DCMI_STATE_READY;
-    }
+    Event data_ready_full_event = {
+      DCMIDataReady,
+      full_data_ready_payload
+    };
+
+   //printf("[%lu] Pushing DCMIDataReady\n", HAL_GetTick());
+   //if (loadingCounter > 2) {
+    push_event_queue(data_ready_full_event);
+  } else if (hdcmi->XferTransferNumber != 0 && hdcmi->XferCount == hdcmi->XferTransferNumber / 2) {
+    DCMIDataReadyEventData *full_data_ready_payload = malloc(sizeof(DCMIDataReadyEventData));
+    full_data_ready_payload->data = cam_fb;
+    full_data_ready_payload->size = CAM_FB_SIZE / 2;
+
+    Event data_ready_full_event = {
+      DCMIDataReady,
+      full_data_ready_payload
+    };
+
+    push_event_queue(data_ready_full_event);
   }
+
+  /* When snapshot mode, set dcmi state to ready */
+  if ((hdcmi->Instance->CR & DCMI_CR_CM) == DCMI_MODE_SNAPSHOT)
+  {
+    hdcmi->State = HAL_DCMI_STATE_READY;
+  }
+}
 
 void DCMI_DMA_TRANSFER_HALF_COMPLETE(DMA_HandleTypeDef *hdma) {
   //printf("\n Half transfer complete\n");
@@ -617,6 +618,21 @@ void JPEG_search_Full_Frame(void) {
 
 HAL_StatusTypeDef HAL_DCMI_Start_DMA2(DCMI_HandleTypeDef *hdcmi, uint32_t DCMI_Mode, uint32_t pData, uint32_t Length)
 {
+  // Convert Length to DMA data units
+  switch (hdcmi->DMA_Handle->Init.PeriphDataAlignment) {
+    case DMA_PDATAALIGN_BYTE:
+      break;
+    case DMA_PDATAALIGN_HALFWORD:
+      Length /= 2;
+      break;
+    case DMA_PDATAALIGN_WORD:
+      Length /= 4;
+      break;
+    default:
+      // @TODO: Error here?
+      break;
+  }
+
   /* Initialize the second memory address */
   uint32_t SecondMemAddress = 0;
 
@@ -638,7 +654,6 @@ HAL_StatusTypeDef HAL_DCMI_Start_DMA2(DCMI_HandleTypeDef *hdcmi, uint32_t DCMI_M
 
   /* Set the DMA memory0 conversion complete callback */
   hdcmi->DMA_Handle->XferCpltCallback = DCMI_DMA_TRANSFER_COMPLETE;
-  hdcmi->DMA_Handle->XferHalfCpltCallback = DCMI_DMA_TRANSFER_HALF_COMPLETE;
 
   /* Set the DMA error callback */
   hdcmi->DMA_Handle->XferErrorCallback = DCMI_DMAError;
@@ -656,6 +671,7 @@ HAL_StatusTypeDef HAL_DCMI_Start_DMA2(DCMI_HandleTypeDef *hdcmi, uint32_t DCMI_M
   {
     printf("\nSTARTED DMA STREAM SMALL\n");
     /* Enable the DMA Stream */
+    hdcmi->DMA_Handle->XferHalfCpltCallback = DCMI_DMA_TRANSFER_HALF_COMPLETE;
     if (HAL_DMA_Start_IT(hdcmi->DMA_Handle, (uint32_t)&hdcmi->Instance->DR, (uint32_t)pData, Length) != HAL_OK)
     {
       return HAL_ERROR;
