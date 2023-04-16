@@ -74,7 +74,9 @@ uint8_t CAM_Init(uint8_t format, uint16_t x_res, uint16_t y_res, uint8_t FPS, ui
 	    		case FMT_JPEG:
 	    		{
 	    			ov5640_Init_JPEG(x_res, y_res, FIFO_SIZE, PACKET_COUNT, jpeg_comp_ratio);
-            OV5640_SetPCLK(FPS);
+            if (FPS != 0) {
+              OV5640_SetPCLK(FPS);
+            }
 	    			//OV5640_Set_Comp_Ratio(jpeg_comp_ratio);
 	    			//OV5640_Config_FIFO(FIFO_SIZE, PACKET_COUNT);
 	    			break;

@@ -120,9 +120,9 @@ struct Cam_config default_settings =  {
         .img_format = FMT_JPEG,
         .x_res = 640,
         .y_res = 480,
-        .FPS = 23, // Can only be 8, 15 or 23
-        .FB_size =  4096,//320 * 240 * 2, // 25600
-        .FIFO_width = 1024, // must be a whole factor of x_res (or frame buffer??) needs to be set in the cam driver .h
+        .FPS = 15, // Can only be 8, 15 or 23 0 == default
+        .FB_size =  4096,//320 * 240 * 2, --> needs to be set in the cam driver .h
+        .FIFO_width = 1024, // must be a whole factor of x_res (or frame buffer??) --> needs to be set in the cam driver .h
         .jpeg_comp_ratio = 12 //check 
 };
 /* USER CODE END 0 */
