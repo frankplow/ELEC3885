@@ -72,9 +72,9 @@ uint8_t CAM_Init(uint8_t format, uint16_t x_res, uint16_t y_res, uint16_t FPS, u
 	        {
 	    		case FMT_JPEG:
 	    		{
-	    			ov5640_Init_JPEG(x_res, y_res);
-	    			OV5640_Set_Comp_Ratio(jpeg_comp_ratio);
-	    			OV5640_Config_FIFO(FIFO_SIZE, PACKET_COUNT);
+	    			ov5640_Init_JPEG(x_res, y_res, FIFO_SIZE, PACKET_COUNT, jpeg_comp_ratio);
+	    			//OV5640_Set_Comp_Ratio(jpeg_comp_ratio);
+	    			//OV5640_Config_FIFO(FIFO_SIZE, PACKET_COUNT);
 	    			break;
 	    		}
 	    		case FMT_RGB565:
@@ -378,7 +378,7 @@ void HAL_DCMI_VsyncEventCallback(DCMI_HandleTypeDef *hdcmi)
   // JPEG_PACKET_COUNT_BUFFER[frameCounter - 1] = packetCounter;
 
   DCMIFrameCompleteEventData *frame_complete_payload = malloc(sizeof(DCMIFrameCompleteEventData));
-  frame_complete_payload->size = FRAME_SIZE; //FRAME_SIZE; //JPEG_Size;
+  frame_complete_payload->size = JPEG_Size; //FRAME_SIZE; //JPEG_Size;
 
 
   Event frame_event = {

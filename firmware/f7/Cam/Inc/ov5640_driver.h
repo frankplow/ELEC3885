@@ -182,7 +182,7 @@
 void ov5640_Init(void);
 void ov5640_Set_RGB565(void);
 void ov5640_Set_JPEG(void);
-void ov5640_Init_JPEG(uint16_t x_res, uint16_t y_res);
+void ov5640_Init_JPEG(uint16_t x_res, uint16_t y_res, uint16_t FifoWidth, uint16_t packetNumber, uint8_t compRatio);
 void ov5640_Init_RGB565(uint16_t x_res, uint16_t y_res);
 uint8_t OV5640_Set_Size(uint16_t offx, uint16_t offy, uint16_t width, uint16_t height);
 

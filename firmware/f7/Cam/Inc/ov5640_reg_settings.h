@@ -733,39 +733,39 @@ const uint16_t format_jpeg[][2] = {
 		// {OV5640_FORMAT_CTRL00, 0x30}, // YUV 422, YUYV --> DIFF!
 		// {OV5640_FORMAT_MUX_CTRL, 0x00}, // YUV 422 --> DIFF!
 
-		// // // // Input clo}ck = 24Mhz
-		// // {OV5640_SC_PLL_CONTRL1, 0x21}, // PLL (PLL) --> DIFF!
-		// // {OV5640_SC_PLL_CONTRL2, 0x69}, // PLL (PLL)
+		// // // // // Input clo}ck = 24Mhz
+		// // // {OV5640_SC_PLL_CONTRL1, 0x21}, // PLL (PLL) --> DIFF!
+		// // // {OV5640_SC_PLL_CONTRL2, 0x69}, // PLL (PLL)
 
-		// {OV5640_LIGHTMETER1_TH_LOW, 0x07}, // lightmeter 1 threshold[7:0]
-		// {OV5640_TIMING_TC_REG20, 0x46}, // flip
-		// {OV5640_TIMING_TC_REG21, 0x20}, // mirror --> DIFF!
+		// // {OV5640_LIGHTMETER1_TH_LOW, 0x07}, // lightmeter 1 threshold[7:0]
+		// // {OV5640_TIMING_TC_REG20, 0x46}, // flip
+		// // {OV5640_TIMING_TC_REG21, 0x20}, // mirror --> DIFF!
 
-		// //TIMINGS
-		// {OV5640_TIMING_X_INC, 0x11}, // timing X inc --> DIFF!
-		// {OV5640_TIMING_Y_INC, 0x11}, // timing Y inc --> DIFF!
-		// {OV5640_TIMING_HS_HIGH, 0x00}, // HS
-		// {OV5640_TIMING_HS_LOW, 0x00}, // HS
-		// {OV5640_TIMING_VS_HIGH, 0x00}, // VS
-		// {OV5640_TIMING_VS_LOW, 0x00}, // VS
-		// {OV5640_TIMING_HW_HIGH, 0x0a}, // HW (HE)
-		// {OV5640_TIMING_VH_HIGH, 0x3f}, // HW (HE)
-		// {OV5640_TIMING_VH_HIGH, 0x07}, // VH (VE) --> DIFF!
-		// {OV5640_TIMING_VH_LOW, 0x9f}, // VH (VE) --> DIFF!
+		// // //TIMINGS
+		// // // {OV5640_TIMING_X_INC, 0x11}, // timing X inc --> DIFF!
+		// // // {OV5640_TIMING_Y_INC, 0x11}, // timing Y inc --> DIFF!
+		// // // {OV5640_TIMING_HS_HIGH, 0x00}, // HS
+		// // // {OV5640_TIMING_HS_LOW, 0x00}, // HS
+		// // // {OV5640_TIMING_VS_HIGH, 0x00}, // VS
+		// // // {OV5640_TIMING_VS_LOW, 0x00}, // VS
+		// // // {OV5640_TIMING_HW_HIGH, 0x0a}, // HW (HE)
+		// // // {OV5640_TIMING_VH_HIGH, 0x3f}, // HW (HE)
+		// // // {OV5640_TIMING_VH_HIGH, 0x07}, // VH (VE) --> DIFF!
+		// // // {OV5640_TIMING_VH_LOW, 0x9f}, // VH (VE) --> DIFF!
 
 
-		// {X_OUTPUT_SIZE_H, 0x02}, // DVPHO --> DIFF! HORIZONTAL WIDTH TIMING
-		// {X_OUTPUT_SIZE_L, 0x80}, // DVPHO --> DIFF!
-		// {Y_OUTPUT_SIZE_H, 0x01}, // DVPVO --> DIFF!
-		// {Y_OUTPUT_SIZE_H, 0xe0}, // DVPVO --> DIFF!
+		// // // {X_OUTPUT_SIZE_H, 0x02}, // DVPHO --> DIFF! HORIZONTAL WIDTH TIMING
+		// // // {X_OUTPUT_SIZE_L, 0x80}, // DVPHO --> DIFF!
+		// // // {Y_OUTPUT_SIZE_H, 0x01}, // DVPVO --> DIFF!
+		// // // {Y_OUTPUT_SIZE_H, 0xe0}, // DVPVO --> DIFF!
 
-		// {X_TOTAL_SIZE_H, 0x0b}, // HTS 		// --> DIFF!
-		// {X_TOTAL_SIZE_L, 0x1c}, // HTS--> DIFF!
-		// {Y_TOTAL_SIZE_H, 0x07}, // VTS 		//--> DIFF!
-		// {Y_TOTAL_SIZE_L, 0xb0}, // VTS--> DIFF!
-		// {Y_OFFSET_L, 0x04}, // timing V offset   04
+		// // // {X_TOTAL_SIZE_H, 0x0b}, // HTS 		// --> DIFF!
+		// // // {X_TOTAL_SIZE_L, 0x1c}, // HTS--> DIFF!
+		// // // {Y_TOTAL_SIZE_H, 0x07}, // VTS 		//--> DIFF!
+		// // // {Y_TOTAL_SIZE_L, 0xb0}, // VTS--> DIFF!
+		// // // {Y_OFFSET_L, 0x04}, // timing V offset   04
 
-		// // NO CLUE
+		// // // NO CLUE
 		// {0x3618, 0x04},// --> DIFF!
 		// {0x3612, 0x2b},//--> DIFF!
 		// {0x3709, 0x12},// --> DIFF!
@@ -794,21 +794,19 @@ const uint16_t format_jpeg[][2] = {
 
 
 //set resolution
-//	    {OV5640_TIMING_DVPHO_HIGH, 0x01},
-//	    {OV5640_TIMING_DVPHO_LOW, 0xE0},
-//	    {OV5640_TIMING_DVPVO_HIGH, 0x01},
-//	    {OV5640_TIMING_DVPVO_LOW, 0x10},
+
+	{OV5640_TIMING_DVPHO_HIGH, 0x02},
+    {OV5640_TIMING_DVPHO_LOW, 0x80},
+    {OV5640_TIMING_DVPVO_HIGH, 0x01},
+    {OV5640_TIMING_DVPVO_LOW, 0xE0},
 
 // Set pixel fomat to JPEG
 	    {OV5640_FORMAT_CTRL00, 0x30},
 	    {OV5640_FORMAT_MUX_CTRL, 0x00},
-		{0x3002, 0x00},//0x1c to 0x00 !!!
-    	{0x3006, 0xff},//0xc3 to 0xff !!!
-    	{0x471c, 0x50},//0xd0 to 0x50
-
-
-//Write timings
-		//{OV5640_TIMING_TC_REG21,}
+		// {0x3002, 0x00},//0x1c to 0x00 !!!
+    	// {0x3006, 0xff},//0xc3 to 0xff !!!
+    	// {0x471c, 0x50},//0xd0 to 0x50
+	
 
 };
 

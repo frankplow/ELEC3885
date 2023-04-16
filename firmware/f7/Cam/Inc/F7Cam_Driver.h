@@ -36,14 +36,13 @@
 // #define PACKET_COUNT 32
 
 
-
-#define FRAME_SIZE PACKET_COUNT * FIFO_SIZE
-
 #define FIFO_SIZE 1 * 1024 //1024 
-#define CAM_FB_SIZE 80 * FIFO_SIZE
-#define PACKET_COUNT 20
+#define CAM_FB_SIZE  100 * FIFO_SIZE
+#define PACKET_COUNT 25
 
 extern char cam_fb[CAM_FB_SIZE]; //[CAM_FB_SIZE];
+
+#define FRAME_SIZE PACKET_COUNT * FIFO_SIZE
 
 
 typedef enum 
