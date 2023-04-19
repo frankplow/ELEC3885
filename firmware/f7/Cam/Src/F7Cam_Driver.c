@@ -17,6 +17,15 @@ uint8_t frameCounter = 0;
 uint8_t buffer_offset;
 uint8_t packetCounter = 0;
 
+//BUFFER TRACKER =============================================
+
+uint8_t total_buffer_fragments;
+uint8_t buffer_position = 0;
+uint8_t current_frame_end_pos;
+uint8_t previous_frame_end_pos;
+
+//=======================================================
+
 void DCMI_DMA_TRANSFER_HALF_COMPLETE(DMA_HandleTypeDef *hdma);
 void DCMI_DMA_TRANSFER_COMPLETE(DMA_HandleTypeDef *hdma);
 static void DCMI_DMAError(DMA_HandleTypeDef *hdma);
@@ -25,20 +34,22 @@ bool LoadedFlag = false;
 uint8_t loadingCounter = 0;
 
 DCMI_HandleTypeDef  hDcmiHandler;
-CAMERA_DrvTypeDef   *camera_drv;
+
 
 uint32_t JPEG_counter = 0;
 uint32_t printFrameCounter = 0;
 uint32_t current_JPEG_size = 0;
 uint8_t bufferblockcounter;
 
+uint16_t FIFO_SIZE;
+uint8_t PACKET_COUNT;
 uint16_t JPEG_Size = 0;
 uint16_t JPEG_FIFO_SIZE_BUFFER[20];
 uint16_t JPEG_HEX_SIZE_BUFFER[20];
 uint16_t JPEG_PACKET_COUNT_BUFFER[20];
 
 #ifdef OV5640
-uint8_t CAM_Init(uint8_t format, uint16_t x_res, uint16_t y_res, uint8_t FPS, uint16_t FB_size, uint16_t FIFO_width, uint8_t jpeg_comp_ratio)
+uint8_t CAM_Init(uint8_t format, uint16_t x_res, uint16_t y_res, uint8_t FPS, uint16_t FB_size, uint16_t FIFO_width, uint8_t packet_count, uint8_t jpeg_comp_ratio)
 {
   DCMI_HandleTypeDef *phdcmi;
   uint8_t status = CAMERA_ERROR;
@@ -68,13 +79,15 @@ uint8_t CAM_Init(uint8_t format, uint16_t x_res, uint16_t y_res, uint8_t FPS, ui
     /* Initialize the camera driver structure */
     //camera_drv = &ov5640_drv;
     //CameraHwAddress = CAMERA_I2C_ADDRESS_OV5640;
+    FIFO_SIZE = FIFO_width;
+    PACKET_COUNT = packet_count;
   
 	    switch (format)
 	        {
 	    		case FMT_JPEG:
 	    		{
-	    			ov5640_Init_JPEG(x_res, y_res, FIFO_SIZE, PACKET_COUNT, jpeg_comp_ratio);
-            if (FPS != 0) {
+	    			ov5640_Init_JPEG(x_res, y_res, FIFO_width, packet_count, jpeg_comp_ratio);
+            if (FPS != 9) {
               OV5640_SetPCLK(FPS);
             }
 	    			//OV5640_Set_Comp_Ratio(jpeg_comp_ratio);
@@ -273,8 +286,9 @@ __weak void BSP_CAMERA_MspInit(DCMI_HandleTypeDef *hdcmi, void *Params)
   hdma_handler.Init.MemInc              = DMA_MINC_ENABLE;
   hdma_handler.Init.PeriphDataAlignment = DMA_PDATAALIGN_WORD;
   hdma_handler.Init.MemDataAlignment    = DMA_MDATAALIGN_WORD;
-  hdma_handler.Init.Mode                = DMA_CIRCULAR;
-  hdma_handler.Init.Mode                = DMA_NORMAL;
+  hdma_handler.Init.Mode                = DMA_CIRCULAR; //DMA_NORMAL
+  //hdma_handler.Init.Mode                = DMA_NORMAL; 
+  //hdma_handler.Init.Mode                = DMA_NORMAL;
   hdma_handler.Init.Priority            = DMA_PRIORITY_HIGH;
   hdma_handler.Init.FIFOMode            = DMA_FIFOMODE_DISABLE; //was disable
   hdma_handler.Init.FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL;
@@ -514,8 +528,8 @@ void DCMI_DMA_TRANSFER_COMPLETE(DMA_HandleTypeDef *hdma)
     __HAL_DCMI_ENABLE_IT(hdcmi, DCMI_IT_FRAME);
 
     DCMIDataReadyEventData *full_data_ready_payload = malloc(sizeof(DCMIDataReadyEventData));
-    full_data_ready_payload->data = cam_fb + CAM_FB_SIZE / 2;
-    full_data_ready_payload->size = CAM_FB_SIZE / 2;
+    full_data_ready_payload->data = cam_fb + (CAM_FB_SIZE / 2) + 10;
+    full_data_ready_payload->size = (CAM_FB_SIZE / 2) - 2;
 
     Event data_ready_full_event = {
       DCMIDataReady,
@@ -528,7 +542,8 @@ void DCMI_DMA_TRANSFER_COMPLETE(DMA_HandleTypeDef *hdma)
   } else if (hdcmi->XferTransferNumber != 0 && hdcmi->XferCount == hdcmi->XferTransferNumber / 2) {
     DCMIDataReadyEventData *full_data_ready_payload = malloc(sizeof(DCMIDataReadyEventData));
     full_data_ready_payload->data = cam_fb;
-    full_data_ready_payload->size = CAM_FB_SIZE / 2;
+    full_data_ready_payload->size = (CAM_FB_SIZE / 2) -2;
+    printf("/nELSE IF/n");
 
     Event data_ready_full_event = {
       DCMIDataReady,
@@ -551,7 +566,7 @@ void DCMI_DMA_TRANSFER_HALF_COMPLETE(DMA_HandleTypeDef *hdma) {
 
   DCMIDataReadyEventData *half_data_ready_payload = malloc(sizeof(DCMIDataReadyEventData));
   half_data_ready_payload->data = cam_fb;
-  half_data_ready_payload->size = CAM_FB_SIZE / 2;
+  half_data_ready_payload->size = (CAM_FB_SIZE / 2) + 2;
 
   Event data_ready_half_event = {
     DCMIDataReady,

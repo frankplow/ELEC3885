@@ -118,12 +118,13 @@ void handle_event(Event event) {
 
 struct Cam_config default_settings =  {
         .img_format = FMT_JPEG,
-        .x_res = 640,
-        .y_res = 480,
-        .FPS = 15, // Can only be 8, 15 or 23 0 == default
-        .FB_size =  4096,//320 * 240 * 2, --> needs to be set in the cam driver .h
-        .FIFO_width = 1024, // must be a whole factor of x_res (or frame buffer??) --> needs to be set in the cam driver .h
-        .jpeg_comp_ratio = 12 //check 
+        .x_res = 320,
+        .y_res = 240,
+        .FPS = 9, //Can be 8, 15, 20, 23, 25, or 30. Setting to 9 == default PLL configuration (usually ~10FPS)
+        .FB_size =  1024 * 40,//320 * 240 * 2, --> needs to be set in the cam driver .h
+        .FIFO_width = 1024, //Packet 
+        .packet_count = 20, // must be a whole factor of x_res (or frame buffer??) --> needs to be set in the cam driver .h
+        .jpeg_comp_ratio = 1 //check 
 };
 /* USER CODE END 0 */
 
@@ -199,6 +200,7 @@ int main(void)
            default_settings.FPS,
            default_settings.FB_size,
            default_settings.FIFO_width,
+           default_settings.packet_count,
            default_settings.jpeg_comp_ratio);
 
   BSP_CAMERA_ContinuousStart();

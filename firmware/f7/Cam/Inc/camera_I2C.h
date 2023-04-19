@@ -62,12 +62,6 @@ typedef struct
 #define FMT_JPEG 0x00
 #define FMT_RGB565 0x01
 
-#define OV5640_PCLK_7M                  0x00   /* Pixel Clock set to 7Mhz    */
-#define OV5640_PCLK_8M                  0x01   /* Pixel Clock set to 8Mhz    */
-#define OV5640_PCLK_9M                  0x02   /* Pixel Clock set to 9Mhz    */
-#define OV5640_PCLK_12M                 0x04   /* Pixel Clock set to 12Mhz   */
-#define OV5640_PCLK_24M                 0x08
-
 //==========================I2C=========================
 
 /* I2C clock speed configuration (in Hz) 
@@ -162,6 +156,7 @@ uint16_t CAMERA_IO_Read_OV5640_16(uint16_t Addr, uint16_t Reg);
 #define OV5640_PCLK_12M                 0x08   /* Pixel Clock set to 12Mhz   */
 #define OV5640_PCLK_24M                 0x0F
 #define OV5640_PCLK_23FPS               0x17
+#define OV5640_PCLK_30FPS               0x1E
 
 #define CAMERA_R160x120                 0x00   /* QQVGA Resolution                     */
 #define CAMERA_R320x240                 0x01   /* QVGA Resolution                      */

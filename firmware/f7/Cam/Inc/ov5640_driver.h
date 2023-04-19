@@ -185,7 +185,7 @@ void ov5640_Set_RGB565(void);
 void ov5640_Set_JPEG(void);
 void ov5640_Init_JPEG(uint16_t x_res, uint16_t y_res, uint16_t FifoWidth, uint16_t packetNumber, uint8_t compRatio);
 void ov5640_Init_RGB565(uint16_t x_res, uint16_t y_res);
-uint8_t OV5640_Set_Size(uint16_t offx, uint16_t offy, uint16_t width, uint16_t height);
+void OV5640_Set_Size(uint16_t offx, uint16_t offy, uint16_t width, uint16_t height);
 
 //void OV5640_JPEG_Config(uint16_t quality, uint16_t width, uint16_t height);
 void set_pll(bool bypass, uint8_t multiplier, uint8_t sys_div, uint8_t pre_div, bool root_2x, uint8_t pclk_root_div, bool pclk_manual, uint8_t pclk_div);
@@ -193,7 +193,7 @@ void set_pll(bool bypass, uint8_t multiplier, uint8_t sys_div, uint8_t pre_div, 
 
 
 void OV5640_Set_NightMode(void);
-int32_t OV5640_SetPCLK(uint32_t ClockValue);
+void OV5640_SetPCLK(uint32_t ClockValue);
 
 void OV5640_Config_FIFO(uint16_t fifo_width, uint16_t packet_count);
 void OV5640_Set_Comp_Ratio(uint16_t comp_ratio);
@@ -204,13 +204,8 @@ void     CAMERA_IO_Init(void);
 //void     CAMERA_IO_Write_OV5640(uint8_t addr, uint16_t reg, uint16_t value);
 //uint16_t CAMERA_IO_Read_OV5640(uint8_t Addr, uint16_t Reg);
 void     CAMERA_Delay(uint32_t delay);
-void ov5640_Config(uint32_t feature, uint32_t value, uint32_t BR_value);
 
 
-extern CAMERA_DrvTypeDef   ov5640_drv;
-/**
-  * @}
-  */    
 #ifdef __cplusplus
 }
 #endif

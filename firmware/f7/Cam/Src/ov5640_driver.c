@@ -66,15 +66,17 @@ void ov5640_Init_JPEG(uint16_t x_res, uint16_t y_res, uint16_t FifoWidth, uint16
 
 //1. set default register values
   ov5640_Init(); 
+  OV5640_Config_FIFO(FifoWidth, packetNumber);
+
 
 
   //
 
 //2. set pixel format
   ov5640_Set_JPEG();
-  
-//3. Set output size (pixel format)
-  OV5640_Set_Size(4, 0, x_res, y_res);
+
+//3. Set REsoltuion before size (pixel format)
+  //OV5640_Set_Size(4, 0, x_res, y_res);
 
 //4. configure timings for the output size
  uint8_t sys_mul = 160;
@@ -102,9 +104,12 @@ void ov5640_Init_JPEG(uint16_t x_res, uint16_t y_res, uint16_t FifoWidth, uint16
   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_POLARITY_CTRL, tmp);
 
 
-  OV5640_SetPCLK(OV5640_PCLK_23FPS);
-  OV5640_Set_Comp_Ratio(compRatio);
-  OV5640_Config_FIFO(FifoWidth, packetNumber);
+  //OV5640_SetPCLK(OV5640_PCLK_23FPS);
+  // OV5640_Set_Comp_Ratio(compRatio);
+  // uint16_t FIFOW = CAMERA_IO_Read_OV5640_16(OV5640_I2C_ADDRESS, VFIFO_X_SIZE_H);
+  // printf("\nFIFOW: %i\n", FIFOW);
+
+  
 
     //CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x3035, 0X41); // slow down OV5640 clocks //Turned off --> TURN BACK ON?
   //CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x3036, 0x79);
@@ -133,56 +138,56 @@ void set_pll(bool bypass, uint8_t multiplier, uint8_t sys_div, uint8_t pre_div, 
 
 
 
-int32_t OV5640_SetPCLK(uint32_t ClockValue)
+void OV5640_SetPCLK(uint32_t ClockValue)
 {
 
-  uint8_t tmp;
 
   switch(ClockValue)
   {
   case OV5640_PCLK_7M:
-    tmp = 0x38;
-    CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL2, tmp);
-    tmp = 0x16;
-    CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL3, tmp);
+ 
+    CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL2, 0x38);
+    CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL3, 0x16);
     break;
   case OV5640_PCLK_8M:
-    tmp = 0x40;
-    //ret = ov5640_write_reg(&pObj->Ctx, OV5640_SC_PLL_CONTRL2, &tmp, 1);
-    CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL2, tmp);
-    tmp = 0x16;
-    CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL3, tmp);
+    CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL2, 0x40);
+    CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL3, 0x16);
     break;
   case OV5640_PCLK_9M:
-  tmp = 0x00; //unsure
-	CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL2, tmp);
-    tmp = 0x18;
-    CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL3, tmp);
+	  CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL2, 0x00);
+    CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL3, 0x18);
     break;
   case OV5640_PCLK_12M:
-  tmp = 0x00; //unsure
-	CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL2, tmp);
-    tmp = 0x16;
-    CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL3, tmp);
+	  CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL2, 0x00);
+    CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL3, 0x16);
     break;
   case OV5640_PCLK_24M:
-  default:
-    tmp = 0x60;
-    CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL2, tmp);
-
-    tmp = 0x13;
-    CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL3, tmp);
+    CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL2, 0x60);
+    CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL3, 0x13);
     break;
 
-  case OV5640_PCLK_23FPS:
-    tmp = 0x60;
-    CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL2, tmp);
-
-    tmp = 0x12;
-    CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL3, tmp);
+   case OV5640_PCLK_23FPS:
+    CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL2, 0x60);
+    CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL3, 0x12);
     break;
 
-    //return ret;
+    case 20:
+    CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL2, 0x80);
+    CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL3, 0x13);
+    break;
+
+    case 25:
+    CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL2, 0xA0);
+    CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL3, 0x13);
+    break;
+
+    case 30:
+     default:
+    CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL2, 0xC0);
+    CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SC_PLL_CONTRL3, 0x13);
+    break;
+
+
 
   }
 }
@@ -231,29 +236,30 @@ uint16_t ov5640_ReadID(void)
   return read_val;
 }
 
-uint8_t OV5640_Set_Size(uint16_t offx,uint16_t offy,uint16_t width,uint16_t height)
+void OV5640_Set_Size(uint16_t offx,uint16_t offy,uint16_t width,uint16_t height)
 {
-		CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x3212, 0x03);
+
+  //@REVIST --check register initilisatio
+		CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SRM_GROUP_ACCESS, 0x03);
 
 		CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, X_OUTPUT_SIZE_H, width >> 8);
 		CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, X_OUTPUT_SIZE_L, width &0xff);
 		CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, Y_OUTPUT_SIZE_H, height >> 8);
 		CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, Y_OUTPUT_SIZE_L, height &0xff);
 
-		CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x3810, offx >> 8);
-		CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x3811, offx &0xff);
+		CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_TIMING_HOFFSET_HIGH, offx >> 8);
+		CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_TIMING_HOFFSET_LOW, offx &0xff);
 
-		CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x3812, offy >> 8);
-		CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x3813, offy &0xff);
+		CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, Y_OFFSET_H, offy >> 8);
+		CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, Y_OFFSET_L, offy &0xff);
 
-		CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x3212, 0x13);
-		CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x3212, 0xa3);
+		CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SRM_GROUP_ACCESS, 0x13);
+		CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_SRM_GROUP_ACCESS, 0xa3);
 
 		//CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, FORMAT_CTRL00, 0x6F);
 		CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, CLOCK_POL_CONTROL, 0x22);
 
-        
-        return 0;
+      
 }
 
 //0-63, lower number means higher quality
@@ -310,6 +316,8 @@ void OV5640_Config_FIFO(uint16_t fifo_width, uint16_t packet_count)
 
 	CAMERA_IO_Write_OV5640_16(OV5640_I2C_ADDRESS, VFIFO_X_SIZE_H, fifo_width);
 
+   //set FIFO height 
+  CAMERA_IO_Write_OV5640_16(OV5640_I2C_ADDRESS, VFIFO_Y_SIZE_H, packet_count);
   
   //set to fifo size to fixed number of bits
   uint8_t temp =  CAMERA_IO_Read_OV5640(OV5640_I2C_ADDRESS, OV5640_VFIFO_CTRL00);
@@ -317,8 +325,7 @@ void OV5640_Config_FIFO(uint16_t fifo_width, uint16_t packet_count)
   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_VFIFO_CTRL00, temp);
 
 
-  //set FIFO height 
-  CAMERA_IO_Write_OV5640_16(OV5640_I2C_ADDRESS, VFIFO_Y_SIZE_H, packet_count);
+ 
   uint16_t read_height = CAMERA_IO_Read_OV5640_16(OV5640_I2C_ADDRESS, VFIFO_Y_SIZE_H);
 
   printf("\n\nREAD_Height = :%i\n\n", read_height);
@@ -327,7 +334,16 @@ void OV5640_Config_FIFO(uint16_t fifo_width, uint16_t packet_count)
 
   printf("\nVFIFO control = :%i\n", temp);
 
-  printf("\nVFIFO control set bit = :%i\n", temp & (1 << 4));
+  printf("\nVFIFO control set bit = :%i\n", temp & (1 << 5));
+
+  //enable huffman table out
+  uint8_t JPEG_CTRL_3 =  CAMERA_IO_Read_OV5640(OV5640_I2C_ADDRESS, OV5640_JPEG_CTRL03);
+  JPEG_CTRL_3 |= (1 << 4);
+  CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_JPEG_CTRL03, JPEG_CTRL_3);
+
+  printf("\nJPEG_CTRL_3  = :%i\n", JPEG_CTRL_3);
+
+
 
 }
 
