@@ -1,0 +1,3432 @@
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 1
+
+
+   1              		.cpu cortex-m7
+   2              		.arch armv7e-m
+   3              		.fpu fpv5-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"container.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.file 1 "Container/Src/container.c"
+  20              		.section	.text.container_init,"ax",%progbits
+  21              		.align	1
+  22              		.global	container_init
+  23              		.syntax unified
+  24              		.thumb
+  25              		.thumb_func
+  27              	container_init:
+  28              	.LVL0:
+  29              	.LFB144:
+   1:Container/Src/container.c **** #include "container.h"
+   2:Container/Src/container.c **** 
+   3:Container/Src/container.c **** #include "container_template.h"
+   4:Container/Src/container.c **** #include "fatfs.h"
+   5:Container/Src/container.c **** #include "ff.h"
+   6:Container/Src/container.c **** #include "mutff.h"
+   7:Container/Src/container.c **** #include "mutff_default.h"
+   8:Container/Src/container.c **** #include "mutff_fatfs.h"
+   9:Container/Src/container.c **** #include <stdint.h>
+  10:Container/Src/container.c **** 
+  11:Container/Src/container.c **** #define FRAGMENT_SIZE 16
+  12:Container/Src/container.c **** 
+  13:Container/Src/container.c **** static MuTFFContext ctx;
+  14:Container/Src/container.c **** static MuTFFMovieFile container = file_template;
+  15:Container/Src/container.c **** 
+  16:Container/Src/container.c **** static MuTFFMovieAtom *const movie = &container.movie;
+  17:Container/Src/container.c **** static MuTFFTrackAtom *const track = &movie->track[0];
+  18:Container/Src/container.c **** static MuTFFMediaAtom *const media = &track->media;
+  19:Container/Src/container.c **** static MuTFFSampleTableAtom *const sample_table = &media->video_media_information.sample_table;
+  20:Container/Src/container.c **** 
+  21:Container/Src/container.c **** uint64_t duration;
+  22:Container/Src/container.c **** 
+  23:Container/Src/container.c **** MuTFFMovieDataAtom tail_mdat = {0, 0};
+  24:Container/Src/container.c **** FSIZE_t tail_mdat_offset;
+  25:Container/Src/container.c **** 
+  26:Container/Src/container.c **** MuTFFMovieFragmentAtom moof = {
+  27:Container/Src/container.c ****   .movie_fragment_header = {
+  28:Container/Src/container.c ****     .version = 0,
+  29:Container/Src/container.c ****     .flags = 0,
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 2
+
+
+  30:Container/Src/container.c ****     .sequence_number = 0,
+  31:Container/Src/container.c ****   },
+  32:Container/Src/container.c ****   .track_fragment_count = 1,
+  33:Container/Src/container.c ****   .track_fragment = {
+  34:Container/Src/container.c ****     {
+  35:Container/Src/container.c ****       .track_fragment_header = {
+  36:Container/Src/container.c ****         .track_id = 1,
+  37:Container/Src/container.c ****         .duration_is_empty = false,
+  38:Container/Src/container.c ****         .default_base_is_moof = false,
+  39:Container/Src/container.c ****         .base_data_offset_present = true,
+  40:Container/Src/container.c ****         .sample_description_index_present = false,
+  41:Container/Src/container.c ****         .default_sample_duration_present = false,
+  42:Container/Src/container.c ****         .default_sample_size_present = false,
+  43:Container/Src/container.c ****         .default_sample_flags_present = false,
+  44:Container/Src/container.c ****       },
+  45:Container/Src/container.c ****       .track_fragment_run_count = 1,
+  46:Container/Src/container.c ****       .track_fragment_run = {
+  47:Container/Src/container.c ****         {
+  48:Container/Src/container.c ****           .version = 0,
+  49:Container/Src/container.c ****           .data_offset_present = false,
+  50:Container/Src/container.c ****           .first_sample_flags_present = false,
+  51:Container/Src/container.c ****           .sample_duration_present = false,
+  52:Container/Src/container.c ****           .sample_size_present = true,
+  53:Container/Src/container.c ****           .sample_flags_present = false,
+  54:Container/Src/container.c ****           .sample_composition_time_offset_present = false,
+  55:Container/Src/container.c ****           .sample_count = FRAGMENT_SIZE,
+  56:Container/Src/container.c ****         }
+  57:Container/Src/container.c ****       },
+  58:Container/Src/container.c ****       .track_fragment_decode_time_present = false,
+  59:Container/Src/container.c ****       .user_data_present = false,
+  60:Container/Src/container.c ****     }
+  61:Container/Src/container.c ****   },
+  62:Container/Src/container.c ****   .user_data_present = false,
+  63:Container/Src/container.c **** };
+  64:Container/Src/container.c **** 
+  65:Container/Src/container.c **** uint32_t sample_idx = 0;
+  66:Container/Src/container.c **** 
+  67:Container/Src/container.c **** void container_init(FIL *target_file) {
+  30              		.loc 1 67 39 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		.loc 1 67 39 is_stmt 0 view .LVU1
+  35 0000 38B5     		push	{r3, r4, r5, lr}
+  36              		.cfi_def_cfa_offset 16
+  37              		.cfi_offset 3, -16
+  38              		.cfi_offset 4, -12
+  39              		.cfi_offset 5, -8
+  40              		.cfi_offset 14, -4
+  41 0002 0546     		mov	r5, r0
+  68:Container/Src/container.c ****   ctx.io = mutff_fatfs_driver;
+  42              		.loc 1 68 3 is_stmt 1 view .LVU2
+  43              		.loc 1 68 10 is_stmt 0 view .LVU3
+  44 0004 0C4C     		ldr	r4, .L3
+  45 0006 0D4B     		ldr	r3, .L3+4
+  46 0008 0FCB     		ldm	r3, {r0, r1, r2, r3}
+  47              	.LVL1:
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 3
+
+
+  48              		.loc 1 68 10 view .LVU4
+  49 000a 84E80F00 		stm	r4, {r0, r1, r2, r3}
+  69:Container/Src/container.c ****   ctx.file = target_file;
+  50              		.loc 1 69 3 is_stmt 1 view .LVU5
+  51              		.loc 1 69 12 is_stmt 0 view .LVU6
+  52 000e 2561     		str	r5, [r4, #16]
+  70:Container/Src/container.c **** 
+  71:Container/Src/container.c ****   mutff_write_movie_file(&ctx, NULL, &container);
+  53              		.loc 1 71 3 is_stmt 1 view .LVU7
+  54 0010 0B4A     		ldr	r2, .L3+8
+  55 0012 0021     		movs	r1, #0
+  56 0014 2046     		mov	r0, r4
+  57 0016 FFF7FEFF 		bl	mutff_write_movie_file
+  58              	.LVL2:
+  72:Container/Src/container.c ****   tail_mdat_offset = f_tell((FIL *)ctx.file);
+  59              		.loc 1 72 3 view .LVU8
+  60              		.loc 1 72 22 is_stmt 0 view .LVU9
+  61 001a 2369     		ldr	r3, [r4, #16]
+  62 001c D3E90E01 		ldrd	r0, [r3, #56]
+  63              		.loc 1 72 20 view .LVU10
+  64 0020 084B     		ldr	r3, .L3+12
+  65 0022 C3E90001 		strd	r0, [r3]
+  73:Container/Src/container.c ****   mutff_write_movie_data_atom(&ctx, NULL, &tail_mdat);
+  66              		.loc 1 73 3 is_stmt 1 view .LVU11
+  67 0026 084A     		ldr	r2, .L3+16
+  68 0028 0021     		movs	r1, #0
+  69 002a 2046     		mov	r0, r4
+  70 002c FFF7FEFF 		bl	mutff_write_movie_data_atom
+  71              	.LVL3:
+  74:Container/Src/container.c ****   f_sync(ctx.file);
+  72              		.loc 1 74 3 view .LVU12
+  73 0030 2069     		ldr	r0, [r4, #16]
+  74 0032 FFF7FEFF 		bl	f_sync
+  75              	.LVL4:
+  75:Container/Src/container.c **** }
+  76              		.loc 1 75 1 is_stmt 0 view .LVU13
+  77 0036 38BD     		pop	{r3, r4, r5, pc}
+  78              	.LVL5:
+  79              	.L4:
+  80              		.loc 1 75 1 view .LVU14
+  81              		.align	2
+  82              	.L3:
+  83 0038 00000000 		.word	ctx
+  84 003c 00000000 		.word	mutff_fatfs_driver
+  85 0040 00000000 		.word	container
+  86 0044 00000000 		.word	tail_mdat_offset
+  87 0048 00000000 		.word	tail_mdat
+  88              		.cfi_endproc
+  89              	.LFE144:
+  91              		.section	.text.container_set_frame_rate,"ax",%progbits
+  92              		.align	1
+  93              		.global	container_set_frame_rate
+  94              		.syntax unified
+  95              		.thumb
+  96              		.thumb_func
+  98              	container_set_frame_rate:
+  99              	.LVL6:
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 4
+
+
+ 100              	.LFB145:
+  76:Container/Src/container.c **** 
+  77:Container/Src/container.c **** void container_set_frame_rate(uint32_t rate) {
+ 101              		.loc 1 77 46 is_stmt 1 view -0
+ 102              		.cfi_startproc
+ 103              		@ args = 0, pretend = 0, frame = 0
+ 104              		@ frame_needed = 0, uses_anonymous_args = 0
+ 105              		@ link register save eliminated.
+  78:Container/Src/container.c ****   container.movie.movie_header.time_scale = rate;
+ 106              		.loc 1 78 3 view .LVU16
+ 107              		.loc 1 78 43 is_stmt 0 view .LVU17
+ 108 0000 024B     		ldr	r3, .L6
+ 109 0002 1863     		str	r0, [r3, #48]
+  79:Container/Src/container.c ****   container.movie.track->media.media_header.time_scale = rate;
+ 110              		.loc 1 79 3 is_stmt 1 view .LVU18
+ 111              		.loc 1 79 56 is_stmt 0 view .LVU19
+ 112 0004 C3F8F800 		str	r0, [r3, #248]
+  80:Container/Src/container.c **** }
+ 113              		.loc 1 80 1 view .LVU20
+ 114 0008 7047     		bx	lr
+ 115              	.L7:
+ 116 000a 00BF     		.align	2
+ 117              	.L6:
+ 118 000c 00000000 		.word	container
+ 119              		.cfi_endproc
+ 120              	.LFE145:
+ 122              		.section	.text.container_set_resolution,"ax",%progbits
+ 123              		.align	1
+ 124              		.global	container_set_resolution
+ 125              		.syntax unified
+ 126              		.thumb
+ 127              		.thumb_func
+ 129              	container_set_resolution:
+ 130              	.LVL7:
+ 131              	.LFB146:
+  81:Container/Src/container.c **** 
+  82:Container/Src/container.c **** void container_set_resolution(uint16_t x, uint16_t y) {
+ 132              		.loc 1 82 55 is_stmt 1 view -0
+ 133              		.cfi_startproc
+ 134              		@ args = 0, pretend = 0, frame = 0
+ 135              		@ frame_needed = 0, uses_anonymous_args = 0
+ 136              		@ link register save eliminated.
+  83:Container/Src/container.c ****   sample_table->sample_description.sample_description_table[0].data.video.width = x;
+ 137              		.loc 1 83 3 view .LVU22
+ 138              		.loc 1 83 81 is_stmt 0 view .LVU23
+ 139 0000 074B     		ldr	r3, .L9
+ 140 0002 A3F85802 		strh	r0, [r3, #600]	@ movhi
+  84:Container/Src/container.c ****   sample_table->sample_description.sample_description_table[0].data.video.height = y;
+ 141              		.loc 1 84 3 is_stmt 1 view .LVU24
+ 142              		.loc 1 84 82 is_stmt 0 view .LVU25
+ 143 0006 A3F85A12 		strh	r1, [r3, #602]	@ movhi
+  85:Container/Src/container.c ****   track->track_header.track_width = (mutff_q16_16_t) {x, 0};
+ 144              		.loc 1 85 3 is_stmt 1 view .LVU26
+ 145              		.loc 1 85 35 is_stmt 0 view .LVU27
+ 146 000a A3F8E000 		strh	r0, [r3, #224]	@ movhi
+ 147 000e 0022     		movs	r2, #0
+ 148 0010 A3F8E220 		strh	r2, [r3, #226]	@ movhi
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 5
+
+
+  86:Container/Src/container.c ****   track->track_header.track_height = (mutff_q16_16_t) {y, 0};
+ 149              		.loc 1 86 3 is_stmt 1 view .LVU28
+ 150              		.loc 1 86 36 is_stmt 0 view .LVU29
+ 151 0014 A3F8E410 		strh	r1, [r3, #228]	@ movhi
+ 152 0018 A3F8E620 		strh	r2, [r3, #230]	@ movhi
+  87:Container/Src/container.c **** }
+ 153              		.loc 1 87 1 view .LVU30
+ 154 001c 7047     		bx	lr
+ 155              	.L10:
+ 156 001e 00BF     		.align	2
+ 157              	.L9:
+ 158 0020 00000000 		.word	container
+ 159              		.cfi_endproc
+ 160              	.LFE146:
+ 162              		.section	.text.container_set_format,"ax",%progbits
+ 163              		.align	1
+ 164              		.global	container_set_format
+ 165              		.syntax unified
+ 166              		.thumb
+ 167              		.thumb_func
+ 169              	container_set_format:
+ 170              	.LVL8:
+ 171              	.LFB147:
+  88:Container/Src/container.c **** 
+  89:Container/Src/container.c **** void container_set_format(uint32_t format) {
+ 172              		.loc 1 89 44 is_stmt 1 view -0
+ 173              		.cfi_startproc
+ 174              		@ args = 0, pretend = 0, frame = 0
+ 175              		@ frame_needed = 0, uses_anonymous_args = 0
+ 176              		@ link register save eliminated.
+  90:Container/Src/container.c ****   sample_table->sample_description.sample_description_table[0].data_format = format;
+ 177              		.loc 1 90 3 view .LVU32
+ 178              		.loc 1 90 76 is_stmt 0 view .LVU33
+ 179 0000 014B     		ldr	r3, .L12
+ 180 0002 C3F84002 		str	r0, [r3, #576]
+  91:Container/Src/container.c **** }
+ 181              		.loc 1 91 1 view .LVU34
+ 182 0006 7047     		bx	lr
+ 183              	.L13:
+ 184              		.align	2
+ 185              	.L12:
+ 186 0008 00000000 		.word	container
+ 187              		.cfi_endproc
+ 188              	.LFE147:
+ 190              		.section	.text.container_set_depth,"ax",%progbits
+ 191              		.align	1
+ 192              		.global	container_set_depth
+ 193              		.syntax unified
+ 194              		.thumb
+ 195              		.thumb_func
+ 197              	container_set_depth:
+ 198              	.LVL9:
+ 199              	.LFB148:
+  92:Container/Src/container.c **** 
+  93:Container/Src/container.c **** void container_set_depth(uint16_t depth) {
+ 200              		.loc 1 93 42 is_stmt 1 view -0
+ 201              		.cfi_startproc
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 6
+
+
+ 202              		@ args = 0, pretend = 0, frame = 0
+ 203              		@ frame_needed = 0, uses_anonymous_args = 0
+ 204              		@ link register save eliminated.
+  94:Container/Src/container.c ****   sample_table->sample_description.sample_description_table[0].data.video.depth = depth;
+ 205              		.loc 1 94 3 view .LVU36
+ 206              		.loc 1 94 81 is_stmt 0 view .LVU37
+ 207 0000 014B     		ldr	r3, .L15
+ 208 0002 A3F88602 		strh	r0, [r3, #646]	@ movhi
+  95:Container/Src/container.c **** }
+ 209              		.loc 1 95 1 view .LVU38
+ 210 0006 7047     		bx	lr
+ 211              	.L16:
+ 212              		.align	2
+ 213              	.L15:
+ 214 0008 00000000 		.word	container
+ 215              		.cfi_endproc
+ 216              	.LFE148:
+ 218              		.section	.text.container_on_dcmi_data_ready,"ax",%progbits
+ 219              		.align	1
+ 220              		.global	container_on_dcmi_data_ready
+ 221              		.syntax unified
+ 222              		.thumb
+ 223              		.thumb_func
+ 225              	container_on_dcmi_data_ready:
+ 226              	.LFB149:
+  96:Container/Src/container.c **** 
+  97:Container/Src/container.c **** ///
+  98:Container/Src/container.c **** /// @brief Handle writing data produced by the camera module to the SD card
+  99:Container/Src/container.c **** ///
+ 100:Container/Src/container.c **** /// Modifies the mdat atom (and preceding wide atom) with the new size.
+ 101:Container/Src/container.c **** /// Appends new video data to the end of the file.
+ 102:Container/Src/container.c **** /// Resets file offset to nominal position at the start of the mdat/wide atoms.
+ 103:Container/Src/container.c **** ///
+ 104:Container/Src/container.c **** void container_on_dcmi_data_ready(DCMIDataReadyEventData data) {
+ 227              		.loc 1 104 64 is_stmt 1 view -0
+ 228              		.cfi_startproc
+ 229              		@ args = 0, pretend = 0, frame = 16
+ 230              		@ frame_needed = 0, uses_anonymous_args = 0
+ 231 0000 10B5     		push	{r4, lr}
+ 232              		.cfi_def_cfa_offset 8
+ 233              		.cfi_offset 4, -8
+ 234              		.cfi_offset 14, -4
+ 235 0002 84B0     		sub	sp, sp, #16
+ 236              		.cfi_def_cfa_offset 24
+ 237 0004 6B46     		mov	r3, sp
+ 238 0006 83E80300 		stm	r3, {r0, r1}
+ 105:Container/Src/container.c ****   FRESULT err;
+ 239              		.loc 1 105 3 view .LVU40
+ 106:Container/Src/container.c ****   unsigned int bytes_written;
+ 240              		.loc 1 106 3 view .LVU41
+ 107:Container/Src/container.c **** 
+ 108:Container/Src/container.c ****   err = f_write(ctx.file, data.data, data.size, &bytes_written);
+ 241              		.loc 1 108 3 view .LVU42
+ 242              		.loc 1 108 9 is_stmt 0 view .LVU43
+ 243 000a 0C46     		mov	r4, r1
+ 244 000c 03AB     		add	r3, sp, #12
+ 245 000e 0A46     		mov	r2, r1
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 7
+
+
+ 246 0010 0146     		mov	r1, r0
+ 247 0012 0E48     		ldr	r0, .L23
+ 248 0014 0069     		ldr	r0, [r0, #16]
+ 249 0016 FFF7FEFF 		bl	f_write
+ 250              	.LVL10:
+ 109:Container/Src/container.c ****   if (err != FR_OK) {
+ 251              		.loc 1 109 3 is_stmt 1 view .LVU44
+ 252              		.loc 1 109 6 is_stmt 0 view .LVU45
+ 253 001a 80B9     		cbnz	r0, .L21
+ 110:Container/Src/container.c ****     exit(1);
+ 111:Container/Src/container.c ****   }
+ 112:Container/Src/container.c ****   if (bytes_written != data.size) {
+ 254              		.loc 1 112 3 is_stmt 1 view .LVU46
+ 255              		.loc 1 112 21 is_stmt 0 view .LVU47
+ 256 001c 039B     		ldr	r3, [sp, #12]
+ 257              		.loc 1 112 6 view .LVU48
+ 258 001e 9C42     		cmp	r4, r3
+ 259 0020 10D1     		bne	.L22
+ 113:Container/Src/container.c ****     // @TODO: This probably shouldn't be fatal
+ 114:Container/Src/container.c ****     exit(1);
+ 115:Container/Src/container.c ****   }
+ 116:Container/Src/container.c **** 
+ 117:Container/Src/container.c ****   tail_mdat.data_size += data.size;
+ 260              		.loc 1 117 3 is_stmt 1 view .LVU49
+ 261              		.loc 1 117 12 is_stmt 0 view .LVU50
+ 262 0022 0B4A     		ldr	r2, .L23+4
+ 263 0024 1368     		ldr	r3, [r2]
+ 264 0026 5168     		ldr	r1, [r2, #4]
+ 265              		.loc 1 117 23 view .LVU51
+ 266 0028 1B19     		adds	r3, r3, r4
+ 267 002a 41F10001 		adc	r1, r1, #0
+ 268 002e 1360     		str	r3, [r2]
+ 269 0030 5160     		str	r1, [r2, #4]
+ 118:Container/Src/container.c **** 
+ 119:Container/Src/container.c ****   f_sync(ctx.file);
+ 270              		.loc 1 119 3 is_stmt 1 view .LVU52
+ 271 0032 064B     		ldr	r3, .L23
+ 272 0034 1869     		ldr	r0, [r3, #16]
+ 273              	.LVL11:
+ 274              		.loc 1 119 3 is_stmt 0 view .LVU53
+ 275 0036 FFF7FEFF 		bl	f_sync
+ 276              	.LVL12:
+ 120:Container/Src/container.c **** }
+ 277              		.loc 1 120 1 view .LVU54
+ 278 003a 04B0     		add	sp, sp, #16
+ 279              		.cfi_remember_state
+ 280              		.cfi_def_cfa_offset 8
+ 281              		@ sp needed
+ 282 003c 10BD     		pop	{r4, pc}
+ 283              	.LVL13:
+ 284              	.L21:
+ 285              		.cfi_restore_state
+ 110:Container/Src/container.c ****   }
+ 286              		.loc 1 110 5 is_stmt 1 view .LVU55
+ 287 003e 0120     		movs	r0, #1
+ 288              	.LVL14:
+ 110:Container/Src/container.c ****   }
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 8
+
+
+ 289              		.loc 1 110 5 is_stmt 0 view .LVU56
+ 290 0040 FFF7FEFF 		bl	exit
+ 291              	.LVL15:
+ 292              	.L22:
+ 114:Container/Src/container.c ****   }
+ 293              		.loc 1 114 5 is_stmt 1 view .LVU57
+ 294 0044 0120     		movs	r0, #1
+ 295              	.LVL16:
+ 114:Container/Src/container.c ****   }
+ 296              		.loc 1 114 5 is_stmt 0 view .LVU58
+ 297 0046 FFF7FEFF 		bl	exit
+ 298              	.LVL17:
+ 299              	.L24:
+ 300 004a 00BF     		.align	2
+ 301              	.L23:
+ 302 004c 00000000 		.word	ctx
+ 303 0050 00000000 		.word	tail_mdat
+ 304              		.cfi_endproc
+ 305              	.LFE149:
+ 307              		.section	.text.container_on_dcmi_frame_complete,"ax",%progbits
+ 308              		.align	1
+ 309              		.global	container_on_dcmi_frame_complete
+ 310              		.syntax unified
+ 311              		.thumb
+ 312              		.thumb_func
+ 314              	container_on_dcmi_frame_complete:
+ 315              	.LVL18:
+ 316              	.LFB150:
+ 121:Container/Src/container.c **** 
+ 122:Container/Src/container.c **** ///
+ 123:Container/Src/container.c **** /// @brief Update container file metadata to add a new frame
+ 124:Container/Src/container.c **** ///
+ 125:Container/Src/container.c **** /// Appends the size of the frame to the sample size table
+ 126:Container/Src/container.c **** /// Shrinks the free space atom as necessary to fit the new table entry
+ 127:Container/Src/container.c **** ///
+ 128:Container/Src/container.c **** void container_on_dcmi_frame_complete(DCMIFrameCompleteEventData data) {
+ 317              		.loc 1 128 72 is_stmt 1 view -0
+ 318              		.cfi_startproc
+ 319              		@ args = 0, pretend = 0, frame = 0
+ 320              		@ frame_needed = 0, uses_anonymous_args = 0
+ 129:Container/Src/container.c ****   moof.track_fragment->track_fragment_run[0].records[sample_idx].sample_size = data.size;
+ 321              		.loc 1 129 3 view .LVU60
+ 322              		.loc 1 129 65 is_stmt 0 view .LVU61
+ 323 0000 2049     		ldr	r1, .L32
+ 324 0002 0B68     		ldr	r3, [r1]
+ 325              		.loc 1 129 78 view .LVU62
+ 326 0004 204A     		ldr	r2, .L32+4
+ 327 0006 02EB0312 		add	r2, r2, r3, lsl #4
+ 328 000a 1066     		str	r0, [r2, #96]
+ 130:Container/Src/container.c ****   sample_idx++;
+ 329              		.loc 1 130 3 is_stmt 1 view .LVU63
+ 330              		.loc 1 130 13 is_stmt 0 view .LVU64
+ 331 000c 0133     		adds	r3, r3, #1
+ 332 000e 0B60     		str	r3, [r1]
+ 131:Container/Src/container.c **** 
+ 132:Container/Src/container.c ****   if (sample_idx >= FRAGMENT_SIZE) {
+ 333              		.loc 1 132 3 is_stmt 1 view .LVU65
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 9
+
+
+ 334              		.loc 1 132 6 is_stmt 0 view .LVU66
+ 335 0010 0F2B     		cmp	r3, #15
+ 336 0012 00D8     		bhi	.L31
+ 337 0014 7047     		bx	lr
+ 338              	.L31:
+ 128:Container/Src/container.c ****   moof.track_fragment->track_fragment_run[0].records[sample_idx].sample_size = data.size;
+ 339              		.loc 1 128 72 view .LVU67
+ 340 0016 2DE97043 		push	{r4, r5, r6, r8, r9, lr}
+ 341              		.cfi_def_cfa_offset 24
+ 342              		.cfi_offset 4, -24
+ 343              		.cfi_offset 5, -20
+ 344              		.cfi_offset 6, -16
+ 345              		.cfi_offset 8, -12
+ 346              		.cfi_offset 9, -8
+ 347              		.cfi_offset 14, -4
+ 348              	.LBB2:
+ 133:Container/Src/container.c ****     FSIZE_t file_end = f_tell((FIL *) ctx.file);
+ 349              		.loc 1 133 5 is_stmt 1 view .LVU68
+ 350              		.loc 1 133 24 is_stmt 0 view .LVU69
+ 351 001a 1C4C     		ldr	r4, .L32+8
+ 352 001c 2069     		ldr	r0, [r4, #16]
+ 353              	.LVL19:
+ 354              		.loc 1 133 13 view .LVU70
+ 355 001e D0E90E89 		ldrd	r8, [r0, #56]
+ 356              	.LVL20:
+ 134:Container/Src/container.c **** 
+ 135:Container/Src/container.c ****     // Finish tailing mdat
+ 136:Container/Src/container.c ****     f_lseek(ctx.file, tail_mdat_offset);
+ 357              		.loc 1 136 5 is_stmt 1 view .LVU71
+ 358 0022 1B4E     		ldr	r6, .L32+12
+ 359 0024 D6E90023 		ldrd	r2, [r6]
+ 360 0028 FFF7FEFF 		bl	f_lseek
+ 361              	.LVL21:
+ 137:Container/Src/container.c ****     mutff_write_movie_data_atom(&ctx, NULL, &tail_mdat);
+ 362              		.loc 1 137 5 view .LVU72
+ 363 002c 194D     		ldr	r5, .L32+16
+ 364 002e 2A46     		mov	r2, r5
+ 365 0030 0021     		movs	r1, #0
+ 366 0032 2046     		mov	r0, r4
+ 367 0034 FFF7FEFF 		bl	mutff_write_movie_data_atom
+ 368              	.LVL22:
+ 138:Container/Src/container.c ****     f_lseek(ctx.file, file_end);
+ 369              		.loc 1 138 5 view .LVU73
+ 370 0038 4246     		mov	r2, r8
+ 371 003a 4B46     		mov	r3, r9
+ 372 003c 2069     		ldr	r0, [r4, #16]
+ 373 003e FFF7FEFF 		bl	f_lseek
+ 374              	.LVL23:
+ 139:Container/Src/container.c ****     tail_mdat.data_size = 0;
+ 375              		.loc 1 139 5 view .LVU74
+ 376              		.loc 1 139 25 is_stmt 0 view .LVU75
+ 377 0042 0022     		movs	r2, #0
+ 378 0044 0023     		movs	r3, #0
+ 379 0046 C5E90023 		strd	r2, [r5]
+ 140:Container/Src/container.c **** 
+ 141:Container/Src/container.c ****     // Write moof
+ 142:Container/Src/container.c ****     moof.movie_fragment_header.sequence_number++;
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 10
+
+
+ 380              		.loc 1 142 5 is_stmt 1 view .LVU76
+ 381              		.loc 1 142 31 is_stmt 0 view .LVU77
+ 382 004a 0F4A     		ldr	r2, .L32+4
+ 383 004c 9368     		ldr	r3, [r2, #8]
+ 384              		.loc 1 142 47 view .LVU78
+ 385 004e 0133     		adds	r3, r3, #1
+ 386 0050 9360     		str	r3, [r2, #8]
+ 143:Container/Src/container.c ****     moof.track_fragment->track_fragment_header.base_data_offset = tail_mdat_offset;
+ 387              		.loc 1 143 5 is_stmt 1 view .LVU79
+ 388              		.loc 1 143 65 is_stmt 0 view .LVU80
+ 389 0052 D6E90001 		ldrd	r0, [r6]
+ 390 0056 C2E90601 		strd	r0, [r2, #24]
+ 144:Container/Src/container.c ****     mutff_write_movie_fragment_atom(&ctx, NULL, &moof);
+ 391              		.loc 1 144 5 is_stmt 1 view .LVU81
+ 392 005a 0021     		movs	r1, #0
+ 393 005c 2046     		mov	r0, r4
+ 394 005e FFF7FEFF 		bl	mutff_write_movie_fragment_atom
+ 395              	.LVL24:
+ 145:Container/Src/container.c ****     sample_idx = 0;
+ 396              		.loc 1 145 5 view .LVU82
+ 397              		.loc 1 145 16 is_stmt 0 view .LVU83
+ 398 0062 0021     		movs	r1, #0
+ 399 0064 074B     		ldr	r3, .L32
+ 400 0066 1960     		str	r1, [r3]
+ 146:Container/Src/container.c **** 
+ 147:Container/Src/container.c ****     // Start next mdat
+ 148:Container/Src/container.c ****     tail_mdat_offset = f_tell((FIL *) ctx.file);
+ 401              		.loc 1 148 5 is_stmt 1 view .LVU84
+ 402              		.loc 1 148 24 is_stmt 0 view .LVU85
+ 403 0068 2369     		ldr	r3, [r4, #16]
+ 404 006a D3E90E23 		ldrd	r2, [r3, #56]
+ 405              		.loc 1 148 22 view .LVU86
+ 406 006e C6E90023 		strd	r2, [r6]
+ 149:Container/Src/container.c ****     mutff_write_movie_data_atom(&ctx, NULL, &tail_mdat);
+ 407              		.loc 1 149 5 is_stmt 1 view .LVU87
+ 408 0072 2A46     		mov	r2, r5
+ 409 0074 2046     		mov	r0, r4
+ 410 0076 FFF7FEFF 		bl	mutff_write_movie_data_atom
+ 411              	.LVL25:
+ 150:Container/Src/container.c **** 
+ 151:Container/Src/container.c ****     f_sync(ctx.file);
+ 412              		.loc 1 151 5 view .LVU88
+ 413 007a 2069     		ldr	r0, [r4, #16]
+ 414 007c FFF7FEFF 		bl	f_sync
+ 415              	.LVL26:
+ 416              	.LBE2:
+ 152:Container/Src/container.c ****   }
+ 153:Container/Src/container.c **** }
+ 417              		.loc 1 153 1 is_stmt 0 view .LVU89
+ 418 0080 BDE87083 		pop	{r4, r5, r6, r8, r9, pc}
+ 419              	.LVL27:
+ 420              	.L33:
+ 421              		.loc 1 153 1 view .LVU90
+ 422              		.align	2
+ 423              	.L32:
+ 424 0084 00000000 		.word	sample_idx
+ 425 0088 00000000 		.word	moof
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 11
+
+
+ 426 008c 00000000 		.word	ctx
+ 427 0090 00000000 		.word	tail_mdat_offset
+ 428 0094 00000000 		.word	tail_mdat
+ 429              		.cfi_endproc
+ 430              	.LFE150:
+ 432              		.global	sample_idx
+ 433              		.section	.bss.sample_idx,"aw",%nobits
+ 434              		.align	2
+ 437              	sample_idx:
+ 438 0000 00000000 		.space	4
+ 439              		.global	moof
+ 440              		.section	.data.moof,"aw"
+ 441              		.align	3
+ 444              	moof:
+ 445 0000 00       		.byte	0
+ 446 0001 000000   		.space	3
+ 447 0004 00000000 		.word	0
+ 448 0008 00000000 		.word	0
+ 449 000c 01000000 		.word	1
+ 450 0010 01000000 		.word	1
+ 451 0014 00       		.byte	0
+ 452 0015 00       		.byte	0
+ 453 0016 01       		.byte	1
+ 454 0017 00000000 		.space	9
+ 454      00000000 
+ 454      00
+ 455 0020 00       		.byte	0
+ 456 0021 00000000 		.space	7
+ 456      000000
+ 457 0028 00       		.byte	0
+ 458 0029 00000000 		.space	7
+ 458      000000
+ 459 0030 00       		.byte	0
+ 460 0031 00000000 		.space	7
+ 460      000000
+ 461 0038 00       		.byte	0
+ 462 0039 00000000 		.space	7
+ 462      000000
+ 463 0040 01000000 		.word	1
+ 464 0044 00       		.byte	0
+ 465 0045 00       		.byte	0
+ 466 0046 00000000 		.space	6
+ 466      0000
+ 467 004c 00       		.byte	0
+ 468 004d 00000000 		.space	7
+ 468      000000
+ 469 0054 00       		.byte	0
+ 470 0055 01       		.byte	1
+ 471 0056 00       		.byte	0
+ 472 0057 00       		.byte	0
+ 473 0058 10000000 		.word	16
+ 474 005c 00000000 		.space	480
+ 474      00000000 
+ 474      00000000 
+ 474      00000000 
+ 474      00000000 
+ 475 023c 00000000 		.space	1512
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 12
+
+
+ 475      00000000 
+ 475      00000000 
+ 475      00000000 
+ 475      00000000 
+ 476 0824 00       		.byte	0
+ 477 0825 00000000 		.space	19
+ 477      00000000 
+ 477      00000000 
+ 477      00000000 
+ 477      000000
+ 478 0838 00       		.byte	0
+ 479 0839 00000000 		.space	1159
+ 479      00000000 
+ 479      00000000 
+ 479      00000000 
+ 479      00000000 
+ 480 0cc0 00000000 		.space	9744
+ 480      00000000 
+ 480      00000000 
+ 480      00000000 
+ 480      00000000 
+ 481 32d0 00       		.byte	0
+ 482 32d1 00000000 		.space	1159
+ 482      00000000 
+ 482      00000000 
+ 482      00000000 
+ 482      00000000 
+ 483              		.global	tail_mdat_offset
+ 484              		.section	.bss.tail_mdat_offset,"aw",%nobits
+ 485              		.align	3
+ 488              	tail_mdat_offset:
+ 489 0000 00000000 		.space	8
+ 489      00000000 
+ 490              		.global	tail_mdat
+ 491              		.section	.bss.tail_mdat,"aw",%nobits
+ 492              		.align	3
+ 495              	tail_mdat:
+ 496 0000 00000000 		.space	16
+ 496      00000000 
+ 496      00000000 
+ 496      00000000 
+ 497              		.global	duration
+ 498              		.section	.bss.duration,"aw",%nobits
+ 499              		.align	3
+ 502              	duration:
+ 503 0000 00000000 		.space	8
+ 503      00000000 
+ 504              		.section	.data.container,"aw"
+ 505              		.align	3
+ 508              	container:
+ 509 0000 01       		.byte	1
+ 510 0001 000000   		.space	3
+ 511 0004 3134706D 		.word	1836069937
+ 512 0008 00091014 		.word	336595200
+ 513 000c 00000000 		.word	0
+ 514 0010 00000000 		.space	16
+ 514      00000000 
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 13
+
+
+ 514      00000000 
+ 514      00000000 
+ 515 0020 00       		.byte	0
+ 516 0021 000000   		.space	3
+ 517 0024 00000000 		.word	0
+ 518 0028 00000000 		.word	0
+ 519 002c 00000000 		.word	0
+ 520 0030 00000000 		.word	0
+ 521 0034 00000000 		.word	0
+ 522 0038 0100     		.short	1
+ 523 003a 0000     		.short	0
+ 524 003c 01       		.byte	1
+ 525 003d 00       		.byte	0
+ 526 003e 0000     		.space	2
+ 527 0040 0100     		.short	1
+ 528 0042 0000     		.short	0
+ 529 0044 0000     		.short	0
+ 530 0046 0000     		.short	0
+ 531 0048 00       		.byte	0
+ 532 0049 000000   		.space	3
+ 533 004c 00000000 		.word	0
+ 534 0050 0000     		.short	0
+ 535 0052 0000     		.short	0
+ 536 0054 0100     		.short	1
+ 537 0056 0000     		.short	0
+ 538 0058 00       		.byte	0
+ 539 0059 000000   		.space	3
+ 540 005c 00000000 		.word	0
+ 541 0060 0000     		.short	0
+ 542 0062 0000     		.short	0
+ 543 0064 0000     		.short	0
+ 544 0066 0000     		.short	0
+ 545 0068 01       		.byte	1
+ 546 0069 000000   		.space	3
+ 547 006c 00000000 		.word	0
+ 548 0070 00000000 		.word	0
+ 549 0074 00000000 		.word	0
+ 550 0078 00000000 		.word	0
+ 551 007c 00000000 		.word	0
+ 552 0080 00000000 		.word	0
+ 553 0084 00000000 		.word	0
+ 554 0088 00000000 		.word	0
+ 555 008c 01000000 		.word	1
+ 556 0090 00       		.byte	0
+ 557 0091 000000   		.space	3
+ 558 0094 00000000 		.word	0
+ 559 0098 00000000 		.word	0
+ 560 009c 00000000 		.word	0
+ 561 00a0 01000000 		.word	1
+ 562 00a4 00000000 		.word	0
+ 563 00a8 0000     		.short	0
+ 564 00aa 0000     		.short	0
+ 565 00ac 01       		.byte	1
+ 566 00ad 00       		.byte	0
+ 567 00ae 0000     		.space	2
+ 568 00b0 0100     		.short	1
+ 569 00b2 0000     		.short	0
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 14
+
+
+ 570 00b4 0000     		.short	0
+ 571 00b6 0000     		.short	0
+ 572 00b8 00       		.byte	0
+ 573 00b9 000000   		.space	3
+ 574 00bc 00000000 		.word	0
+ 575 00c0 0000     		.short	0
+ 576 00c2 0000     		.short	0
+ 577 00c4 0100     		.short	1
+ 578 00c6 0000     		.short	0
+ 579 00c8 00       		.byte	0
+ 580 00c9 000000   		.space	3
+ 581 00cc 00000000 		.word	0
+ 582 00d0 0000     		.short	0
+ 583 00d2 0000     		.short	0
+ 584 00d4 0000     		.short	0
+ 585 00d6 0000     		.short	0
+ 586 00d8 01       		.byte	1
+ 587 00d9 000000   		.space	3
+ 588 00dc 00000000 		.word	0
+ 589 00e0 0000     		.short	0
+ 590 00e2 0000     		.short	0
+ 591 00e4 0000     		.short	0
+ 592 00e6 0000     		.short	0
+ 593 00e8 00       		.byte	0
+ 594 00e9 000000   		.space	3
+ 595 00ec 00000000 		.word	0
+ 596 00f0 00000000 		.word	0
+ 597 00f4 00000000 		.word	0
+ 598 00f8 00000000 		.word	0
+ 599 00fc 00000000 		.word	0
+ 600 0100 0000     		.short	0
+ 601 0102 0000     		.short	0
+ 602 0104 00       		.byte	0
+ 603 0105 000000   		.space	3
+ 604 0108 00000000 		.space	16
+ 604      00000000 
+ 604      00000000 
+ 604      00000000 
+ 605 0118 01       		.byte	1
+ 606 0119 000000   		.space	3
+ 607 011c 00       		.byte	0
+ 608 011d 000000   		.space	3
+ 609 0120 00000000 		.word	0
+ 610 0124 726C686D 		.word	1835560050
+ 611 0128 65646976 		.word	1986618469
+ 612 012c 00000000 		.word	0
+ 613 0130 00000000 		.word	0
+ 614 0134 00000000 		.word	0
+ 615 0138 00       		.ascii	"\000"
+ 616 0139 00000000 		.space	24
+ 616      00000000 
+ 616      00000000 
+ 616      00000000 
+ 616      00000000 
+ 617 0151 000000   		.space	3
+ 618 0154 01       		.byte	1
+ 619 0155 000000   		.space	3
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 15
+
+
+ 620 0158 00       		.byte	0
+ 621 0159 000000   		.space	3
+ 622 015c 01000000 		.word	1
+ 623 0160 0000     		.short	0
+ 624 0162 0000     		.short	0
+ 625 0164 0000     		.short	0
+ 626 0166 0000     		.short	0
+ 627 0168 00       		.byte	0
+ 628 0169 000000   		.space	3
+ 629 016c 00000000 		.word	0
+ 630 0170 726C686D 		.word	1835560050
+ 631 0174 65646976 		.word	1986618469
+ 632 0178 00000000 		.word	0
+ 633 017c 00000000 		.word	0
+ 634 0180 00000000 		.word	0
+ 635 0184 00       		.ascii	"\000"
+ 636 0185 00000000 		.space	24
+ 636      00000000 
+ 636      00000000 
+ 636      00000000 
+ 636      00000000 
+ 637 019d 000000   		.space	3
+ 638 01a0 01       		.byte	1
+ 639 01a1 000000   		.space	3
+ 640 01a4 00       		.byte	0
+ 641 01a5 000000   		.space	3
+ 642 01a8 00000000 		.word	0
+ 643 01ac 01000000 		.word	1
+ 644 01b0 206C7275 		.word	1970433056
+ 645 01b4 00       		.byte	0
+ 646 01b5 000000   		.space	3
+ 647 01b8 01000000 		.word	1
+ 648 01bc 00000000 		.word	0
+ 649 01c0 00       		.ascii	"\000"
+ 650 01c1 00000000 		.space	15
+ 650      00000000 
+ 650      00000000 
+ 650      000000
+ 651 01d0 00000000 		.space	96
+ 651      00000000 
+ 651      00000000 
+ 651      00000000 
+ 651      00000000 
+ 652 0230 01       		.byte	1
+ 653 0231 000000   		.space	3
+ 654 0234 00       		.byte	0
+ 655 0235 000000   		.space	3
+ 656 0238 00000000 		.word	0
+ 657 023c 01000000 		.word	1
+ 658 0240 6765706A 		.word	1785750887
+ 659 0244 0100     		.short	1
+ 660 0246 0000     		.space	2
+ 661 0248 0000     		.short	0
+ 662 024a 0000     		.space	2
+ 663 024c 34504447 		.word	1195659316
+ 664 0250 00000000 		.word	0
+ 665 0254 00000000 		.word	0
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 16
+
+
+ 666 0258 0000     		.short	0
+ 667 025a 0000     		.short	0
+ 668 025c 4800     		.short	72
+ 669 025e 0000     		.short	0
+ 670 0260 4800     		.short	72
+ 671 0262 0000     		.short	0
+ 672 0264 0100     		.short	1
+ 673 0266 4F563536 		.ascii	"OV5640 JPEG\000"
+ 673      3430204A 
+ 673      50454700 
+ 674 0272 00000000 		.space	20
+ 674      00000000 
+ 674      00000000 
+ 674      00000000 
+ 674      00000000 
+ 675 0286 0000     		.short	0
+ 676 0288 FFFF     		.short	-1
+ 677 028a 0000     		.space	2
+ 678 028c 00000000 		.space	532
+ 678      00000000 
+ 678      00000000 
+ 678      00000000 
+ 678      00000000 
+ 679 04a0 00       		.byte	0
+ 680 04a1 000000   		.space	3
+ 681 04a4 00000000 		.word	0
+ 682 04a8 00000000 		.word	0
+ 683 04ac 00000000 		.space	32
+ 683      00000000 
+ 683      00000000 
+ 683      00000000 
+ 683      00000000 
+ 684 04cc 00       		.byte	0
+ 685 04cd 000000   		.space	3
+ 686 04d0 00000000 		.space	44
+ 686      00000000 
+ 686      00000000 
+ 686      00000000 
+ 686      00000000 
+ 687 04fc 00       		.byte	0
+ 688 04fd 000000   		.space	3
+ 689 0500 00000000 		.space	28
+ 689      00000000 
+ 689      00000000 
+ 689      00000000 
+ 689      00000000 
+ 690 051c 00       		.byte	0
+ 691 051d 000000   		.space	3
+ 692 0520 00000000 		.space	44
+ 692      00000000 
+ 692      00000000 
+ 692      00000000 
+ 692      00000000 
+ 693 054c 00       		.byte	0
+ 694 054d 000000   		.space	3
+ 695 0550 00000000 		.space	28
+ 695      00000000 
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 17
+
+
+ 695      00000000 
+ 695      00000000 
+ 695      00000000 
+ 696 056c 01       		.byte	1
+ 697 056d 000000   		.space	3
+ 698 0570 00       		.byte	0
+ 699 0571 000000   		.space	3
+ 700 0574 00000000 		.word	0
+ 701 0578 00000000 		.word	0
+ 702 057c 00000000 		.space	48
+ 702      00000000 
+ 702      00000000 
+ 702      00000000 
+ 702      00000000 
+ 703 05ac 01       		.byte	1
+ 704 05ad 000000   		.space	3
+ 705 05b0 00       		.byte	0
+ 706 05b1 000000   		.space	3
+ 707 05b4 00000000 		.word	0
+ 708 05b8 00000000 		.word	0
+ 709 05bc 00000000 		.word	0
+ 710 05c0 00000000 		.space	16
+ 710      00000000 
+ 710      00000000 
+ 710      00000000 
+ 711 05d0 01       		.byte	1
+ 712 05d1 000000   		.space	3
+ 713 05d4 00       		.byte	0
+ 714 05d5 000000   		.space	3
+ 715 05d8 00000000 		.word	0
+ 716 05dc 00000000 		.word	0
+ 717 05e0 00000000 		.space	16
+ 717      00000000 
+ 717      00000000 
+ 717      00000000 
+ 718 05f0 00       		.byte	0
+ 719 05f1 000000   		.space	3
+ 720 05f4 00000000 		.space	16
+ 720      00000000 
+ 720      00000000 
+ 720      00000000 
+ 721 0604 00000000 		.space	1192
+ 721      00000000 
+ 721      00000000 
+ 721      00000000 
+ 721      00000000 
+ 722 0aac 00000000 		.space	72
+ 722      00000000 
+ 722      00000000 
+ 722      00000000 
+ 722      00000000 
+ 723 0af4 00       		.byte	0
+ 724 0af5 000000   		.space	3
+ 725 0af8 00000000 		.space	1156
+ 725      00000000 
+ 725      00000000 
+ 725      00000000 
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 18
+
+
+ 725      00000000 
+ 726 0f7c 00       		.byte	0
+ 727 0f7d 000000   		.space	3
+ 728 0f80 00000000 		.space	48
+ 728      00000000 
+ 728      00000000 
+ 728      00000000 
+ 728      00000000 
+ 729 0fb0 00       		.byte	0
+ 730 0fb1 00       		.space	1
+ 731 0fb2 00000000 		.space	18
+ 731      00000000 
+ 731      00000000 
+ 731      00000000 
+ 731      0000
+ 732 0fc4 00       		.byte	0
+ 733 0fc5 000000   		.space	3
+ 734 0fc8 00000000 		.space	104
+ 734      00000000 
+ 734      00000000 
+ 734      00000000 
+ 734      00000000 
+ 735 1030 00       		.byte	0
+ 736 1031 000000   		.space	3
+ 737 1034 00000000 		.space	108
+ 737      00000000 
+ 737      00000000 
+ 737      00000000 
+ 737      00000000 
+ 738 10a0 00       		.byte	0
+ 739 10a1 000000   		.space	3
+ 740 10a4 00000000 		.space	100
+ 740      00000000 
+ 740      00000000 
+ 740      00000000 
+ 740      00000000 
+ 741 1108 00       		.byte	0
+ 742 1109 00       		.space	1
+ 743 110a 00       		.byte	0
+ 744 110b 00       		.space	1
+ 745 110c 00000000 		.space	16
+ 745      00000000 
+ 745      00000000 
+ 745      00000000 
+ 746 111c 00       		.byte	0
+ 747 111d 000000   		.space	3
+ 748 1120 00000000 		.space	44
+ 748      00000000 
+ 748      00000000 
+ 748      00000000 
+ 748      00000000 
+ 749 114c 00       		.byte	0
+ 750 114d 000000   		.space	3
+ 751 1150 00000000 		.space	1156
+ 751      00000000 
+ 751      00000000 
+ 751      00000000 
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 19
+
+
+ 751      00000000 
+ 752 15d4 00000000 		.space	16332
+ 752      00000000 
+ 752      00000000 
+ 752      00000000 
+ 752      00000000 
+ 753 55a0 00       		.byte	0
+ 754 55a1 00       		.space	1
+ 755 55a2 00000000 		.space	18
+ 755      00000000 
+ 755      00000000 
+ 755      00000000 
+ 755      0000
+ 756 55b4 00       		.byte	0
+ 757 55b5 000000   		.space	3
+ 758 55b8 00000000 		.space	136
+ 758      00000000 
+ 758      00000000 
+ 758      00000000 
+ 758      00000000 
+ 759 5640 00       		.byte	0
+ 760 5641 000000   		.space	3
+ 761 5644 00000000 		.space	1156
+ 761      00000000 
+ 761      00000000 
+ 761      00000000 
+ 761      00000000 
+ 762 5ac8 01       		.byte	1
+ 763 5ac9 00000000 		.space	7
+ 763      000000
+ 764 5ad0 00       		.byte	0
+ 765 5ad1 00000000 		.space	7
+ 765      000000
+ 766 5ad8 01       		.byte	1
+ 767 5ad9 000000   		.space	3
+ 768 5adc 00000000 		.word	0
+ 769 5ae0 00000000 		.word	0
+ 770 5ae4 00000000 		.word	0
+ 771 5ae8 01000000 		.word	1
+ 772 5aec 00       		.byte	0
+ 773 5aed 000000   		.space	3
+ 774 5af0 00000000 		.word	0
+ 775 5af4 01000000 		.word	1
+ 776 5af8 01000000 		.word	1
+ 777 5afc 01000000 		.word	1
+ 778 5b00 00000000 		.word	0
+ 779 5b04 00000000 		.word	0
+ 780 5b08 00000000 		.space	84
+ 780      00000000 
+ 780      00000000 
+ 780      00000000 
+ 780      00000000 
+ 781 5b5c 00000000 		.space	4
+ 782 5b60 00000000 		.word	0
+ 783 5b64 00000000 		.space	4
+ 784 5b68 00000000 		.space	128
+ 784      00000000 
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 20
+
+
+ 784      00000000 
+ 784      00000000 
+ 784      00000000 
+ 785 5be8 00000000 		.word	0
+ 786 5bec 00000000 		.space	4
+ 787 5bf0 00000000 		.space	113344
+ 787      00000000 
+ 787      00000000 
+ 787      00000000 
+ 787      00000000 
+ 788 216b0 00000000 		.word	0
+ 789 216b4 00000000 		.space	4
+ 790 216b8 00000000 		.space	32
+ 790      00000000 
+ 790      00000000 
+ 790      00000000 
+ 790      00000000 
+ 791 216d8 00000000 		.word	0
+ 792 216dc 00000000 		.space	4
+ 793 216e0 00000000 		.space	32
+ 793      00000000 
+ 793      00000000 
+ 793      00000000 
+ 793      00000000 
+ 794 21700 00000000 		.word	0
+ 795 21704 00000000 		.space	4
+ 796 21708 00000000 		.space	32
+ 796      00000000 
+ 796      00000000 
+ 796      00000000 
+ 796      00000000 
+ 797 21728 00       		.byte	0
+ 798 21729 000000   		.space	3
+ 799 2172c 00000000 		.space	16
+ 799      00000000 
+ 799      00000000 
+ 799      00000000 
+ 800 2173c 00000000 		.space	4
+ 801              		.section	.bss.ctx,"aw",%nobits
+ 802              		.align	2
+ 805              	ctx:
+ 806 0000 00000000 		.space	20
+ 806      00000000 
+ 806      00000000 
+ 806      00000000 
+ 806      00000000 
+ 807              		.global	file_template
+ 808              		.section	.rodata.file_template,"a"
+ 809              		.align	3
+ 812              	file_template:
+ 813 0000 01       		.byte	1
+ 814 0001 000000   		.space	3
+ 815 0004 3134706D 		.word	1836069937
+ 816 0008 00091014 		.word	336595200
+ 817 000c 00000000 		.word	0
+ 818 0010 00000000 		.space	16
+ 818      00000000 
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 21
+
+
+ 818      00000000 
+ 818      00000000 
+ 819 0020 00       		.byte	0
+ 820 0021 000000   		.space	3
+ 821 0024 00000000 		.word	0
+ 822 0028 00000000 		.word	0
+ 823 002c 00000000 		.word	0
+ 824 0030 00000000 		.word	0
+ 825 0034 00000000 		.word	0
+ 826 0038 0100     		.short	1
+ 827 003a 0000     		.short	0
+ 828 003c 01       		.byte	1
+ 829 003d 00       		.byte	0
+ 830 003e 0000     		.space	2
+ 831 0040 0100     		.short	1
+ 832 0042 0000     		.short	0
+ 833 0044 0000     		.short	0
+ 834 0046 0000     		.short	0
+ 835 0048 00       		.byte	0
+ 836 0049 000000   		.space	3
+ 837 004c 00000000 		.word	0
+ 838 0050 0000     		.short	0
+ 839 0052 0000     		.short	0
+ 840 0054 0100     		.short	1
+ 841 0056 0000     		.short	0
+ 842 0058 00       		.byte	0
+ 843 0059 000000   		.space	3
+ 844 005c 00000000 		.word	0
+ 845 0060 0000     		.short	0
+ 846 0062 0000     		.short	0
+ 847 0064 0000     		.short	0
+ 848 0066 0000     		.short	0
+ 849 0068 01       		.byte	1
+ 850 0069 000000   		.space	3
+ 851 006c 00000000 		.word	0
+ 852 0070 00000000 		.word	0
+ 853 0074 00000000 		.word	0
+ 854 0078 00000000 		.word	0
+ 855 007c 00000000 		.word	0
+ 856 0080 00000000 		.word	0
+ 857 0084 00000000 		.word	0
+ 858 0088 00000000 		.word	0
+ 859 008c 01000000 		.word	1
+ 860 0090 00       		.byte	0
+ 861 0091 000000   		.space	3
+ 862 0094 00000000 		.word	0
+ 863 0098 00000000 		.word	0
+ 864 009c 00000000 		.word	0
+ 865 00a0 01000000 		.word	1
+ 866 00a4 00000000 		.word	0
+ 867 00a8 0000     		.short	0
+ 868 00aa 0000     		.short	0
+ 869 00ac 01       		.byte	1
+ 870 00ad 00       		.byte	0
+ 871 00ae 0000     		.space	2
+ 872 00b0 0100     		.short	1
+ 873 00b2 0000     		.short	0
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 22
+
+
+ 874 00b4 0000     		.short	0
+ 875 00b6 0000     		.short	0
+ 876 00b8 00       		.byte	0
+ 877 00b9 000000   		.space	3
+ 878 00bc 00000000 		.word	0
+ 879 00c0 0000     		.short	0
+ 880 00c2 0000     		.short	0
+ 881 00c4 0100     		.short	1
+ 882 00c6 0000     		.short	0
+ 883 00c8 00       		.byte	0
+ 884 00c9 000000   		.space	3
+ 885 00cc 00000000 		.word	0
+ 886 00d0 0000     		.short	0
+ 887 00d2 0000     		.short	0
+ 888 00d4 0000     		.short	0
+ 889 00d6 0000     		.short	0
+ 890 00d8 01       		.byte	1
+ 891 00d9 000000   		.space	3
+ 892 00dc 00000000 		.word	0
+ 893 00e0 0000     		.short	0
+ 894 00e2 0000     		.short	0
+ 895 00e4 0000     		.short	0
+ 896 00e6 0000     		.short	0
+ 897 00e8 00       		.byte	0
+ 898 00e9 000000   		.space	3
+ 899 00ec 00000000 		.word	0
+ 900 00f0 00000000 		.word	0
+ 901 00f4 00000000 		.word	0
+ 902 00f8 00000000 		.word	0
+ 903 00fc 00000000 		.word	0
+ 904 0100 0000     		.short	0
+ 905 0102 0000     		.short	0
+ 906 0104 00       		.byte	0
+ 907 0105 000000   		.space	3
+ 908 0108 00000000 		.space	16
+ 908      00000000 
+ 908      00000000 
+ 908      00000000 
+ 909 0118 01       		.byte	1
+ 910 0119 000000   		.space	3
+ 911 011c 00       		.byte	0
+ 912 011d 000000   		.space	3
+ 913 0120 00000000 		.word	0
+ 914 0124 726C686D 		.word	1835560050
+ 915 0128 65646976 		.word	1986618469
+ 916 012c 00000000 		.word	0
+ 917 0130 00000000 		.word	0
+ 918 0134 00000000 		.word	0
+ 919 0138 00       		.ascii	"\000"
+ 920 0139 00000000 		.space	24
+ 920      00000000 
+ 920      00000000 
+ 920      00000000 
+ 920      00000000 
+ 921 0151 000000   		.space	3
+ 922 0154 01       		.byte	1
+ 923 0155 000000   		.space	3
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 23
+
+
+ 924 0158 00       		.byte	0
+ 925 0159 000000   		.space	3
+ 926 015c 01000000 		.word	1
+ 927 0160 0000     		.short	0
+ 928 0162 0000     		.short	0
+ 929 0164 0000     		.short	0
+ 930 0166 0000     		.short	0
+ 931 0168 00       		.byte	0
+ 932 0169 000000   		.space	3
+ 933 016c 00000000 		.word	0
+ 934 0170 726C686D 		.word	1835560050
+ 935 0174 65646976 		.word	1986618469
+ 936 0178 00000000 		.word	0
+ 937 017c 00000000 		.word	0
+ 938 0180 00000000 		.word	0
+ 939 0184 00       		.ascii	"\000"
+ 940 0185 00000000 		.space	24
+ 940      00000000 
+ 940      00000000 
+ 940      00000000 
+ 940      00000000 
+ 941 019d 000000   		.space	3
+ 942 01a0 01       		.byte	1
+ 943 01a1 000000   		.space	3
+ 944 01a4 00       		.byte	0
+ 945 01a5 000000   		.space	3
+ 946 01a8 00000000 		.word	0
+ 947 01ac 01000000 		.word	1
+ 948 01b0 206C7275 		.word	1970433056
+ 949 01b4 00       		.byte	0
+ 950 01b5 000000   		.space	3
+ 951 01b8 01000000 		.word	1
+ 952 01bc 00000000 		.word	0
+ 953 01c0 00       		.ascii	"\000"
+ 954 01c1 00000000 		.space	15
+ 954      00000000 
+ 954      00000000 
+ 954      000000
+ 955 01d0 00000000 		.space	96
+ 955      00000000 
+ 955      00000000 
+ 955      00000000 
+ 955      00000000 
+ 956 0230 01       		.byte	1
+ 957 0231 000000   		.space	3
+ 958 0234 00       		.byte	0
+ 959 0235 000000   		.space	3
+ 960 0238 00000000 		.word	0
+ 961 023c 01000000 		.word	1
+ 962 0240 6765706A 		.word	1785750887
+ 963 0244 0100     		.short	1
+ 964 0246 0000     		.space	2
+ 965 0248 0000     		.short	0
+ 966 024a 0000     		.space	2
+ 967 024c 34504447 		.word	1195659316
+ 968 0250 00000000 		.word	0
+ 969 0254 00000000 		.word	0
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 24
+
+
+ 970 0258 0000     		.short	0
+ 971 025a 0000     		.short	0
+ 972 025c 4800     		.short	72
+ 973 025e 0000     		.short	0
+ 974 0260 4800     		.short	72
+ 975 0262 0000     		.short	0
+ 976 0264 0100     		.short	1
+ 977 0266 4F563536 		.ascii	"OV5640 JPEG\000"
+ 977      3430204A 
+ 977      50454700 
+ 978 0272 00000000 		.space	20
+ 978      00000000 
+ 978      00000000 
+ 978      00000000 
+ 978      00000000 
+ 979 0286 0000     		.short	0
+ 980 0288 FFFF     		.short	-1
+ 981 028a 0000     		.space	2
+ 982 028c 00000000 		.space	532
+ 982      00000000 
+ 982      00000000 
+ 982      00000000 
+ 982      00000000 
+ 983 04a0 00       		.byte	0
+ 984 04a1 000000   		.space	3
+ 985 04a4 00000000 		.word	0
+ 986 04a8 00000000 		.word	0
+ 987 04ac 00000000 		.space	32
+ 987      00000000 
+ 987      00000000 
+ 987      00000000 
+ 987      00000000 
+ 988 04cc 00       		.byte	0
+ 989 04cd 000000   		.space	3
+ 990 04d0 00000000 		.space	44
+ 990      00000000 
+ 990      00000000 
+ 990      00000000 
+ 990      00000000 
+ 991 04fc 00       		.byte	0
+ 992 04fd 000000   		.space	3
+ 993 0500 00000000 		.space	28
+ 993      00000000 
+ 993      00000000 
+ 993      00000000 
+ 993      00000000 
+ 994 051c 00       		.byte	0
+ 995 051d 000000   		.space	3
+ 996 0520 00000000 		.space	44
+ 996      00000000 
+ 996      00000000 
+ 996      00000000 
+ 996      00000000 
+ 997 054c 00       		.byte	0
+ 998 054d 000000   		.space	3
+ 999 0550 00000000 		.space	28
+ 999      00000000 
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 25
+
+
+ 999      00000000 
+ 999      00000000 
+ 999      00000000 
+ 1000 056c 01       		.byte	1
+ 1001 056d 000000   		.space	3
+ 1002 0570 00       		.byte	0
+ 1003 0571 000000   		.space	3
+ 1004 0574 00000000 		.word	0
+ 1005 0578 00000000 		.word	0
+ 1006 057c 00000000 		.space	48
+ 1006      00000000 
+ 1006      00000000 
+ 1006      00000000 
+ 1006      00000000 
+ 1007 05ac 01       		.byte	1
+ 1008 05ad 000000   		.space	3
+ 1009 05b0 00       		.byte	0
+ 1010 05b1 000000   		.space	3
+ 1011 05b4 00000000 		.word	0
+ 1012 05b8 00000000 		.word	0
+ 1013 05bc 00000000 		.word	0
+ 1014 05c0 00000000 		.space	16
+ 1014      00000000 
+ 1014      00000000 
+ 1014      00000000 
+ 1015 05d0 01       		.byte	1
+ 1016 05d1 000000   		.space	3
+ 1017 05d4 00       		.byte	0
+ 1018 05d5 000000   		.space	3
+ 1019 05d8 00000000 		.word	0
+ 1020 05dc 00000000 		.word	0
+ 1021 05e0 00000000 		.space	16
+ 1021      00000000 
+ 1021      00000000 
+ 1021      00000000 
+ 1022 05f0 00       		.byte	0
+ 1023 05f1 000000   		.space	3
+ 1024 05f4 00000000 		.space	16
+ 1024      00000000 
+ 1024      00000000 
+ 1024      00000000 
+ 1025 0604 00000000 		.space	1192
+ 1025      00000000 
+ 1025      00000000 
+ 1025      00000000 
+ 1025      00000000 
+ 1026 0aac 00000000 		.space	72
+ 1026      00000000 
+ 1026      00000000 
+ 1026      00000000 
+ 1026      00000000 
+ 1027 0af4 00       		.byte	0
+ 1028 0af5 000000   		.space	3
+ 1029 0af8 00000000 		.space	1156
+ 1029      00000000 
+ 1029      00000000 
+ 1029      00000000 
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 26
+
+
+ 1029      00000000 
+ 1030 0f7c 00       		.byte	0
+ 1031 0f7d 000000   		.space	3
+ 1032 0f80 00000000 		.space	48
+ 1032      00000000 
+ 1032      00000000 
+ 1032      00000000 
+ 1032      00000000 
+ 1033 0fb0 00       		.byte	0
+ 1034 0fb1 00       		.space	1
+ 1035 0fb2 00000000 		.space	18
+ 1035      00000000 
+ 1035      00000000 
+ 1035      00000000 
+ 1035      0000
+ 1036 0fc4 00       		.byte	0
+ 1037 0fc5 000000   		.space	3
+ 1038 0fc8 00000000 		.space	104
+ 1038      00000000 
+ 1038      00000000 
+ 1038      00000000 
+ 1038      00000000 
+ 1039 1030 00       		.byte	0
+ 1040 1031 000000   		.space	3
+ 1041 1034 00000000 		.space	108
+ 1041      00000000 
+ 1041      00000000 
+ 1041      00000000 
+ 1041      00000000 
+ 1042 10a0 00       		.byte	0
+ 1043 10a1 000000   		.space	3
+ 1044 10a4 00000000 		.space	100
+ 1044      00000000 
+ 1044      00000000 
+ 1044      00000000 
+ 1044      00000000 
+ 1045 1108 00       		.byte	0
+ 1046 1109 00       		.space	1
+ 1047 110a 00       		.byte	0
+ 1048 110b 00       		.space	1
+ 1049 110c 00000000 		.space	16
+ 1049      00000000 
+ 1049      00000000 
+ 1049      00000000 
+ 1050 111c 00       		.byte	0
+ 1051 111d 000000   		.space	3
+ 1052 1120 00000000 		.space	44
+ 1052      00000000 
+ 1052      00000000 
+ 1052      00000000 
+ 1052      00000000 
+ 1053 114c 00       		.byte	0
+ 1054 114d 000000   		.space	3
+ 1055 1150 00000000 		.space	1156
+ 1055      00000000 
+ 1055      00000000 
+ 1055      00000000 
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 27
+
+
+ 1055      00000000 
+ 1056 15d4 00000000 		.space	16332
+ 1056      00000000 
+ 1056      00000000 
+ 1056      00000000 
+ 1056      00000000 
+ 1057 55a0 00       		.byte	0
+ 1058 55a1 00       		.space	1
+ 1059 55a2 00000000 		.space	18
+ 1059      00000000 
+ 1059      00000000 
+ 1059      00000000 
+ 1059      0000
+ 1060 55b4 00       		.byte	0
+ 1061 55b5 000000   		.space	3
+ 1062 55b8 00000000 		.space	136
+ 1062      00000000 
+ 1062      00000000 
+ 1062      00000000 
+ 1062      00000000 
+ 1063 5640 00       		.byte	0
+ 1064 5641 000000   		.space	3
+ 1065 5644 00000000 		.space	1156
+ 1065      00000000 
+ 1065      00000000 
+ 1065      00000000 
+ 1065      00000000 
+ 1066 5ac8 01       		.byte	1
+ 1067 5ac9 00000000 		.space	7
+ 1067      000000
+ 1068 5ad0 00       		.byte	0
+ 1069 5ad1 00000000 		.space	7
+ 1069      000000
+ 1070 5ad8 01       		.byte	1
+ 1071 5ad9 000000   		.space	3
+ 1072 5adc 00000000 		.word	0
+ 1073 5ae0 00000000 		.word	0
+ 1074 5ae4 00000000 		.word	0
+ 1075 5ae8 01000000 		.word	1
+ 1076 5aec 00       		.byte	0
+ 1077 5aed 000000   		.space	3
+ 1078 5af0 00000000 		.word	0
+ 1079 5af4 01000000 		.word	1
+ 1080 5af8 01000000 		.word	1
+ 1081 5afc 01000000 		.word	1
+ 1082 5b00 00000000 		.word	0
+ 1083 5b04 00000000 		.word	0
+ 1084 5b08 00000000 		.space	84
+ 1084      00000000 
+ 1084      00000000 
+ 1084      00000000 
+ 1084      00000000 
+ 1085 5b5c 00000000 		.space	4
+ 1086 5b60 00000000 		.word	0
+ 1087 5b64 00000000 		.space	4
+ 1088 5b68 00000000 		.space	128
+ 1088      00000000 
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 28
+
+
+ 1088      00000000 
+ 1088      00000000 
+ 1088      00000000 
+ 1089 5be8 00000000 		.word	0
+ 1090 5bec 00000000 		.space	4
+ 1091 5bf0 00000000 		.space	113344
+ 1091      00000000 
+ 1091      00000000 
+ 1091      00000000 
+ 1091      00000000 
+ 1092 216b0 00000000 		.word	0
+ 1093 216b4 00000000 		.space	4
+ 1094 216b8 00000000 		.space	32
+ 1094      00000000 
+ 1094      00000000 
+ 1094      00000000 
+ 1094      00000000 
+ 1095 216d8 00000000 		.word	0
+ 1096 216dc 00000000 		.space	4
+ 1097 216e0 00000000 		.space	32
+ 1097      00000000 
+ 1097      00000000 
+ 1097      00000000 
+ 1097      00000000 
+ 1098 21700 00000000 		.word	0
+ 1099 21704 00000000 		.space	4
+ 1100 21708 00000000 		.space	32
+ 1100      00000000 
+ 1100      00000000 
+ 1100      00000000 
+ 1100      00000000 
+ 1101 21728 00       		.byte	0
+ 1102 21729 000000   		.space	3
+ 1103 2172c 00000000 		.space	16
+ 1103      00000000 
+ 1103      00000000 
+ 1103      00000000 
+ 1104 2173c 00000000 		.space	4
+ 1105              		.global	ftyp_template
+ 1106              		.section	.rodata.ftyp_template,"a"
+ 1107              		.align	2
+ 1110              	ftyp_template:
+ 1111 0000 3134706D 		.word	1836069937
+ 1112 0004 00091014 		.word	336595200
+ 1113 0008 00000000 		.word	0
+ 1114 000c 00000000 		.space	16
+ 1114      00000000 
+ 1114      00000000 
+ 1114      00000000 
+ 1115              		.global	moov_template
+ 1116              		.section	.rodata.moov_template,"a"
+ 1117              		.align	3
+ 1120              	moov_template:
+ 1121 0000 00       		.byte	0
+ 1122 0001 000000   		.space	3
+ 1123 0004 00000000 		.word	0
+ 1124 0008 00000000 		.word	0
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 29
+
+
+ 1125 000c 00000000 		.word	0
+ 1126 0010 00000000 		.word	0
+ 1127 0014 00000000 		.word	0
+ 1128 0018 0100     		.short	1
+ 1129 001a 0000     		.short	0
+ 1130 001c 01       		.byte	1
+ 1131 001d 00       		.byte	0
+ 1132 001e 0000     		.space	2
+ 1133 0020 0100     		.short	1
+ 1134 0022 0000     		.short	0
+ 1135 0024 0000     		.short	0
+ 1136 0026 0000     		.short	0
+ 1137 0028 00       		.byte	0
+ 1138 0029 000000   		.space	3
+ 1139 002c 00000000 		.word	0
+ 1140 0030 0000     		.short	0
+ 1141 0032 0000     		.short	0
+ 1142 0034 0100     		.short	1
+ 1143 0036 0000     		.short	0
+ 1144 0038 00       		.byte	0
+ 1145 0039 000000   		.space	3
+ 1146 003c 00000000 		.word	0
+ 1147 0040 0000     		.short	0
+ 1148 0042 0000     		.short	0
+ 1149 0044 0000     		.short	0
+ 1150 0046 0000     		.short	0
+ 1151 0048 01       		.byte	1
+ 1152 0049 000000   		.space	3
+ 1153 004c 00000000 		.word	0
+ 1154 0050 00000000 		.word	0
+ 1155 0054 00000000 		.word	0
+ 1156 0058 00000000 		.word	0
+ 1157 005c 00000000 		.word	0
+ 1158 0060 00000000 		.word	0
+ 1159 0064 00000000 		.word	0
+ 1160 0068 00000000 		.word	0
+ 1161 006c 01000000 		.word	1
+ 1162 0070 00       		.byte	0
+ 1163 0071 000000   		.space	3
+ 1164 0074 00000000 		.word	0
+ 1165 0078 00000000 		.word	0
+ 1166 007c 00000000 		.word	0
+ 1167 0080 01000000 		.word	1
+ 1168 0084 00000000 		.word	0
+ 1169 0088 0000     		.short	0
+ 1170 008a 0000     		.short	0
+ 1171 008c 01       		.byte	1
+ 1172 008d 00       		.byte	0
+ 1173 008e 0000     		.space	2
+ 1174 0090 0100     		.short	1
+ 1175 0092 0000     		.short	0
+ 1176 0094 0000     		.short	0
+ 1177 0096 0000     		.short	0
+ 1178 0098 00       		.byte	0
+ 1179 0099 000000   		.space	3
+ 1180 009c 00000000 		.word	0
+ 1181 00a0 0000     		.short	0
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 30
+
+
+ 1182 00a2 0000     		.short	0
+ 1183 00a4 0100     		.short	1
+ 1184 00a6 0000     		.short	0
+ 1185 00a8 00       		.byte	0
+ 1186 00a9 000000   		.space	3
+ 1187 00ac 00000000 		.word	0
+ 1188 00b0 0000     		.short	0
+ 1189 00b2 0000     		.short	0
+ 1190 00b4 0000     		.short	0
+ 1191 00b6 0000     		.short	0
+ 1192 00b8 01       		.byte	1
+ 1193 00b9 000000   		.space	3
+ 1194 00bc 00000000 		.word	0
+ 1195 00c0 0000     		.short	0
+ 1196 00c2 0000     		.short	0
+ 1197 00c4 0000     		.short	0
+ 1198 00c6 0000     		.short	0
+ 1199 00c8 00       		.byte	0
+ 1200 00c9 000000   		.space	3
+ 1201 00cc 00000000 		.word	0
+ 1202 00d0 00000000 		.word	0
+ 1203 00d4 00000000 		.word	0
+ 1204 00d8 00000000 		.word	0
+ 1205 00dc 00000000 		.word	0
+ 1206 00e0 0000     		.short	0
+ 1207 00e2 0000     		.short	0
+ 1208 00e4 00       		.byte	0
+ 1209 00e5 000000   		.space	3
+ 1210 00e8 00000000 		.space	16
+ 1210      00000000 
+ 1210      00000000 
+ 1210      00000000 
+ 1211 00f8 01       		.byte	1
+ 1212 00f9 000000   		.space	3
+ 1213 00fc 00       		.byte	0
+ 1214 00fd 000000   		.space	3
+ 1215 0100 00000000 		.word	0
+ 1216 0104 726C686D 		.word	1835560050
+ 1217 0108 65646976 		.word	1986618469
+ 1218 010c 00000000 		.word	0
+ 1219 0110 00000000 		.word	0
+ 1220 0114 00000000 		.word	0
+ 1221 0118 00       		.ascii	"\000"
+ 1222 0119 00000000 		.space	24
+ 1222      00000000 
+ 1222      00000000 
+ 1222      00000000 
+ 1222      00000000 
+ 1223 0131 000000   		.space	3
+ 1224 0134 01       		.byte	1
+ 1225 0135 000000   		.space	3
+ 1226 0138 00       		.byte	0
+ 1227 0139 000000   		.space	3
+ 1228 013c 01000000 		.word	1
+ 1229 0140 0000     		.short	0
+ 1230 0142 0000     		.short	0
+ 1231 0144 0000     		.short	0
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 31
+
+
+ 1232 0146 0000     		.short	0
+ 1233 0148 00       		.byte	0
+ 1234 0149 000000   		.space	3
+ 1235 014c 00000000 		.word	0
+ 1236 0150 726C686D 		.word	1835560050
+ 1237 0154 65646976 		.word	1986618469
+ 1238 0158 00000000 		.word	0
+ 1239 015c 00000000 		.word	0
+ 1240 0160 00000000 		.word	0
+ 1241 0164 00       		.ascii	"\000"
+ 1242 0165 00000000 		.space	24
+ 1242      00000000 
+ 1242      00000000 
+ 1242      00000000 
+ 1242      00000000 
+ 1243 017d 000000   		.space	3
+ 1244 0180 01       		.byte	1
+ 1245 0181 000000   		.space	3
+ 1246 0184 00       		.byte	0
+ 1247 0185 000000   		.space	3
+ 1248 0188 00000000 		.word	0
+ 1249 018c 01000000 		.word	1
+ 1250 0190 206C7275 		.word	1970433056
+ 1251 0194 00       		.byte	0
+ 1252 0195 000000   		.space	3
+ 1253 0198 01000000 		.word	1
+ 1254 019c 00000000 		.word	0
+ 1255 01a0 00       		.ascii	"\000"
+ 1256 01a1 00000000 		.space	15
+ 1256      00000000 
+ 1256      00000000 
+ 1256      000000
+ 1257 01b0 00000000 		.space	96
+ 1257      00000000 
+ 1257      00000000 
+ 1257      00000000 
+ 1257      00000000 
+ 1258 0210 01       		.byte	1
+ 1259 0211 000000   		.space	3
+ 1260 0214 00       		.byte	0
+ 1261 0215 000000   		.space	3
+ 1262 0218 00000000 		.word	0
+ 1263 021c 01000000 		.word	1
+ 1264 0220 6765706A 		.word	1785750887
+ 1265 0224 0100     		.short	1
+ 1266 0226 0000     		.space	2
+ 1267 0228 0000     		.short	0
+ 1268 022a 0000     		.space	2
+ 1269 022c 34504447 		.word	1195659316
+ 1270 0230 00000000 		.word	0
+ 1271 0234 00000000 		.word	0
+ 1272 0238 0000     		.short	0
+ 1273 023a 0000     		.short	0
+ 1274 023c 4800     		.short	72
+ 1275 023e 0000     		.short	0
+ 1276 0240 4800     		.short	72
+ 1277 0242 0000     		.short	0
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 32
+
+
+ 1278 0244 0100     		.short	1
+ 1279 0246 4F563536 		.ascii	"OV5640 JPEG\000"
+ 1279      3430204A 
+ 1279      50454700 
+ 1280 0252 00000000 		.space	20
+ 1280      00000000 
+ 1280      00000000 
+ 1280      00000000 
+ 1280      00000000 
+ 1281 0266 0000     		.short	0
+ 1282 0268 FFFF     		.short	-1
+ 1283 026a 0000     		.space	2
+ 1284 026c 00000000 		.space	532
+ 1284      00000000 
+ 1284      00000000 
+ 1284      00000000 
+ 1284      00000000 
+ 1285 0480 00       		.byte	0
+ 1286 0481 000000   		.space	3
+ 1287 0484 00000000 		.word	0
+ 1288 0488 00000000 		.word	0
+ 1289 048c 00000000 		.space	32
+ 1289      00000000 
+ 1289      00000000 
+ 1289      00000000 
+ 1289      00000000 
+ 1290 04ac 00       		.byte	0
+ 1291 04ad 000000   		.space	3
+ 1292 04b0 00000000 		.space	44
+ 1292      00000000 
+ 1292      00000000 
+ 1292      00000000 
+ 1292      00000000 
+ 1293 04dc 00       		.byte	0
+ 1294 04dd 000000   		.space	3
+ 1295 04e0 00000000 		.space	28
+ 1295      00000000 
+ 1295      00000000 
+ 1295      00000000 
+ 1295      00000000 
+ 1296 04fc 00       		.byte	0
+ 1297 04fd 000000   		.space	3
+ 1298 0500 00000000 		.space	44
+ 1298      00000000 
+ 1298      00000000 
+ 1298      00000000 
+ 1298      00000000 
+ 1299 052c 00       		.byte	0
+ 1300 052d 000000   		.space	3
+ 1301 0530 00000000 		.space	28
+ 1301      00000000 
+ 1301      00000000 
+ 1301      00000000 
+ 1301      00000000 
+ 1302 054c 01       		.byte	1
+ 1303 054d 000000   		.space	3
+ 1304 0550 00       		.byte	0
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 33
+
+
+ 1305 0551 000000   		.space	3
+ 1306 0554 00000000 		.word	0
+ 1307 0558 00000000 		.word	0
+ 1308 055c 00000000 		.space	48
+ 1308      00000000 
+ 1308      00000000 
+ 1308      00000000 
+ 1308      00000000 
+ 1309 058c 01       		.byte	1
+ 1310 058d 000000   		.space	3
+ 1311 0590 00       		.byte	0
+ 1312 0591 000000   		.space	3
+ 1313 0594 00000000 		.word	0
+ 1314 0598 00000000 		.word	0
+ 1315 059c 00000000 		.word	0
+ 1316 05a0 00000000 		.space	16
+ 1316      00000000 
+ 1316      00000000 
+ 1316      00000000 
+ 1317 05b0 01       		.byte	1
+ 1318 05b1 000000   		.space	3
+ 1319 05b4 00       		.byte	0
+ 1320 05b5 000000   		.space	3
+ 1321 05b8 00000000 		.word	0
+ 1322 05bc 00000000 		.word	0
+ 1323 05c0 00000000 		.space	16
+ 1323      00000000 
+ 1323      00000000 
+ 1323      00000000 
+ 1324 05d0 00       		.byte	0
+ 1325 05d1 000000   		.space	3
+ 1326 05d4 00000000 		.space	16
+ 1326      00000000 
+ 1326      00000000 
+ 1326      00000000 
+ 1327 05e4 00000000 		.space	1192
+ 1327      00000000 
+ 1327      00000000 
+ 1327      00000000 
+ 1327      00000000 
+ 1328 0a8c 00000000 		.space	72
+ 1328      00000000 
+ 1328      00000000 
+ 1328      00000000 
+ 1328      00000000 
+ 1329 0ad4 00       		.byte	0
+ 1330 0ad5 000000   		.space	3
+ 1331 0ad8 00000000 		.space	1156
+ 1331      00000000 
+ 1331      00000000 
+ 1331      00000000 
+ 1331      00000000 
+ 1332 0f5c 00       		.byte	0
+ 1333 0f5d 000000   		.space	3
+ 1334 0f60 00000000 		.space	48
+ 1334      00000000 
+ 1334      00000000 
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 34
+
+
+ 1334      00000000 
+ 1334      00000000 
+ 1335 0f90 00       		.byte	0
+ 1336 0f91 00       		.space	1
+ 1337 0f92 00000000 		.space	18
+ 1337      00000000 
+ 1337      00000000 
+ 1337      00000000 
+ 1337      0000
+ 1338 0fa4 00       		.byte	0
+ 1339 0fa5 000000   		.space	3
+ 1340 0fa8 00000000 		.space	104
+ 1340      00000000 
+ 1340      00000000 
+ 1340      00000000 
+ 1340      00000000 
+ 1341 1010 00       		.byte	0
+ 1342 1011 000000   		.space	3
+ 1343 1014 00000000 		.space	108
+ 1343      00000000 
+ 1343      00000000 
+ 1343      00000000 
+ 1343      00000000 
+ 1344 1080 00       		.byte	0
+ 1345 1081 000000   		.space	3
+ 1346 1084 00000000 		.space	100
+ 1346      00000000 
+ 1346      00000000 
+ 1346      00000000 
+ 1346      00000000 
+ 1347 10e8 00       		.byte	0
+ 1348 10e9 00       		.space	1
+ 1349 10ea 00       		.byte	0
+ 1350 10eb 00       		.space	1
+ 1351 10ec 00000000 		.space	16
+ 1351      00000000 
+ 1351      00000000 
+ 1351      00000000 
+ 1352 10fc 00       		.byte	0
+ 1353 10fd 000000   		.space	3
+ 1354 1100 00000000 		.space	44
+ 1354      00000000 
+ 1354      00000000 
+ 1354      00000000 
+ 1354      00000000 
+ 1355 112c 00       		.byte	0
+ 1356 112d 000000   		.space	3
+ 1357 1130 00000000 		.space	1156
+ 1357      00000000 
+ 1357      00000000 
+ 1357      00000000 
+ 1357      00000000 
+ 1358 15b4 00000000 		.space	16332
+ 1358      00000000 
+ 1358      00000000 
+ 1358      00000000 
+ 1358      00000000 
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 35
+
+
+ 1359 5580 00       		.byte	0
+ 1360 5581 00       		.space	1
+ 1361 5582 00000000 		.space	18
+ 1361      00000000 
+ 1361      00000000 
+ 1361      00000000 
+ 1361      0000
+ 1362 5594 00       		.byte	0
+ 1363 5595 000000   		.space	3
+ 1364 5598 00000000 		.space	136
+ 1364      00000000 
+ 1364      00000000 
+ 1364      00000000 
+ 1364      00000000 
+ 1365 5620 00       		.byte	0
+ 1366 5621 000000   		.space	3
+ 1367 5624 00000000 		.space	1156
+ 1367      00000000 
+ 1367      00000000 
+ 1367      00000000 
+ 1367      00000000 
+ 1368 5aa8 01       		.byte	1
+ 1369 5aa9 00000000 		.space	7
+ 1369      000000
+ 1370 5ab0 00       		.byte	0
+ 1371 5ab1 00000000 		.space	7
+ 1371      000000
+ 1372 5ab8 01       		.byte	1
+ 1373 5ab9 000000   		.space	3
+ 1374 5abc 00000000 		.word	0
+ 1375 5ac0 00000000 		.word	0
+ 1376 5ac4 00000000 		.word	0
+ 1377 5ac8 01000000 		.word	1
+ 1378 5acc 00       		.byte	0
+ 1379 5acd 000000   		.space	3
+ 1380 5ad0 00000000 		.word	0
+ 1381 5ad4 01000000 		.word	1
+ 1382 5ad8 01000000 		.word	1
+ 1383 5adc 01000000 		.word	1
+ 1384 5ae0 00000000 		.word	0
+ 1385 5ae4 00000000 		.word	0
+ 1386 5ae8 00000000 		.space	84
+ 1386      00000000 
+ 1386      00000000 
+ 1386      00000000 
+ 1386      00000000 
+ 1387 5b3c 00000000 		.space	4
+ 1388              		.global	mvex_template
+ 1389              		.section	.rodata.mvex_template,"a"
+ 1390              		.align	3
+ 1393              	mvex_template:
+ 1394 0000 00       		.byte	0
+ 1395 0001 00000000 		.space	7
+ 1395      000000
+ 1396 0008 01       		.byte	1
+ 1397 0009 000000   		.space	3
+ 1398 000c 00000000 		.word	0
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 36
+
+
+ 1399 0010 00000000 		.word	0
+ 1400 0014 00000000 		.word	0
+ 1401 0018 01000000 		.word	1
+ 1402 001c 00       		.byte	0
+ 1403 001d 000000   		.space	3
+ 1404 0020 00000000 		.word	0
+ 1405 0024 01000000 		.word	1
+ 1406 0028 01000000 		.word	1
+ 1407 002c 01000000 		.word	1
+ 1408 0030 00000000 		.word	0
+ 1409 0034 00000000 		.word	0
+ 1410 0038 00000000 		.space	84
+ 1410      00000000 
+ 1410      00000000 
+ 1410      00000000 
+ 1410      00000000 
+ 1411 008c 00000000 		.space	4
+ 1412              		.global	trex_template
+ 1413              		.section	.rodata.trex_template,"a"
+ 1414              		.align	2
+ 1417              	trex_template:
+ 1418 0000 00       		.byte	0
+ 1419 0001 000000   		.space	3
+ 1420 0004 00000000 		.word	0
+ 1421 0008 01000000 		.word	1
+ 1422 000c 01000000 		.word	1
+ 1423 0010 01000000 		.word	1
+ 1424 0014 00000000 		.word	0
+ 1425 0018 00000000 		.word	0
+ 1426              		.global	mvhd_template
+ 1427              		.section	.rodata.mvhd_template,"a"
+ 1428              		.align	2
+ 1431              	mvhd_template:
+ 1432 0000 00       		.byte	0
+ 1433 0001 000000   		.space	3
+ 1434 0004 00000000 		.word	0
+ 1435 0008 00000000 		.word	0
+ 1436 000c 00000000 		.word	0
+ 1437 0010 00000000 		.word	0
+ 1438 0014 00000000 		.word	0
+ 1439 0018 0100     		.short	1
+ 1440 001a 0000     		.short	0
+ 1441 001c 01       		.byte	1
+ 1442 001d 00       		.byte	0
+ 1443 001e 0000     		.space	2
+ 1444 0020 0100     		.short	1
+ 1445 0022 0000     		.short	0
+ 1446 0024 0000     		.short	0
+ 1447 0026 0000     		.short	0
+ 1448 0028 00       		.byte	0
+ 1449 0029 000000   		.space	3
+ 1450 002c 00000000 		.word	0
+ 1451 0030 0000     		.short	0
+ 1452 0032 0000     		.short	0
+ 1453 0034 0100     		.short	1
+ 1454 0036 0000     		.short	0
+ 1455 0038 00       		.byte	0
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 37
+
+
+ 1456 0039 000000   		.space	3
+ 1457 003c 00000000 		.word	0
+ 1458 0040 0000     		.short	0
+ 1459 0042 0000     		.short	0
+ 1460 0044 0000     		.short	0
+ 1461 0046 0000     		.short	0
+ 1462 0048 01       		.byte	1
+ 1463 0049 000000   		.space	3
+ 1464 004c 00000000 		.word	0
+ 1465 0050 00000000 		.word	0
+ 1466 0054 00000000 		.word	0
+ 1467 0058 00000000 		.word	0
+ 1468 005c 00000000 		.word	0
+ 1469 0060 00000000 		.word	0
+ 1470 0064 00000000 		.word	0
+ 1471 0068 00000000 		.word	0
+ 1472              		.global	trak_template
+ 1473              		.section	.rodata.trak_template,"a"
+ 1474              		.align	2
+ 1477              	trak_template:
+ 1478 0000 00       		.byte	0
+ 1479 0001 000000   		.space	3
+ 1480 0004 00000000 		.word	0
+ 1481 0008 00000000 		.word	0
+ 1482 000c 00000000 		.word	0
+ 1483 0010 01000000 		.word	1
+ 1484 0014 00000000 		.word	0
+ 1485 0018 0000     		.short	0
+ 1486 001a 0000     		.short	0
+ 1487 001c 01       		.byte	1
+ 1488 001d 00       		.byte	0
+ 1489 001e 0000     		.space	2
+ 1490 0020 0100     		.short	1
+ 1491 0022 0000     		.short	0
+ 1492 0024 0000     		.short	0
+ 1493 0026 0000     		.short	0
+ 1494 0028 00       		.byte	0
+ 1495 0029 000000   		.space	3
+ 1496 002c 00000000 		.word	0
+ 1497 0030 0000     		.short	0
+ 1498 0032 0000     		.short	0
+ 1499 0034 0100     		.short	1
+ 1500 0036 0000     		.short	0
+ 1501 0038 00       		.byte	0
+ 1502 0039 000000   		.space	3
+ 1503 003c 00000000 		.word	0
+ 1504 0040 0000     		.short	0
+ 1505 0042 0000     		.short	0
+ 1506 0044 0000     		.short	0
+ 1507 0046 0000     		.short	0
+ 1508 0048 01       		.byte	1
+ 1509 0049 000000   		.space	3
+ 1510 004c 00000000 		.word	0
+ 1511 0050 0000     		.short	0
+ 1512 0052 0000     		.short	0
+ 1513 0054 0000     		.short	0
+ 1514 0056 0000     		.short	0
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 38
+
+
+ 1515 0058 00       		.byte	0
+ 1516 0059 000000   		.space	3
+ 1517 005c 00000000 		.word	0
+ 1518 0060 00000000 		.word	0
+ 1519 0064 00000000 		.word	0
+ 1520 0068 00000000 		.word	0
+ 1521 006c 00000000 		.word	0
+ 1522 0070 0000     		.short	0
+ 1523 0072 0000     		.short	0
+ 1524 0074 00       		.byte	0
+ 1525 0075 000000   		.space	3
+ 1526 0078 00000000 		.space	16
+ 1526      00000000 
+ 1526      00000000 
+ 1526      00000000 
+ 1527 0088 01       		.byte	1
+ 1528 0089 000000   		.space	3
+ 1529 008c 00       		.byte	0
+ 1530 008d 000000   		.space	3
+ 1531 0090 00000000 		.word	0
+ 1532 0094 726C686D 		.word	1835560050
+ 1533 0098 65646976 		.word	1986618469
+ 1534 009c 00000000 		.word	0
+ 1535 00a0 00000000 		.word	0
+ 1536 00a4 00000000 		.word	0
+ 1537 00a8 00       		.ascii	"\000"
+ 1538 00a9 00000000 		.space	24
+ 1538      00000000 
+ 1538      00000000 
+ 1538      00000000 
+ 1538      00000000 
+ 1539 00c1 000000   		.space	3
+ 1540 00c4 01       		.byte	1
+ 1541 00c5 000000   		.space	3
+ 1542 00c8 00       		.byte	0
+ 1543 00c9 000000   		.space	3
+ 1544 00cc 01000000 		.word	1
+ 1545 00d0 0000     		.short	0
+ 1546 00d2 0000     		.short	0
+ 1547 00d4 0000     		.short	0
+ 1548 00d6 0000     		.short	0
+ 1549 00d8 00       		.byte	0
+ 1550 00d9 000000   		.space	3
+ 1551 00dc 00000000 		.word	0
+ 1552 00e0 726C686D 		.word	1835560050
+ 1553 00e4 65646976 		.word	1986618469
+ 1554 00e8 00000000 		.word	0
+ 1555 00ec 00000000 		.word	0
+ 1556 00f0 00000000 		.word	0
+ 1557 00f4 00       		.ascii	"\000"
+ 1558 00f5 00000000 		.space	24
+ 1558      00000000 
+ 1558      00000000 
+ 1558      00000000 
+ 1558      00000000 
+ 1559 010d 000000   		.space	3
+ 1560 0110 01       		.byte	1
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 39
+
+
+ 1561 0111 000000   		.space	3
+ 1562 0114 00       		.byte	0
+ 1563 0115 000000   		.space	3
+ 1564 0118 00000000 		.word	0
+ 1565 011c 01000000 		.word	1
+ 1566 0120 206C7275 		.word	1970433056
+ 1567 0124 00       		.byte	0
+ 1568 0125 000000   		.space	3
+ 1569 0128 01000000 		.word	1
+ 1570 012c 00000000 		.word	0
+ 1571 0130 00       		.ascii	"\000"
+ 1572 0131 00000000 		.space	15
+ 1572      00000000 
+ 1572      00000000 
+ 1572      000000
+ 1573 0140 00000000 		.space	96
+ 1573      00000000 
+ 1573      00000000 
+ 1573      00000000 
+ 1573      00000000 
+ 1574 01a0 01       		.byte	1
+ 1575 01a1 000000   		.space	3
+ 1576 01a4 00       		.byte	0
+ 1577 01a5 000000   		.space	3
+ 1578 01a8 00000000 		.word	0
+ 1579 01ac 01000000 		.word	1
+ 1580 01b0 6765706A 		.word	1785750887
+ 1581 01b4 0100     		.short	1
+ 1582 01b6 0000     		.space	2
+ 1583 01b8 0000     		.short	0
+ 1584 01ba 0000     		.space	2
+ 1585 01bc 34504447 		.word	1195659316
+ 1586 01c0 00000000 		.word	0
+ 1587 01c4 00000000 		.word	0
+ 1588 01c8 0000     		.short	0
+ 1589 01ca 0000     		.short	0
+ 1590 01cc 4800     		.short	72
+ 1591 01ce 0000     		.short	0
+ 1592 01d0 4800     		.short	72
+ 1593 01d2 0000     		.short	0
+ 1594 01d4 0100     		.short	1
+ 1595 01d6 4F563536 		.ascii	"OV5640 JPEG\000"
+ 1595      3430204A 
+ 1595      50454700 
+ 1596 01e2 00000000 		.space	20
+ 1596      00000000 
+ 1596      00000000 
+ 1596      00000000 
+ 1596      00000000 
+ 1597 01f6 0000     		.short	0
+ 1598 01f8 FFFF     		.short	-1
+ 1599 01fa 0000     		.space	2
+ 1600 01fc 00000000 		.space	532
+ 1600      00000000 
+ 1600      00000000 
+ 1600      00000000 
+ 1600      00000000 
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 40
+
+
+ 1601 0410 00       		.byte	0
+ 1602 0411 000000   		.space	3
+ 1603 0414 00000000 		.word	0
+ 1604 0418 00000000 		.word	0
+ 1605 041c 00000000 		.space	32
+ 1605      00000000 
+ 1605      00000000 
+ 1605      00000000 
+ 1605      00000000 
+ 1606 043c 00       		.byte	0
+ 1607 043d 000000   		.space	3
+ 1608 0440 00000000 		.space	44
+ 1608      00000000 
+ 1608      00000000 
+ 1608      00000000 
+ 1608      00000000 
+ 1609 046c 00       		.byte	0
+ 1610 046d 000000   		.space	3
+ 1611 0470 00000000 		.space	28
+ 1611      00000000 
+ 1611      00000000 
+ 1611      00000000 
+ 1611      00000000 
+ 1612 048c 00       		.byte	0
+ 1613 048d 000000   		.space	3
+ 1614 0490 00000000 		.space	44
+ 1614      00000000 
+ 1614      00000000 
+ 1614      00000000 
+ 1614      00000000 
+ 1615 04bc 00       		.byte	0
+ 1616 04bd 000000   		.space	3
+ 1617 04c0 00000000 		.space	28
+ 1617      00000000 
+ 1617      00000000 
+ 1617      00000000 
+ 1617      00000000 
+ 1618 04dc 01       		.byte	1
+ 1619 04dd 000000   		.space	3
+ 1620 04e0 00       		.byte	0
+ 1621 04e1 000000   		.space	3
+ 1622 04e4 00000000 		.word	0
+ 1623 04e8 00000000 		.word	0
+ 1624 04ec 00000000 		.space	48
+ 1624      00000000 
+ 1624      00000000 
+ 1624      00000000 
+ 1624      00000000 
+ 1625 051c 01       		.byte	1
+ 1626 051d 000000   		.space	3
+ 1627 0520 00       		.byte	0
+ 1628 0521 000000   		.space	3
+ 1629 0524 00000000 		.word	0
+ 1630 0528 00000000 		.word	0
+ 1631 052c 00000000 		.word	0
+ 1632 0530 00000000 		.space	16
+ 1632      00000000 
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 41
+
+
+ 1632      00000000 
+ 1632      00000000 
+ 1633 0540 01       		.byte	1
+ 1634 0541 000000   		.space	3
+ 1635 0544 00       		.byte	0
+ 1636 0545 000000   		.space	3
+ 1637 0548 00000000 		.word	0
+ 1638 054c 00000000 		.word	0
+ 1639 0550 00000000 		.space	16
+ 1639      00000000 
+ 1639      00000000 
+ 1639      00000000 
+ 1640 0560 00       		.byte	0
+ 1641 0561 000000   		.space	3
+ 1642 0564 00000000 		.space	16
+ 1642      00000000 
+ 1642      00000000 
+ 1642      00000000 
+ 1643 0574 00000000 		.space	1192
+ 1643      00000000 
+ 1643      00000000 
+ 1643      00000000 
+ 1643      00000000 
+ 1644 0a1c 00000000 		.space	72
+ 1644      00000000 
+ 1644      00000000 
+ 1644      00000000 
+ 1644      00000000 
+ 1645 0a64 00       		.byte	0
+ 1646 0a65 000000   		.space	3
+ 1647 0a68 00000000 		.space	1156
+ 1647      00000000 
+ 1647      00000000 
+ 1647      00000000 
+ 1647      00000000 
+ 1648 0eec 00       		.byte	0
+ 1649 0eed 000000   		.space	3
+ 1650 0ef0 00000000 		.space	48
+ 1650      00000000 
+ 1650      00000000 
+ 1650      00000000 
+ 1650      00000000 
+ 1651 0f20 00       		.byte	0
+ 1652 0f21 00       		.space	1
+ 1653 0f22 00000000 		.space	18
+ 1653      00000000 
+ 1653      00000000 
+ 1653      00000000 
+ 1653      0000
+ 1654 0f34 00       		.byte	0
+ 1655 0f35 000000   		.space	3
+ 1656 0f38 00000000 		.space	104
+ 1656      00000000 
+ 1656      00000000 
+ 1656      00000000 
+ 1656      00000000 
+ 1657 0fa0 00       		.byte	0
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 42
+
+
+ 1658 0fa1 000000   		.space	3
+ 1659 0fa4 00000000 		.space	108
+ 1659      00000000 
+ 1659      00000000 
+ 1659      00000000 
+ 1659      00000000 
+ 1660 1010 00       		.byte	0
+ 1661 1011 000000   		.space	3
+ 1662 1014 00000000 		.space	100
+ 1662      00000000 
+ 1662      00000000 
+ 1662      00000000 
+ 1662      00000000 
+ 1663 1078 00       		.byte	0
+ 1664 1079 00       		.space	1
+ 1665 107a 00       		.byte	0
+ 1666 107b 00       		.space	1
+ 1667 107c 00000000 		.space	16
+ 1667      00000000 
+ 1667      00000000 
+ 1667      00000000 
+ 1668 108c 00       		.byte	0
+ 1669 108d 000000   		.space	3
+ 1670 1090 00000000 		.space	44
+ 1670      00000000 
+ 1670      00000000 
+ 1670      00000000 
+ 1670      00000000 
+ 1671 10bc 00       		.byte	0
+ 1672 10bd 000000   		.space	3
+ 1673 10c0 00000000 		.space	1156
+ 1673      00000000 
+ 1673      00000000 
+ 1673      00000000 
+ 1673      00000000 
+ 1674              		.global	tkhd_template
+ 1675              		.section	.rodata.tkhd_template,"a"
+ 1676              		.align	2
+ 1679              	tkhd_template:
+ 1680 0000 00       		.byte	0
+ 1681 0001 000000   		.space	3
+ 1682 0004 00000000 		.word	0
+ 1683 0008 00000000 		.word	0
+ 1684 000c 00000000 		.word	0
+ 1685 0010 01000000 		.word	1
+ 1686 0014 00000000 		.word	0
+ 1687 0018 0000     		.short	0
+ 1688 001a 0000     		.short	0
+ 1689 001c 01       		.byte	1
+ 1690 001d 00       		.byte	0
+ 1691 001e 0000     		.space	2
+ 1692 0020 0100     		.short	1
+ 1693 0022 0000     		.short	0
+ 1694 0024 0000     		.short	0
+ 1695 0026 0000     		.short	0
+ 1696 0028 00       		.byte	0
+ 1697 0029 000000   		.space	3
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 43
+
+
+ 1698 002c 00000000 		.word	0
+ 1699 0030 0000     		.short	0
+ 1700 0032 0000     		.short	0
+ 1701 0034 0100     		.short	1
+ 1702 0036 0000     		.short	0
+ 1703 0038 00       		.byte	0
+ 1704 0039 000000   		.space	3
+ 1705 003c 00000000 		.word	0
+ 1706 0040 0000     		.short	0
+ 1707 0042 0000     		.short	0
+ 1708 0044 0000     		.short	0
+ 1709 0046 0000     		.short	0
+ 1710 0048 01       		.byte	1
+ 1711 0049 000000   		.space	3
+ 1712 004c 00000000 		.word	0
+ 1713 0050 0000     		.short	0
+ 1714 0052 0000     		.short	0
+ 1715 0054 0000     		.short	0
+ 1716 0056 0000     		.short	0
+ 1717              		.global	mdia_template
+ 1718              		.section	.rodata.mdia_template,"a"
+ 1719              		.align	2
+ 1722              	mdia_template:
+ 1723 0000 00       		.byte	0
+ 1724 0001 000000   		.space	3
+ 1725 0004 00000000 		.word	0
+ 1726 0008 00000000 		.word	0
+ 1727 000c 00000000 		.word	0
+ 1728 0010 00000000 		.word	0
+ 1729 0014 00000000 		.word	0
+ 1730 0018 0000     		.short	0
+ 1731 001a 0000     		.short	0
+ 1732 001c 00       		.byte	0
+ 1733 001d 000000   		.space	3
+ 1734 0020 00000000 		.space	16
+ 1734      00000000 
+ 1734      00000000 
+ 1734      00000000 
+ 1735 0030 01       		.byte	1
+ 1736 0031 000000   		.space	3
+ 1737 0034 00       		.byte	0
+ 1738 0035 000000   		.space	3
+ 1739 0038 00000000 		.word	0
+ 1740 003c 726C686D 		.word	1835560050
+ 1741 0040 65646976 		.word	1986618469
+ 1742 0044 00000000 		.word	0
+ 1743 0048 00000000 		.word	0
+ 1744 004c 00000000 		.word	0
+ 1745 0050 00       		.ascii	"\000"
+ 1746 0051 00000000 		.space	24
+ 1746      00000000 
+ 1746      00000000 
+ 1746      00000000 
+ 1746      00000000 
+ 1747 0069 000000   		.space	3
+ 1748 006c 01       		.byte	1
+ 1749 006d 000000   		.space	3
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 44
+
+
+ 1750 0070 00       		.byte	0
+ 1751 0071 000000   		.space	3
+ 1752 0074 01000000 		.word	1
+ 1753 0078 0000     		.short	0
+ 1754 007a 0000     		.short	0
+ 1755 007c 0000     		.short	0
+ 1756 007e 0000     		.short	0
+ 1757 0080 00       		.byte	0
+ 1758 0081 000000   		.space	3
+ 1759 0084 00000000 		.word	0
+ 1760 0088 726C686D 		.word	1835560050
+ 1761 008c 65646976 		.word	1986618469
+ 1762 0090 00000000 		.word	0
+ 1763 0094 00000000 		.word	0
+ 1764 0098 00000000 		.word	0
+ 1765 009c 00       		.ascii	"\000"
+ 1766 009d 00000000 		.space	24
+ 1766      00000000 
+ 1766      00000000 
+ 1766      00000000 
+ 1766      00000000 
+ 1767 00b5 000000   		.space	3
+ 1768 00b8 01       		.byte	1
+ 1769 00b9 000000   		.space	3
+ 1770 00bc 00       		.byte	0
+ 1771 00bd 000000   		.space	3
+ 1772 00c0 00000000 		.word	0
+ 1773 00c4 01000000 		.word	1
+ 1774 00c8 206C7275 		.word	1970433056
+ 1775 00cc 00       		.byte	0
+ 1776 00cd 000000   		.space	3
+ 1777 00d0 01000000 		.word	1
+ 1778 00d4 00000000 		.word	0
+ 1779 00d8 00       		.ascii	"\000"
+ 1780 00d9 00000000 		.space	15
+ 1780      00000000 
+ 1780      00000000 
+ 1780      000000
+ 1781 00e8 00000000 		.space	96
+ 1781      00000000 
+ 1781      00000000 
+ 1781      00000000 
+ 1781      00000000 
+ 1782 0148 01       		.byte	1
+ 1783 0149 000000   		.space	3
+ 1784 014c 00       		.byte	0
+ 1785 014d 000000   		.space	3
+ 1786 0150 00000000 		.word	0
+ 1787 0154 01000000 		.word	1
+ 1788 0158 6765706A 		.word	1785750887
+ 1789 015c 0100     		.short	1
+ 1790 015e 0000     		.space	2
+ 1791 0160 0000     		.short	0
+ 1792 0162 0000     		.space	2
+ 1793 0164 34504447 		.word	1195659316
+ 1794 0168 00000000 		.word	0
+ 1795 016c 00000000 		.word	0
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 45
+
+
+ 1796 0170 0000     		.short	0
+ 1797 0172 0000     		.short	0
+ 1798 0174 4800     		.short	72
+ 1799 0176 0000     		.short	0
+ 1800 0178 4800     		.short	72
+ 1801 017a 0000     		.short	0
+ 1802 017c 0100     		.short	1
+ 1803 017e 4F563536 		.ascii	"OV5640 JPEG\000"
+ 1803      3430204A 
+ 1803      50454700 
+ 1804 018a 00000000 		.space	20
+ 1804      00000000 
+ 1804      00000000 
+ 1804      00000000 
+ 1804      00000000 
+ 1805 019e 0000     		.short	0
+ 1806 01a0 FFFF     		.short	-1
+ 1807 01a2 0000     		.space	2
+ 1808 01a4 00000000 		.space	532
+ 1808      00000000 
+ 1808      00000000 
+ 1808      00000000 
+ 1808      00000000 
+ 1809 03b8 00       		.byte	0
+ 1810 03b9 000000   		.space	3
+ 1811 03bc 00000000 		.word	0
+ 1812 03c0 00000000 		.word	0
+ 1813 03c4 00000000 		.space	32
+ 1813      00000000 
+ 1813      00000000 
+ 1813      00000000 
+ 1813      00000000 
+ 1814 03e4 00       		.byte	0
+ 1815 03e5 000000   		.space	3
+ 1816 03e8 00000000 		.space	44
+ 1816      00000000 
+ 1816      00000000 
+ 1816      00000000 
+ 1816      00000000 
+ 1817 0414 00       		.byte	0
+ 1818 0415 000000   		.space	3
+ 1819 0418 00000000 		.space	28
+ 1819      00000000 
+ 1819      00000000 
+ 1819      00000000 
+ 1819      00000000 
+ 1820 0434 00       		.byte	0
+ 1821 0435 000000   		.space	3
+ 1822 0438 00000000 		.space	44
+ 1822      00000000 
+ 1822      00000000 
+ 1822      00000000 
+ 1822      00000000 
+ 1823 0464 00       		.byte	0
+ 1824 0465 000000   		.space	3
+ 1825 0468 00000000 		.space	28
+ 1825      00000000 
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 46
+
+
+ 1825      00000000 
+ 1825      00000000 
+ 1825      00000000 
+ 1826 0484 01       		.byte	1
+ 1827 0485 000000   		.space	3
+ 1828 0488 00       		.byte	0
+ 1829 0489 000000   		.space	3
+ 1830 048c 00000000 		.word	0
+ 1831 0490 00000000 		.word	0
+ 1832 0494 00000000 		.space	48
+ 1832      00000000 
+ 1832      00000000 
+ 1832      00000000 
+ 1832      00000000 
+ 1833 04c4 01       		.byte	1
+ 1834 04c5 000000   		.space	3
+ 1835 04c8 00       		.byte	0
+ 1836 04c9 000000   		.space	3
+ 1837 04cc 00000000 		.word	0
+ 1838 04d0 00000000 		.word	0
+ 1839 04d4 00000000 		.word	0
+ 1840 04d8 00000000 		.space	16
+ 1840      00000000 
+ 1840      00000000 
+ 1840      00000000 
+ 1841 04e8 01       		.byte	1
+ 1842 04e9 000000   		.space	3
+ 1843 04ec 00       		.byte	0
+ 1844 04ed 000000   		.space	3
+ 1845 04f0 00000000 		.word	0
+ 1846 04f4 00000000 		.word	0
+ 1847 04f8 00000000 		.space	16
+ 1847      00000000 
+ 1847      00000000 
+ 1847      00000000 
+ 1848 0508 00       		.byte	0
+ 1849 0509 000000   		.space	3
+ 1850 050c 00000000 		.space	16
+ 1850      00000000 
+ 1850      00000000 
+ 1850      00000000 
+ 1851 051c 00000000 		.space	1192
+ 1851      00000000 
+ 1851      00000000 
+ 1851      00000000 
+ 1851      00000000 
+ 1852 09c4 00000000 		.space	72
+ 1852      00000000 
+ 1852      00000000 
+ 1852      00000000 
+ 1852      00000000 
+ 1853 0a0c 00       		.byte	0
+ 1854 0a0d 000000   		.space	3
+ 1855 0a10 00000000 		.space	1156
+ 1855      00000000 
+ 1855      00000000 
+ 1855      00000000 
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 47
+
+
+ 1855      00000000 
+ 1856              		.global	mdhd_template
+ 1857              		.section	.rodata.mdhd_template,"a"
+ 1858              		.align	2
+ 1861              	mdhd_template:
+ 1862 0000 00000000 		.space	28
+ 1862      00000000 
+ 1862      00000000 
+ 1862      00000000 
+ 1862      00000000 
+ 1863              		.global	mdia_hdlr_template
+ 1864              		.section	.rodata.mdia_hdlr_template,"a"
+ 1865              		.align	2
+ 1868              	mdia_hdlr_template:
+ 1869 0000 00       		.byte	0
+ 1870 0001 000000   		.space	3
+ 1871 0004 00000000 		.word	0
+ 1872 0008 726C686D 		.word	1835560050
+ 1873 000c 65646976 		.word	1986618469
+ 1874 0010 00000000 		.word	0
+ 1875 0014 00000000 		.word	0
+ 1876 0018 00000000 		.word	0
+ 1877 001c 00       		.ascii	"\000"
+ 1878 001d 00000000 		.space	24
+ 1878      00000000 
+ 1878      00000000 
+ 1878      00000000 
+ 1878      00000000 
+ 1879 0035 000000   		.space	3
+ 1880              		.global	minf_template
+ 1881              		.section	.rodata.minf_template,"a"
+ 1882              		.align	2
+ 1885              	minf_template:
+ 1886 0000 00       		.byte	0
+ 1887 0001 000000   		.space	3
+ 1888 0004 01000000 		.word	1
+ 1889 0008 0000     		.short	0
+ 1890 000a 0000     		.short	0
+ 1891 000c 0000     		.short	0
+ 1892 000e 0000     		.short	0
+ 1893 0010 00       		.byte	0
+ 1894 0011 000000   		.space	3
+ 1895 0014 00000000 		.word	0
+ 1896 0018 726C686D 		.word	1835560050
+ 1897 001c 65646976 		.word	1986618469
+ 1898 0020 00000000 		.word	0
+ 1899 0024 00000000 		.word	0
+ 1900 0028 00000000 		.word	0
+ 1901 002c 00       		.ascii	"\000"
+ 1902 002d 00000000 		.space	24
+ 1902      00000000 
+ 1902      00000000 
+ 1902      00000000 
+ 1902      00000000 
+ 1903 0045 000000   		.space	3
+ 1904 0048 01       		.byte	1
+ 1905 0049 000000   		.space	3
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 48
+
+
+ 1906 004c 00       		.byte	0
+ 1907 004d 000000   		.space	3
+ 1908 0050 00000000 		.word	0
+ 1909 0054 01000000 		.word	1
+ 1910 0058 206C7275 		.word	1970433056
+ 1911 005c 00       		.byte	0
+ 1912 005d 000000   		.space	3
+ 1913 0060 01000000 		.word	1
+ 1914 0064 00000000 		.word	0
+ 1915 0068 00       		.ascii	"\000"
+ 1916 0069 00000000 		.space	15
+ 1916      00000000 
+ 1916      00000000 
+ 1916      000000
+ 1917 0078 00000000 		.space	96
+ 1917      00000000 
+ 1917      00000000 
+ 1917      00000000 
+ 1917      00000000 
+ 1918 00d8 01       		.byte	1
+ 1919 00d9 000000   		.space	3
+ 1920 00dc 00       		.byte	0
+ 1921 00dd 000000   		.space	3
+ 1922 00e0 00000000 		.word	0
+ 1923 00e4 01000000 		.word	1
+ 1924 00e8 6765706A 		.word	1785750887
+ 1925 00ec 0100     		.short	1
+ 1926 00ee 0000     		.space	2
+ 1927 00f0 0000     		.short	0
+ 1928 00f2 0000     		.space	2
+ 1929 00f4 34504447 		.word	1195659316
+ 1930 00f8 00000000 		.word	0
+ 1931 00fc 00000000 		.word	0
+ 1932 0100 0000     		.short	0
+ 1933 0102 0000     		.short	0
+ 1934 0104 4800     		.short	72
+ 1935 0106 0000     		.short	0
+ 1936 0108 4800     		.short	72
+ 1937 010a 0000     		.short	0
+ 1938 010c 0100     		.short	1
+ 1939 010e 4F563536 		.ascii	"OV5640 JPEG\000"
+ 1939      3430204A 
+ 1939      50454700 
+ 1940 011a 00000000 		.space	20
+ 1940      00000000 
+ 1940      00000000 
+ 1940      00000000 
+ 1940      00000000 
+ 1941 012e 0000     		.short	0
+ 1942 0130 FFFF     		.short	-1
+ 1943 0132 0000     		.space	2
+ 1944 0134 00000000 		.space	532
+ 1944      00000000 
+ 1944      00000000 
+ 1944      00000000 
+ 1944      00000000 
+ 1945 0348 00       		.byte	0
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 49
+
+
+ 1946 0349 000000   		.space	3
+ 1947 034c 00000000 		.word	0
+ 1948 0350 00000000 		.word	0
+ 1949 0354 00000000 		.space	32
+ 1949      00000000 
+ 1949      00000000 
+ 1949      00000000 
+ 1949      00000000 
+ 1950 0374 00       		.byte	0
+ 1951 0375 000000   		.space	3
+ 1952 0378 00000000 		.space	44
+ 1952      00000000 
+ 1952      00000000 
+ 1952      00000000 
+ 1952      00000000 
+ 1953 03a4 00       		.byte	0
+ 1954 03a5 000000   		.space	3
+ 1955 03a8 00000000 		.space	28
+ 1955      00000000 
+ 1955      00000000 
+ 1955      00000000 
+ 1955      00000000 
+ 1956 03c4 00       		.byte	0
+ 1957 03c5 000000   		.space	3
+ 1958 03c8 00000000 		.space	44
+ 1958      00000000 
+ 1958      00000000 
+ 1958      00000000 
+ 1958      00000000 
+ 1959 03f4 00       		.byte	0
+ 1960 03f5 000000   		.space	3
+ 1961 03f8 00000000 		.space	28
+ 1961      00000000 
+ 1961      00000000 
+ 1961      00000000 
+ 1961      00000000 
+ 1962 0414 01       		.byte	1
+ 1963 0415 000000   		.space	3
+ 1964 0418 00       		.byte	0
+ 1965 0419 000000   		.space	3
+ 1966 041c 00000000 		.word	0
+ 1967 0420 00000000 		.word	0
+ 1968 0424 00000000 		.space	48
+ 1968      00000000 
+ 1968      00000000 
+ 1968      00000000 
+ 1968      00000000 
+ 1969 0454 01       		.byte	1
+ 1970 0455 000000   		.space	3
+ 1971 0458 00       		.byte	0
+ 1972 0459 000000   		.space	3
+ 1973 045c 00000000 		.word	0
+ 1974 0460 00000000 		.word	0
+ 1975 0464 00000000 		.word	0
+ 1976 0468 00000000 		.space	16
+ 1976      00000000 
+ 1976      00000000 
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 50
+
+
+ 1976      00000000 
+ 1977 0478 01       		.byte	1
+ 1978 0479 000000   		.space	3
+ 1979 047c 00       		.byte	0
+ 1980 047d 000000   		.space	3
+ 1981 0480 00000000 		.word	0
+ 1982 0484 00000000 		.word	0
+ 1983 0488 00000000 		.space	16
+ 1983      00000000 
+ 1983      00000000 
+ 1983      00000000 
+ 1984 0498 00       		.byte	0
+ 1985 0499 000000   		.space	3
+ 1986 049c 00000000 		.space	16
+ 1986      00000000 
+ 1986      00000000 
+ 1986      00000000 
+ 1987              		.global	vmhd_template
+ 1988              		.section	.rodata.vmhd_template,"a"
+ 1989              		.align	2
+ 1992              	vmhd_template:
+ 1993 0000 00       		.byte	0
+ 1994 0001 000000   		.space	3
+ 1995 0004 01000000 		.word	1
+ 1996 0008 0000     		.short	0
+ 1997 000a 0000     		.short	0
+ 1998 000c 0000     		.short	0
+ 1999 000e 0000     		.short	0
+ 2000              		.global	minf_hdlr_template
+ 2001              		.section	.rodata.minf_hdlr_template,"a"
+ 2002              		.align	2
+ 2005              	minf_hdlr_template:
+ 2006 0000 00       		.byte	0
+ 2007 0001 000000   		.space	3
+ 2008 0004 00000000 		.word	0
+ 2009 0008 726C686D 		.word	1835560050
+ 2010 000c 65646976 		.word	1986618469
+ 2011 0010 00000000 		.word	0
+ 2012 0014 00000000 		.word	0
+ 2013 0018 00000000 		.word	0
+ 2014 001c 00       		.ascii	"\000"
+ 2015 001d 00000000 		.space	24
+ 2015      00000000 
+ 2015      00000000 
+ 2015      00000000 
+ 2015      00000000 
+ 2016 0035 000000   		.space	3
+ 2017              		.global	dinf_template
+ 2018              		.section	.rodata.dinf_template,"a"
+ 2019              		.align	2
+ 2022              	dinf_template:
+ 2023 0000 00       		.byte	0
+ 2024 0001 000000   		.space	3
+ 2025 0004 00000000 		.word	0
+ 2026 0008 01000000 		.word	1
+ 2027 000c 206C7275 		.word	1970433056
+ 2028 0010 00       		.byte	0
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 51
+
+
+ 2029 0011 000000   		.space	3
+ 2030 0014 01000000 		.word	1
+ 2031 0018 00000000 		.word	0
+ 2032 001c 00       		.ascii	"\000"
+ 2033 001d 00000000 		.space	15
+ 2033      00000000 
+ 2033      00000000 
+ 2033      000000
+ 2034 002c 00000000 		.space	96
+ 2034      00000000 
+ 2034      00000000 
+ 2034      00000000 
+ 2034      00000000 
+ 2035              		.global	dref_template
+ 2036              		.section	.rodata.dref_template,"a"
+ 2037              		.align	2
+ 2040              	dref_template:
+ 2041 0000 00       		.byte	0
+ 2042 0001 000000   		.space	3
+ 2043 0004 00000000 		.word	0
+ 2044 0008 01000000 		.word	1
+ 2045 000c 206C7275 		.word	1970433056
+ 2046 0010 00       		.byte	0
+ 2047 0011 000000   		.space	3
+ 2048 0014 01000000 		.word	1
+ 2049 0018 00000000 		.word	0
+ 2050 001c 00       		.ascii	"\000"
+ 2051 001d 00000000 		.space	15
+ 2051      00000000 
+ 2051      00000000 
+ 2051      000000
+ 2052 002c 00000000 		.space	96
+ 2052      00000000 
+ 2052      00000000 
+ 2052      00000000 
+ 2052      00000000 
+ 2053              		.global	data_ref_template
+ 2054              		.section	.rodata.data_ref_template,"a"
+ 2055              		.align	2
+ 2058              	data_ref_template:
+ 2059 0000 206C7275 		.word	1970433056
+ 2060 0004 00       		.byte	0
+ 2061 0005 000000   		.space	3
+ 2062 0008 01000000 		.word	1
+ 2063 000c 00000000 		.word	0
+ 2064 0010 00       		.ascii	"\000"
+ 2065 0011 00000000 		.space	15
+ 2065      00000000 
+ 2065      00000000 
+ 2065      000000
+ 2066              		.global	stbl_template
+ 2067              		.section	.rodata.stbl_template,"a"
+ 2068              		.align	2
+ 2071              	stbl_template:
+ 2072 0000 00       		.byte	0
+ 2073 0001 000000   		.space	3
+ 2074 0004 00000000 		.word	0
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 52
+
+
+ 2075 0008 01000000 		.word	1
+ 2076 000c 6765706A 		.word	1785750887
+ 2077 0010 0100     		.short	1
+ 2078 0012 0000     		.space	2
+ 2079 0014 0000     		.short	0
+ 2080 0016 0000     		.space	2
+ 2081 0018 34504447 		.word	1195659316
+ 2082 001c 00000000 		.word	0
+ 2083 0020 00000000 		.word	0
+ 2084 0024 0000     		.short	0
+ 2085 0026 0000     		.short	0
+ 2086 0028 4800     		.short	72
+ 2087 002a 0000     		.short	0
+ 2088 002c 4800     		.short	72
+ 2089 002e 0000     		.short	0
+ 2090 0030 0100     		.short	1
+ 2091 0032 4F563536 		.ascii	"OV5640 JPEG\000"
+ 2091      3430204A 
+ 2091      50454700 
+ 2092 003e 00000000 		.space	20
+ 2092      00000000 
+ 2092      00000000 
+ 2092      00000000 
+ 2092      00000000 
+ 2093 0052 0000     		.short	0
+ 2094 0054 FFFF     		.short	-1
+ 2095 0056 0000     		.space	2
+ 2096 0058 00000000 		.space	532
+ 2096      00000000 
+ 2096      00000000 
+ 2096      00000000 
+ 2096      00000000 
+ 2097 026c 00       		.byte	0
+ 2098 026d 000000   		.space	3
+ 2099 0270 00000000 		.word	0
+ 2100 0274 00000000 		.word	0
+ 2101 0278 00000000 		.space	32
+ 2101      00000000 
+ 2101      00000000 
+ 2101      00000000 
+ 2101      00000000 
+ 2102 0298 00       		.byte	0
+ 2103 0299 000000   		.space	3
+ 2104 029c 00000000 		.space	44
+ 2104      00000000 
+ 2104      00000000 
+ 2104      00000000 
+ 2104      00000000 
+ 2105 02c8 00       		.byte	0
+ 2106 02c9 000000   		.space	3
+ 2107 02cc 00000000 		.space	28
+ 2107      00000000 
+ 2107      00000000 
+ 2107      00000000 
+ 2107      00000000 
+ 2108 02e8 00       		.byte	0
+ 2109 02e9 000000   		.space	3
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 53
+
+
+ 2110 02ec 00000000 		.space	44
+ 2110      00000000 
+ 2110      00000000 
+ 2110      00000000 
+ 2110      00000000 
+ 2111 0318 00       		.byte	0
+ 2112 0319 000000   		.space	3
+ 2113 031c 00000000 		.space	28
+ 2113      00000000 
+ 2113      00000000 
+ 2113      00000000 
+ 2113      00000000 
+ 2114 0338 01       		.byte	1
+ 2115 0339 000000   		.space	3
+ 2116 033c 00       		.byte	0
+ 2117 033d 000000   		.space	3
+ 2118 0340 00000000 		.word	0
+ 2119 0344 00000000 		.word	0
+ 2120 0348 00000000 		.space	48
+ 2120      00000000 
+ 2120      00000000 
+ 2120      00000000 
+ 2120      00000000 
+ 2121 0378 01       		.byte	1
+ 2122 0379 000000   		.space	3
+ 2123 037c 00       		.byte	0
+ 2124 037d 000000   		.space	3
+ 2125 0380 00000000 		.word	0
+ 2126 0384 00000000 		.word	0
+ 2127 0388 00000000 		.word	0
+ 2128 038c 00000000 		.space	16
+ 2128      00000000 
+ 2128      00000000 
+ 2128      00000000 
+ 2129 039c 01       		.byte	1
+ 2130 039d 000000   		.space	3
+ 2131 03a0 00       		.byte	0
+ 2132 03a1 000000   		.space	3
+ 2133 03a4 00000000 		.word	0
+ 2134 03a8 00000000 		.word	0
+ 2135 03ac 00000000 		.space	16
+ 2135      00000000 
+ 2135      00000000 
+ 2135      00000000 
+ 2136 03bc 00       		.byte	0
+ 2137 03bd 000000   		.space	3
+ 2138 03c0 00000000 		.space	16
+ 2138      00000000 
+ 2138      00000000 
+ 2138      00000000 
+ 2139              		.global	stco_template
+ 2140              		.section	.rodata.stco_template,"a"
+ 2141              		.align	2
+ 2144              	stco_template:
+ 2145 0000 00000000 		.space	28
+ 2145      00000000 
+ 2145      00000000 
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 54
+
+
+ 2145      00000000 
+ 2145      00000000 
+ 2146              		.global	stsz_template
+ 2147              		.section	.rodata.stsz_template,"a"
+ 2148              		.align	2
+ 2151              	stsz_template:
+ 2152 0000 00000000 		.space	32
+ 2152      00000000 
+ 2152      00000000 
+ 2152      00000000 
+ 2152      00000000 
+ 2153              		.global	stsc_template
+ 2154              		.section	.rodata.stsc_template,"a"
+ 2155              		.align	2
+ 2158              	stsc_template:
+ 2159 0000 00000000 		.space	60
+ 2159      00000000 
+ 2159      00000000 
+ 2159      00000000 
+ 2159      00000000 
+ 2160              		.global	stts_template
+ 2161              		.section	.rodata.stts_template,"a"
+ 2162              		.align	2
+ 2165              	stts_template:
+ 2166 0000 00000000 		.space	44
+ 2166      00000000 
+ 2166      00000000 
+ 2166      00000000 
+ 2166      00000000 
+ 2167              		.global	stsd_template
+ 2168              		.section	.rodata.stsd_template,"a"
+ 2169              		.align	2
+ 2172              	stsd_template:
+ 2173 0000 00       		.byte	0
+ 2174 0001 000000   		.space	3
+ 2175 0004 00000000 		.word	0
+ 2176 0008 01000000 		.word	1
+ 2177 000c 6765706A 		.word	1785750887
+ 2178 0010 0100     		.short	1
+ 2179 0012 0000     		.space	2
+ 2180 0014 0000     		.short	0
+ 2181 0016 0000     		.space	2
+ 2182 0018 34504447 		.word	1195659316
+ 2183 001c 00000000 		.word	0
+ 2184 0020 00000000 		.word	0
+ 2185 0024 0000     		.short	0
+ 2186 0026 0000     		.short	0
+ 2187 0028 4800     		.short	72
+ 2188 002a 0000     		.short	0
+ 2189 002c 4800     		.short	72
+ 2190 002e 0000     		.short	0
+ 2191 0030 0100     		.short	1
+ 2192 0032 4F563536 		.ascii	"OV5640 JPEG\000"
+ 2192      3430204A 
+ 2192      50454700 
+ 2193 003e 00000000 		.space	20
+ 2193      00000000 
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 55
+
+
+ 2193      00000000 
+ 2193      00000000 
+ 2193      00000000 
+ 2194 0052 0000     		.short	0
+ 2195 0054 FFFF     		.short	-1
+ 2196 0056 0000     		.space	2
+ 2197 0058 00000000 		.space	532
+ 2197      00000000 
+ 2197      00000000 
+ 2197      00000000 
+ 2197      00000000 
+ 2198              		.global	sample_desc_template
+ 2199              		.section	.rodata.sample_desc_template,"a"
+ 2200              		.align	2
+ 2203              	sample_desc_template:
+ 2204 0000 6765706A 		.word	1785750887
+ 2205 0004 0100     		.short	1
+ 2206 0006 0000     		.space	2
+ 2207 0008 0000     		.short	0
+ 2208 000a 0000     		.space	2
+ 2209 000c 34504447 		.word	1195659316
+ 2210 0010 00000000 		.word	0
+ 2211 0014 00000000 		.word	0
+ 2212 0018 0000     		.short	0
+ 2213 001a 0000     		.short	0
+ 2214 001c 4800     		.short	72
+ 2215 001e 0000     		.short	0
+ 2216 0020 4800     		.short	72
+ 2217 0022 0000     		.short	0
+ 2218 0024 0100     		.short	1
+ 2219 0026 4F563536 		.ascii	"OV5640 JPEG\000"
+ 2219      3430204A 
+ 2219      50454700 
+ 2220 0032 00000000 		.space	20
+ 2220      00000000 
+ 2220      00000000 
+ 2220      00000000 
+ 2220      00000000 
+ 2221 0046 0000     		.short	0
+ 2222 0048 FFFF     		.short	-1
+ 2223 004a 0000     		.space	2
+ 2224              		.global	video_sample_desc_template
+ 2225              		.section	.rodata.video_sample_desc_template,"a"
+ 2226              		.align	2
+ 2229              	video_sample_desc_template:
+ 2230 0000 0000     		.short	0
+ 2231 0002 0000     		.space	2
+ 2232 0004 34504447 		.word	1195659316
+ 2233 0008 00000000 		.word	0
+ 2234 000c 00000000 		.word	0
+ 2235 0010 0000     		.short	0
+ 2236 0012 0000     		.short	0
+ 2237 0014 4800     		.short	72
+ 2238 0016 0000     		.short	0
+ 2239 0018 4800     		.short	72
+ 2240 001a 0000     		.short	0
+ 2241 001c 0100     		.short	1
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 56
+
+
+ 2242 001e 4F563536 		.ascii	"OV5640 JPEG\000"
+ 2242      3430204A 
+ 2242      50454700 
+ 2243 002a 00000000 		.space	20
+ 2243      00000000 
+ 2243      00000000 
+ 2243      00000000 
+ 2243      00000000 
+ 2244 003e 0000     		.short	0
+ 2245 0040 FFFF     		.short	-1
+ 2246 0042 0000     		.space	2
+ 2247              		.text
+ 2248              	.Letext0:
+ 2249              		.file 2 "Core/Inc/events.h"
+ 2250              		.file 3 "/Users/sol/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/@xpac
+ 2251              		.file 4 "Middlewares/Third_Party/FatFs/src/integer.h"
+ 2252              		.file 5 "/Users/sol/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/@xpac
+ 2253              		.file 6 "/Users/sol/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/@xpac
+ 2254              		.file 7 "Middlewares/Third_Party/FatFs/src/ff.h"
+ 2255              		.file 8 "mutff/include/mutff_error.h"
+ 2256              		.file 9 "mutff/include/mutff_io.h"
+ 2257              		.file 10 "mutff/include/mutff_core.h"
+ 2258              		.file 11 "mutff/include/mutff_default.h"
+ 2259              		.file 12 "Container/Inc/container_template.h"
+ 2260              		.file 13 "Container/Inc/mutff_fatfs.h"
+ 2261              		.file 14 "/Users/sol/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/@xpa
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 57
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 container.c
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:21     .text.container_init:0000000000000000 $t
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:27     .text.container_init:0000000000000000 container_init
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:83     .text.container_init:0000000000000038 $d
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:805    .bss.ctx:0000000000000000 ctx
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:508    .data.container:0000000000000000 container
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:488    .bss.tail_mdat_offset:0000000000000000 tail_mdat_offset
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:495    .bss.tail_mdat:0000000000000000 tail_mdat
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:92     .text.container_set_frame_rate:0000000000000000 $t
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:98     .text.container_set_frame_rate:0000000000000000 container_set_frame_rate
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:118    .text.container_set_frame_rate:000000000000000c $d
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:123    .text.container_set_resolution:0000000000000000 $t
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:129    .text.container_set_resolution:0000000000000000 container_set_resolution
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:158    .text.container_set_resolution:0000000000000020 $d
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:163    .text.container_set_format:0000000000000000 $t
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:169    .text.container_set_format:0000000000000000 container_set_format
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:186    .text.container_set_format:0000000000000008 $d
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:191    .text.container_set_depth:0000000000000000 $t
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:197    .text.container_set_depth:0000000000000000 container_set_depth
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:214    .text.container_set_depth:0000000000000008 $d
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:219    .text.container_on_dcmi_data_ready:0000000000000000 $t
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:225    .text.container_on_dcmi_data_ready:0000000000000000 container_on_dcmi_data_ready
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:302    .text.container_on_dcmi_data_ready:000000000000004c $d
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:308    .text.container_on_dcmi_frame_complete:0000000000000000 $t
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:314    .text.container_on_dcmi_frame_complete:0000000000000000 container_on_dcmi_frame_complete
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:424    .text.container_on_dcmi_frame_complete:0000000000000084 $d
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:437    .bss.sample_idx:0000000000000000 sample_idx
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:444    .data.moof:0000000000000000 moof
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:434    .bss.sample_idx:0000000000000000 $d
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:441    .data.moof:0000000000000000 $d
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:485    .bss.tail_mdat_offset:0000000000000000 $d
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:492    .bss.tail_mdat:0000000000000000 $d
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:502    .bss.duration:0000000000000000 duration
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:499    .bss.duration:0000000000000000 $d
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:505    .data.container:0000000000000000 $d
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:802    .bss.ctx:0000000000000000 $d
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:812    .rodata.file_template:0000000000000000 file_template
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:809    .rodata.file_template:0000000000000000 $d
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:1110   .rodata.ftyp_template:0000000000000000 ftyp_template
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:1107   .rodata.ftyp_template:0000000000000000 $d
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:1120   .rodata.moov_template:0000000000000000 moov_template
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:1117   .rodata.moov_template:0000000000000000 $d
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:1393   .rodata.mvex_template:0000000000000000 mvex_template
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:1390   .rodata.mvex_template:0000000000000000 $d
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:1417   .rodata.trex_template:0000000000000000 trex_template
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:1414   .rodata.trex_template:0000000000000000 $d
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:1431   .rodata.mvhd_template:0000000000000000 mvhd_template
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:1428   .rodata.mvhd_template:0000000000000000 $d
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:1477   .rodata.trak_template:0000000000000000 trak_template
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:1474   .rodata.trak_template:0000000000000000 $d
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:1679   .rodata.tkhd_template:0000000000000000 tkhd_template
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:1676   .rodata.tkhd_template:0000000000000000 $d
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:1722   .rodata.mdia_template:0000000000000000 mdia_template
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:1719   .rodata.mdia_template:0000000000000000 $d
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:1861   .rodata.mdhd_template:0000000000000000 mdhd_template
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:1858   .rodata.mdhd_template:0000000000000000 $d
+ARM GAS  /var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s 			page 58
+
+
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:1868   .rodata.mdia_hdlr_template:0000000000000000 mdia_hdlr_template
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:1865   .rodata.mdia_hdlr_template:0000000000000000 $d
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:1885   .rodata.minf_template:0000000000000000 minf_template
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:1882   .rodata.minf_template:0000000000000000 $d
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:1992   .rodata.vmhd_template:0000000000000000 vmhd_template
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:1989   .rodata.vmhd_template:0000000000000000 $d
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:2005   .rodata.minf_hdlr_template:0000000000000000 minf_hdlr_template
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:2002   .rodata.minf_hdlr_template:0000000000000000 $d
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:2022   .rodata.dinf_template:0000000000000000 dinf_template
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:2019   .rodata.dinf_template:0000000000000000 $d
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:2040   .rodata.dref_template:0000000000000000 dref_template
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:2037   .rodata.dref_template:0000000000000000 $d
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:2058   .rodata.data_ref_template:0000000000000000 data_ref_template
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:2055   .rodata.data_ref_template:0000000000000000 $d
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:2071   .rodata.stbl_template:0000000000000000 stbl_template
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:2068   .rodata.stbl_template:0000000000000000 $d
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:2144   .rodata.stco_template:0000000000000000 stco_template
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:2141   .rodata.stco_template:0000000000000000 $d
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:2151   .rodata.stsz_template:0000000000000000 stsz_template
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:2148   .rodata.stsz_template:0000000000000000 $d
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:2158   .rodata.stsc_template:0000000000000000 stsc_template
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:2155   .rodata.stsc_template:0000000000000000 $d
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:2165   .rodata.stts_template:0000000000000000 stts_template
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:2162   .rodata.stts_template:0000000000000000 $d
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:2172   .rodata.stsd_template:0000000000000000 stsd_template
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:2169   .rodata.stsd_template:0000000000000000 $d
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:2203   .rodata.sample_desc_template:0000000000000000 sample_desc_template
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:2200   .rodata.sample_desc_template:0000000000000000 $d
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:2229   .rodata.video_sample_desc_template:0000000000000000 video_sample_desc_template
+/var/folders/fz/x0kldt2j7vs_j4slv3pyc44m0000gp/T//ccY7swTk.s:2226   .rodata.video_sample_desc_template:0000000000000000 $d
+
+UNDEFINED SYMBOLS
+mutff_write_movie_file
+mutff_write_movie_data_atom
+f_sync
+mutff_fatfs_driver
+f_write
+exit
+f_lseek
+mutff_write_movie_fragment_atom

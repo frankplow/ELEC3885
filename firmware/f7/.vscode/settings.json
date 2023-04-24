@@ -1,0 +1,10 @@
+{
+    "cortex-debug.armToolchainPath": "/Users/sol/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/@xpack-dev-tools/arm-none-eabi-gcc/12.2.1-1.2.1/.content/bin",
+    "cortex-debug.openocdPath": "/Users/sol/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/@xpack-dev-tools/openocd/0.12.0-1.1/.content/bin/openocd",
+    "files.associations": {
+        "f7cam_driver.h": "c",
+        "stm32f7xx_hal_dcmi.h": "c",
+        "stm32f7xx_hal.h": "c",
+        "events.h": "c"
+    }
+}
