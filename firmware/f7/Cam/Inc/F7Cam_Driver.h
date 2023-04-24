@@ -36,9 +36,9 @@
 // #define PACKET_COUNT 32
 
 
-//#define FIFO_SIZE 1 * 1024 //1024 
-#define CAM_FB_SIZE  40 * 1024 //2 x frame size
-//#define PACKET_COUNT 10
+
+#define CAM_FB_SIZE  64 * 1024 //2 x frame size
+
 
 extern char cam_fb[CAM_FB_SIZE]; //[CAM_FB_SIZE];
 

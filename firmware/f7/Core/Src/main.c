@@ -118,13 +118,15 @@ void handle_event(Event event) {
 
 struct Cam_config default_settings =  {
         .img_format = FMT_JPEG,
-        .x_res = 320,
-        .y_res = 240,
-        .FPS = 9, //Can be 8, 15, 20, 23, 25, or 30. Setting to 9 == default PLL configuration (usually ~10FPS)
-        .FB_size =  1024 * 40,//320 * 240 * 2, --> needs to be set in the cam driver .h
+        .x_res = 800, //DVP timings need to be change for hi res
+        .y_res = 600,
+        .FPS = 30, //Can be 8, 15, 20, 23, 25, or 30. Setting to 9 == default PLL configuration (usually ~10FPS)
+        .FB_size =  1024 * 64,//320 * 240 * 2, --> needs to be set in the cam driver .h
         .FIFO_width = 1024, //Packet 
-        .packet_count = 20, // must be a whole factor of x_res (or frame buffer??) --> needs to be set in the cam driver .h
-        .jpeg_comp_ratio = 1 //check 
+        .packet_count = 32, // must be a whole factor of x_res (or frame buffer??) --> needs to be set in the cam driver .h
+        .jpeg_comp_ratio = 12 //check 
+
+
 };
 /* USER CODE END 0 */
 
@@ -301,7 +303,7 @@ static void MX_DCMI_Init(void)
   hdcmi.Init.HSPolarity = DCMI_HSPOLARITY_HIGH;
   hdcmi.Init.CaptureRate = DCMI_CR_ALL_FRAME;
   hdcmi.Init.ExtendedDataMode = DCMI_EXTEND_DATA_8B;
-  hdcmi.Init.JPEGMode = DCMI_JPEG_DISABLE;
+  hdcmi.Init.JPEGMode = DCMI_JPEG_ENABLE;
   hdcmi.Init.ByteSelectMode = DCMI_BSM_ALL;
   hdcmi.Init.ByteSelectStart = DCMI_OEBS_ODD;
   hdcmi.Init.LineSelectMode = DCMI_LSM_ALL;
