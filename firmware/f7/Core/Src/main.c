@@ -121,13 +121,9 @@ struct Cam_config default_settings =  {
         .x_res = 800, //DVP timings need to be change for hi res
         .y_res = 600,
         .FPS = 30, //Can be 8, 15, 20, 23, 25, or 30. Setting to 9 == default PLL configuration (usually ~10FPS)
-        .FB_size =  1024 * 64,//320 * 240 * 2, --> needs to be set in the cam driver .h
-        .FIFO_width = 1024, //Packet 
-        .packet_count = 32, // must be a whole factor of x_res (or frame buffer??) --> needs to be set in the cam driver .h
         .jpeg_comp_ratio = 12 //check 
-
-
 };
+
 /* USER CODE END 0 */
 
 /**
@@ -200,9 +196,6 @@ int main(void)
            default_settings.x_res,
            default_settings.y_res,
            default_settings.FPS,
-           default_settings.FB_size,
-           default_settings.FIFO_width,
-           default_settings.packet_count,
            default_settings.jpeg_comp_ratio);
 
   BSP_CAMERA_ContinuousStart();
