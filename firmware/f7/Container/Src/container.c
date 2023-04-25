@@ -68,9 +68,9 @@ void container_init(FIL *target_file) {
   ctx.io = mutff_fatfs_driver;
   ctx.file = target_file;
 
-  //mutff_write_movie_file(&ctx, NULL, &container);
+  mutff_write_movie_file(&ctx, NULL, &container);
   tail_mdat_offset = f_tell((FIL *)ctx.file);
-  //mutff_write_movie_data_atom(&ctx, NULL, &tail_mdat);
+  mutff_write_movie_data_atom(&ctx, NULL, &tail_mdat);
   f_sync(ctx.file);
 }
 
@@ -134,19 +134,19 @@ void container_on_dcmi_frame_complete(DCMIFrameCompleteEventData data) {
 
     // Finish tailing mdat
     f_lseek(ctx.file, tail_mdat_offset);
-    //mutff_write_movie_data_atom(&ctx, NULL, &tail_mdat);
+    mutff_write_movie_data_atom(&ctx, NULL, &tail_mdat);
     f_lseek(ctx.file, file_end);
     tail_mdat.data_size = 0;
 
     // Write moof
     moof.movie_fragment_header.sequence_number++;
     moof.track_fragment->track_fragment_header.base_data_offset = tail_mdat_offset;
-    //mutff_write_movie_fragment_atom(&ctx, NULL, &moof);
+    mutff_write_movie_fragment_atom(&ctx, NULL, &moof);
     sample_idx = 0;
 
     // Start next mdat
     tail_mdat_offset = f_tell((FIL *) ctx.file);
-    //mutff_write_movie_data_atom(&ctx, NULL, &tail_mdat);
+    mutff_write_movie_data_atom(&ctx, NULL, &tail_mdat);
 
     f_sync(ctx.file);
   }
