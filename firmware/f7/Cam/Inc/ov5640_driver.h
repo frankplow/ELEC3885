@@ -82,11 +82,17 @@ uint32_t calc_sysclk(uint32_t xclk, bool pll_bypass, uint16_t pll_multiplier,
                      uint16_t pll_sys_div, uint16_t pre_div, bool root_2x,
                      uint16_t pclk_root_div, bool pclk_manual,
                      uint16_t pclk_div);
+void set_pll(bool pll_bypass, uint16_t  pll_multiplier,
+            uint16_t pll_sys_div, uint16_t pre_div, bool root_2x,
+            uint16_t pclk_root_div, bool pclk_manual,
+            uint16_t pclk_div);
+            
 void OV5640_Set_Comp_Ratio(uint16_t comp_ratio);
 void OV5640_SetPCLK(uint32_t ClockValue);
 uint16_t ov5640_ReadID();
 void CAMERA_IO_Init(void);
 void CAMERA_Delay(uint32_t delay);
+void OV5640_Config_FIFO(uint16_t fifo_width, uint16_t packet_count);
 
 #ifdef __cplusplus
 }

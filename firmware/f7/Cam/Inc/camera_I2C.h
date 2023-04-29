@@ -1,43 +1,4 @@
-/**
- ******************************************************************************
- * @file    camera.h
- * @author  MCD Application Team
- * @version V4.0.1
- * @date    21-July-2015
- * @brief   This header file contains the common defines and functions
- *prototypes for the camera driver.
- ******************************************************************************
- * @attention
- *
- * <h2><center>&copy; COPYRIGHT(c) 2015 STMicroelectronics</center></h2>
- *
- * Redistribution and use in source and binary forms, with or without
- *modification, are permitted provided that the following conditions are met:
- *   1. Redistributions of source code must retain the above copyright notice,
- *      this list of conditions and the following disclaimer.
- *   2. Redistributions in binary form must reproduce the above copyright
- *notice, this list of conditions and the following disclaimer in the
- *documentation and/or other materials provided with the distribution.
- *   3. Neither the name of STMicroelectronics nor the names of its contributors
- *      may be used to endorse or promote products derived from this software
- *      without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- *ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
- *LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- *CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- *SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- *INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- *CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- *ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- *POSSIBILITY OF SUCH DAMAGE.
- *
- ******************************************************************************
- */
 
-/* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __CAMERA_I2C_H
 #define __CAMERA_I2C_H
 
@@ -45,22 +6,18 @@
 extern "C" {
 #endif
 
-/* Includes ------------------------------------------------------------------*/
 #include <stdint.h>
 
 #include "stdio.h"
 #include "stm32f7xx_hal.h"
 
-typedef struct {
-  void (*Init)(uint16_t, uint32_t);
-  uint16_t (*ReadID)(uint16_t);
-  void (*Config)(uint32_t, uint32_t, uint32_t);
-} CAMERA_DrvTypeDef;
 
 #define FMT_JPEG 0x00
 #define FMT_RGB565 0x01
 
-//==========================I2C=========================
+#define CAMERA_I2C_ADDRESS ((uint16_t)0x60)
+#define CAMERA_I2C_ADDRESS_OV5640 ((uint16_t)0x78)
+
 
 /* I2C clock speed configuration (in Hz)
    WARNING:
@@ -120,11 +77,8 @@ typedef struct {
 #ifndef DISCOVERY_I2Cx_TIMING
 #define DISCOVERY_I2Cx_TIMING ((uint32_t)0x40912732)
 #endif /* DISCOVERY_I2Cx_TIMING */
-//======================================================== end I2C
-//=============================================
 
-#define CAMERA_I2C_ADDRESS ((uint16_t)0x60)
-#define CAMERA_I2C_ADDRESS_OV5640 ((uint16_t)0x78)
+
 
 void CAMERA_IO_Init(void);
 void CAMERA_Delay(uint32_t Delay);
@@ -140,16 +94,6 @@ uint8_t CAMERA_IO_Read_OV5640(uint16_t DeviceAddr, uint16_t Reg);
 void CAMERA_IO_Write_OV5640_16(uint16_t Addrup, uint16_t Reg, uint16_t value);
 uint16_t CAMERA_IO_Read_OV5640_16(uint16_t Addr, uint16_t Reg);
 
-/********************************* LINK CAMERA ********************************/
-
-/**
- * @brief  Initializes Camera low level.
- * @retval None
- */
-
-// goes in main
-
-//========================================================
 
 #define OV5640_PCLK_7M 0x00  /* Pixel Clock set to 7Mhz    */
 #define OV5640_PCLK_8M 0x01  /* Pixel Clock set to 8Mhz    */
@@ -159,39 +103,7 @@ uint16_t CAMERA_IO_Read_OV5640_16(uint16_t Addr, uint16_t Reg);
 #define OV5640_PCLK_23FPS 0x17
 #define OV5640_PCLK_30FPS 0x1E
 
-#define CAMERA_R160x120 0x00 /* QQVGA Resolution                     */
-#define CAMERA_R320x240 0x01 /* QVGA Resolution                      */
-#define CAMERA_R480x272 0x02 /* 480x272 Resolution                   */
-#define CAMERA_R640x480 0x03 /* VGA Resolution */
-#define CAMERA_R600x800 0x04
 
-#define CAMERA_CONTRAST_BRIGHTNESS \
-  0x00                           /* Camera contrast brightness features  */
-#define CAMERA_BLACK_WHITE 0x01  /* Camera black white feature           */
-#define CAMERA_COLOR_EFFECT 0x03 /* Camera color effect feature          */
-
-#define CAMERA_BRIGHTNESS_LEVEL0 0x00 /* Brightness level -2         */
-#define CAMERA_BRIGHTNESS_LEVEL1 0x01 /* Brightness level -1         */
-#define CAMERA_BRIGHTNESS_LEVEL2 0x02 /* Brightness level 0          */
-#define CAMERA_BRIGHTNESS_LEVEL3 0x03 /* Brightness level +1         */
-#define CAMERA_BRIGHTNESS_LEVEL4 0x04 /* Brightness level +2         */
-
-#define CAMERA_CONTRAST_LEVEL0 0x05 /* Contrast level -2           */
-#define CAMERA_CONTRAST_LEVEL1 0x06 /* Contrast level -1           */
-#define CAMERA_CONTRAST_LEVEL2 0x07 /* Contrast level  0           */
-#define CAMERA_CONTRAST_LEVEL3 0x08 /* Contrast level +1           */
-#define CAMERA_CONTRAST_LEVEL4 0x09 /* Contrast level +2           */
-
-#define CAMERA_BLACK_WHITE_BW 0x00          /* Black and white effect      */
-#define CAMERA_BLACK_WHITE_NEGATIVE 0x01    /* Negative effect             */
-#define CAMERA_BLACK_WHITE_BW_NEGATIVE 0x02 /* BW and Negative effect      */
-#define CAMERA_BLACK_WHITE_NORMAL 0x03      /* Normal effect               */
-
-#define CAMERA_COLOR_EFFECT_NONE 0x00    /* No effects                  */
-#define CAMERA_COLOR_EFFECT_BLUE 0x01    /* Blue effect                 */
-#define CAMERA_COLOR_EFFECT_GREEN 0x02   /* Green effect                */
-#define CAMERA_COLOR_EFFECT_RED 0x03     /* Red effect                  */
-#define CAMERA_COLOR_EFFECT_ANTIQUE 0x04 /* Antique effect              */
 
 #ifdef __cplusplus
 }
