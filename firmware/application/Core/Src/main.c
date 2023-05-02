@@ -18,8 +18,6 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "stm32f4xx_hal.h"
-#include "stm32f4xx_hal_gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -43,6 +41,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 DCMI_HandleTypeDef hdcmi;
+DMA_HandleTypeDef hdma_dcmi;
 
 I2C_HandleTypeDef hi2c1;
 
@@ -59,6 +58,7 @@ PCD_HandleTypeDef hpcd_USB_OTG_HS;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_DMA_Init(void);
 static void MX_DCMI_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_RTC_Init(void);
@@ -102,6 +102,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_DCMI_Init();
   MX_I2C1_Init();
   MX_RTC_Init();
@@ -200,12 +201,12 @@ static void MX_DCMI_Init(void)
   /* USER CODE END DCMI_Init 1 */
   hdcmi.Instance = DCMI;
   hdcmi.Init.SynchroMode = DCMI_SYNCHRO_HARDWARE;
-  hdcmi.Init.PCKPolarity = DCMI_PCKPOLARITY_FALLING;
-  hdcmi.Init.VSPolarity = DCMI_VSPOLARITY_LOW;
-  hdcmi.Init.HSPolarity = DCMI_HSPOLARITY_LOW;
+  hdcmi.Init.PCKPolarity = DCMI_PCKPOLARITY_RISING;
+  hdcmi.Init.VSPolarity = DCMI_VSPOLARITY_HIGH;
+  hdcmi.Init.HSPolarity = DCMI_HSPOLARITY_HIGH;
   hdcmi.Init.CaptureRate = DCMI_CR_ALL_FRAME;
   hdcmi.Init.ExtendedDataMode = DCMI_EXTEND_DATA_8B;
-  hdcmi.Init.JPEGMode = DCMI_JPEG_DISABLE;
+  hdcmi.Init.JPEGMode = DCMI_JPEG_ENABLE;
   hdcmi.Init.ByteSelectMode = DCMI_BSM_ALL;
   hdcmi.Init.ByteSelectStart = DCMI_OEBS_ODD;
   hdcmi.Init.LineSelectMode = DCMI_LSM_ALL;
@@ -308,7 +309,7 @@ static void MX_SDIO_SD_Init(void)
   hsd.Init.ClockEdge = SDIO_CLOCK_EDGE_RISING;
   hsd.Init.ClockBypass = SDIO_CLOCK_BYPASS_DISABLE;
   hsd.Init.ClockPowerSave = SDIO_CLOCK_POWER_SAVE_DISABLE;
-  hsd.Init.BusWide = SDIO_BUS_WIDE_1B;
+  hsd.Init.BusWide = SDIO_BUS_WIDE_4B;
   hsd.Init.HardwareFlowControl = SDIO_HARDWARE_FLOW_CONTROL_DISABLE;
   hsd.Init.ClockDiv = 0;
   if (HAL_SD_Init(&hsd) != HAL_OK)
@@ -362,6 +363,22 @@ static void MX_USB_OTG_HS_PCD_Init(void)
 }
 
 /**
+  * Enable DMA controller clock
+  */
+static void MX_DMA_Init(void)
+{
+
+  /* DMA controller clock enable */
+  __HAL_RCC_DMA2_CLK_ENABLE();
+
+  /* DMA interrupt init */
+  /* DMA2_Stream1_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA2_Stream1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA2_Stream1_IRQn);
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -383,12 +400,22 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(STAT_GPIO_Port, STAT_Pin, GPIO_PIN_RESET);
 
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(DCMI_PWR_EN_GPIO_Port, DCMI_PWR_EN_Pin, GPIO_PIN_RESET);
+
   /*Configure GPIO pin : STAT_Pin */
   GPIO_InitStruct.Pin = STAT_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(STAT_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : DCMI_PWR_EN_Pin */
+  GPIO_InitStruct.Pin = DCMI_PWR_EN_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+  HAL_GPIO_Init(DCMI_PWR_EN_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PA8 */
   GPIO_InitStruct.Pin = GPIO_PIN_8;

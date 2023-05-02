@@ -59,6 +59,8 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define STAT_Pin GPIO_PIN_14
 #define STAT_GPIO_Port GPIOE
+#define DCMI_PWR_EN_Pin GPIO_PIN_15
+#define DCMI_PWR_EN_GPIO_Port GPIOD
 #define Cam_SCL_Pin GPIO_PIN_6
 #define Cam_SCL_GPIO_Port GPIOB
 #define Cam_SDA_Pin GPIO_PIN_9
