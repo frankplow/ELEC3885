@@ -121,18 +121,18 @@ void BSP_CAMERA_PwrUp(void) {
   GPIO_InitTypeDef gpio_init_structure;
 
   /* Enable GPIO clock */
-  __HAL_RCC_GPIOH_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*** Configure the GPIO ***/
   /* Configure DCMI GPIO as alternate function */
-  gpio_init_structure.Pin = GPIO_PIN_13;
+  gpio_init_structure.Pin = GPIO_PIN_15;
   gpio_init_structure.Mode = GPIO_MODE_OUTPUT_PP;
   gpio_init_structure.Pull = GPIO_NOPULL;
   gpio_init_structure.Speed = GPIO_SPEED_HIGH;
-  HAL_GPIO_Init(GPIOH, &gpio_init_structure);
+  HAL_GPIO_Init(GPIOD, &gpio_init_structure);
 
-  /* De-assert the camera POWER_DOWN pin (active high) */
-  HAL_GPIO_WritePin(GPIOH, GPIO_PIN_13, GPIO_PIN_RESET);
+  /* De-assert the camera POWER_DOWN pin (active high) */ 
+  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_RESET);
 
   HAL_Delay(3); /* POWER_DOWN de-asserted during 3ms */
 }
@@ -141,18 +141,18 @@ void BSP_CAMERA_PwrDown(void) {
   GPIO_InitTypeDef gpio_init_structure;
 
   /* Enable GPIO clock */
-  __HAL_RCC_GPIOH_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*** Configure the GPIO ***/
   /* Configure DCMI GPIO as alternate function */
-  gpio_init_structure.Pin = GPIO_PIN_13;
+  gpio_init_structure.Pin = GPIO_PIN_15;
   gpio_init_structure.Mode = GPIO_MODE_OUTPUT_PP;
   gpio_init_structure.Pull = GPIO_NOPULL;
   gpio_init_structure.Speed = GPIO_SPEED_HIGH;
-  HAL_GPIO_Init(GPIOH, &gpio_init_structure);
+  HAL_GPIO_Init(GPIOD, &gpio_init_structure);
 
   /* Assert the camera POWER_DOWN pin (active high) */
-  HAL_GPIO_WritePin(GPIOH, GPIO_PIN_13, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_SET);
 }
 
 __weak void BSP_CAMERA_MspInit(DCMI_HandleTypeDef *hdcmi, void *Params) {
@@ -166,12 +166,12 @@ __weak void BSP_CAMERA_MspInit(DCMI_HandleTypeDef *hdcmi, void *Params) {
   /* Enable DMA2 clock */
   __HAL_RCC_DMA2_CLK_ENABLE();
 
-  /* Enable GPIO clocks   //A B C D E for DCMI GPIO
+  /* Enable GPIO clocks   A B C D E for DCMI GPIO */
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOE_CLK_ENABLE();
-  __HAL_RCC_GPIOG_CLK_ENABLE();
-  __HAL_RCC_GPIOH_CLK_ENABLE();
 
   /*** Configure the GPIO ***/
   /* Configure DCMI GPIO as alternate function */
@@ -234,7 +234,7 @@ __weak void BSP_CAMERA_MspInit(DCMI_HandleTypeDef *hdcmi, void *Params) {
   hdma_handler.Init.FIFOMode = DMA_FIFOMODE_ENABLE;  // was disable
   hdma_handler.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_FULL;
   hdma_handler.Init.MemBurst = DMA_MBURST_SINGLE;
-  hdma_handler.Init.PeriphBurst = DMA_PBURST_INC4;  // wasDMA_PBURST_SINGLE
+  hdma_handler.Init.PeriphBurst = DMA_PBURST_INC4;  // wasDMA_PBURST_SINGLE 
 
   hdma_handler.Instance = DMA2_Stream1;
 
