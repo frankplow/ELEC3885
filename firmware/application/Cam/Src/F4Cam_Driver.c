@@ -1,14 +1,11 @@
-#include "F7Cam_Driver.h"
+#include "F4Cam_Driver.h"
 
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 #include "camera_I2C.h"
-#include "events.h"
-#include "stm32f7xx_hal.h"
-#include "stm32f7xx_hal_dcmi.h"
-#include "stm32f7xx_hal_gpio.h"
+// #include "events.h"
+// #include "stm32f7xx_hal.h"
+// #include "stm32f7xx_hal_dcmi.h"
+// #include "stm32f7xx_hal_gpio.h"
 
 #define OV5640
 
@@ -169,7 +166,7 @@ __weak void BSP_CAMERA_MspInit(DCMI_HandleTypeDef *hdcmi, void *Params) {
   /* Enable DMA2 clock */
   __HAL_RCC_DMA2_CLK_ENABLE();
 
-  /* Enable GPIO clocks */
+  /* Enable GPIO clocks   //A B C D E for DCMI GPIO
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOE_CLK_ENABLE();
@@ -178,13 +175,34 @@ __weak void BSP_CAMERA_MspInit(DCMI_HandleTypeDef *hdcmi, void *Params) {
 
   /*** Configure the GPIO ***/
   /* Configure DCMI GPIO as alternate function */
+
+  //PINS A4 HYSNC A6 PIXCLK
+  //A4 - HYSNC, A6 - PCLK
   gpio_init_structure.Pin = GPIO_PIN_4 | GPIO_PIN_6;
   gpio_init_structure.Mode = GPIO_MODE_AF_PP;
   gpio_init_structure.Pull = GPIO_PULLUP;
   gpio_init_structure.Speed = GPIO_SPEED_HIGH;
   gpio_init_structure.Alternate = GPIO_AF13_DCMI;
-  HAL_GPIO_Init(GPIOA, &gpio_init_structure);
+  HAL_GPIO_Init(GPIOA, &gpio_init_structure); //
 
+  //PINS G9 --> VSYNC
+  //VSYNC : PB7
+  gpio_init_structure.Pin = GPIO_PIN_7;
+  gpio_init_structure.Mode = GPIO_MODE_AF_PP;
+  gpio_init_structure.Pull = GPIO_PULLUP;
+  gpio_init_structure.Speed = GPIO_SPEED_HIGH;
+  gpio_init_structure.Alternate = GPIO_AF13_DCMI;
+  HAL_GPIO_Init(GPIOB, &gpio_init_structure); //
+
+  //C6, C7  --> DATA0, DATA 1
+  gpio_init_structure.Pin = GPIO_PIN_6 | GPIO_PIN_7;
+  gpio_init_structure.Mode = GPIO_MODE_AF_PP;
+  gpio_init_structure.Pull = GPIO_PULLUP;
+  gpio_init_structure.Speed = GPIO_SPEED_HIGH;
+  gpio_init_structure.Alternate = GPIO_AF13_DCMI;
+  HAL_GPIO_Init(GPIOC, &gpio_init_structure);
+
+  //D3 --> DATA 5
   gpio_init_structure.Pin = GPIO_PIN_3;
   gpio_init_structure.Mode = GPIO_MODE_AF_PP;
   gpio_init_structure.Pull = GPIO_PULLUP;
@@ -192,27 +210,14 @@ __weak void BSP_CAMERA_MspInit(DCMI_HandleTypeDef *hdcmi, void *Params) {
   gpio_init_structure.Alternate = GPIO_AF13_DCMI;
   HAL_GPIO_Init(GPIOD, &gpio_init_structure);
 
-  gpio_init_structure.Pin = GPIO_PIN_5 | GPIO_PIN_6;
+
+  //E0,1,4,5,6 --> DATA 2:7
+  gpio_init_structure.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6;
   gpio_init_structure.Mode = GPIO_MODE_AF_PP;
   gpio_init_structure.Pull = GPIO_PULLUP;
   gpio_init_structure.Speed = GPIO_SPEED_HIGH;
   gpio_init_structure.Alternate = GPIO_AF13_DCMI;
   HAL_GPIO_Init(GPIOE, &gpio_init_structure);
-
-  gpio_init_structure.Pin = GPIO_PIN_9;
-  gpio_init_structure.Mode = GPIO_MODE_AF_PP;
-  gpio_init_structure.Pull = GPIO_PULLUP;
-  gpio_init_structure.Speed = GPIO_SPEED_HIGH;
-  gpio_init_structure.Alternate = GPIO_AF13_DCMI;
-  HAL_GPIO_Init(GPIOG, &gpio_init_structure);
-
-  gpio_init_structure.Pin =
-      GPIO_PIN_9 | GPIO_PIN_10 | GPIO_PIN_11 | GPIO_PIN_12 | GPIO_PIN_14;
-  gpio_init_structure.Mode = GPIO_MODE_AF_PP;
-  gpio_init_structure.Pull = GPIO_PULLUP;
-  gpio_init_structure.Speed = GPIO_SPEED_HIGH;
-  gpio_init_structure.Alternate = GPIO_AF13_DCMI;
-  HAL_GPIO_Init(GPIOH, &gpio_init_structure);
 
   /*** Configure the DMA ***/
   /* Set the parameters to be configured */

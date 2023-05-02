@@ -11,8 +11,7 @@ static HAL_StatusTypeDef I2Cx_WriteMultiple(I2C_HandleTypeDef *i2c_handler,
                                             uint8_t Addr, uint16_t Reg,
                                             uint16_t MemAddSize,
                                             uint8_t *Buffer, uint16_t Length);
-// static HAL_StatusTypeDef I2Cx_IsDeviceReady(I2C_HandleTypeDef *i2c_handler,
-// uint16_t DevAddress, uint32_t Trials);
+;
 static void I2Cx_Error(I2C_HandleTypeDef *i2c_handler, uint8_t Addr);
 static void I2Cx_MspInit(I2C_HandleTypeDef *i2c_handler);
 static void I2Cx_Init(I2C_HandleTypeDef *i2c_handler);
@@ -69,24 +68,21 @@ uint16_t CAMERA_IO_Read_OV5640_16(uint16_t Addr, uint16_t Reg) {
   return (val_be[0] << 8) + val_be[1];
 }
 
-//=====================================================================================================
 
 // delay (ms)
 void CAMERA_Delay(uint32_t Delay) { HAL_Delay(Delay); }
 
-//==============================I2C
-//Init==================================================================
+//==============================I2C Init==================================================================//
 
 static void I2Cx_Init(I2C_HandleTypeDef *i2c_handler) {
   if (HAL_I2C_GetState(i2c_handler) == HAL_I2C_STATE_RESET) {
-    if (i2c_handler == (I2C_HandleTypeDef *)(&hI2cAudioHandler)) {
-      /* Audio and LCD I2C configuration */
-      i2c_handler->Instance = DISCOVERY_AUDIO_I2Cx;
-    } else {
-      /* External, camera and Arduino connector  I2C configuration */
-      i2c_handler->Instance = DISCOVERY_EXT_I2Cx;
-    }
-    i2c_handler->Init.Timing = DISCOVERY_I2Cx_TIMING;
+    
+      /* External, camera I2C configuration*/
+    i2c_handler->Instance = I2C1; //
+    
+    //i2c_handler->Init.Timing = DISCOVERY_I2Cx_TIMING;
+    i2c_handler->Init.DutyCycle = I2C_DUTYCYCLE_2; // Diff
+    i2c_handler->Init.ClockSpeed = 3000; // Could be 10000 --> Have a play around DIFF
     i2c_handler->Init.OwnAddress1 = 0;
     i2c_handler->Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
     i2c_handler->Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
@@ -117,17 +113,7 @@ static HAL_StatusTypeDef I2Cx_ReadMultiple(I2C_HandleTypeDef *i2c_handler,
   return status;
 }
 
-/**
- * @brief  Writes a value in a register of the device through BUS in using DMA
- * mode.
- * @param  i2c_handler : I2C handler
- * @param  Addr: Device address on BUS Bus.
- * @param  Reg: The target register address to write
- * @param  MemAddress: Memory address
- * @param  Buffer: The target register value to be written
- * @param  Length: buffer size to be written
- * @retval HAL status
- */
+
 static HAL_StatusTypeDef I2Cx_WriteMultiple(I2C_HandleTypeDef *i2c_handler,
                                             uint8_t Addr, uint16_t Reg,
                                             uint16_t MemAddress,
@@ -145,82 +131,46 @@ static HAL_StatusTypeDef I2Cx_WriteMultiple(I2C_HandleTypeDef *i2c_handler,
   return status;
 }
 
+
 static void I2Cx_MspInit(I2C_HandleTypeDef *i2c_handler) {
   GPIO_InitTypeDef gpio_init_structure;
 
-  if (i2c_handler == (I2C_HandleTypeDef *)(&hI2cAudioHandler)) {
-    /* AUDIO and LCD I2C MSP init */
-
-    /*** Configure the GPIOs ***/
-    /* Enable GPIO clock */
-    DISCOVERY_AUDIO_I2Cx_SCL_SDA_GPIO_CLK_ENABLE();
-
-    /* Configure I2C Tx as alternate function */
-    gpio_init_structure.Pin = DISCOVERY_AUDIO_I2Cx_SCL_PIN;
-    gpio_init_structure.Mode = GPIO_MODE_AF_OD;
-    gpio_init_structure.Pull = GPIO_NOPULL;
-    gpio_init_structure.Speed = GPIO_SPEED_FAST;
-    gpio_init_structure.Alternate = DISCOVERY_AUDIO_I2Cx_SCL_SDA_AF;
-    HAL_GPIO_Init(DISCOVERY_AUDIO_I2Cx_SCL_SDA_GPIO_PORT, &gpio_init_structure);
-
-    /* Configure I2C Rx as alternate function */
-    gpio_init_structure.Pin = DISCOVERY_AUDIO_I2Cx_SDA_PIN;
-    HAL_GPIO_Init(DISCOVERY_AUDIO_I2Cx_SCL_SDA_GPIO_PORT, &gpio_init_structure);
-
-    /*** Configure the I2C peripheral ***/
-    /* Enable I2C clock */
-    DISCOVERY_AUDIO_I2Cx_CLK_ENABLE();
-
-    /* Force the I2C peripheral clock reset */
-    DISCOVERY_AUDIO_I2Cx_FORCE_RESET();
-
-    /* Release the I2C peripheral clock reset */
-    DISCOVERY_AUDIO_I2Cx_RELEASE_RESET();
-
-    /* Enable and set I2Cx Interrupt to a lower priority */
-    HAL_NVIC_SetPriority(DISCOVERY_AUDIO_I2Cx_EV_IRQn, 0x0F, 0);
-    HAL_NVIC_EnableIRQ(DISCOVERY_AUDIO_I2Cx_EV_IRQn);
-
-    /* Enable and set I2Cx Interrupt to a lower priority */
-    HAL_NVIC_SetPriority(DISCOVERY_AUDIO_I2Cx_ER_IRQn, 0x0F, 0);
-    HAL_NVIC_EnableIRQ(DISCOVERY_AUDIO_I2Cx_ER_IRQn);
-  } else {
     /* External, camera and Arduino connector I2C MSP init */
 
     /*** Configure the GPIOs ***/
     /* Enable GPIO clock */
-    DISCOVERY_EXT_I2Cx_SCL_SDA_GPIO_CLK_ENABLE();
+    __HAL_RCC_GPIOB_CLK_ENABLE(); //enabel GPIO B clock for I2C
 
     /* Configure I2C Tx as alternate function */
-    gpio_init_structure.Pin = DISCOVERY_EXT_I2Cx_SCL_PIN;
+    gpio_init_structure.Pin = GPIO_PIN_6;
     gpio_init_structure.Mode = GPIO_MODE_AF_OD;
     gpio_init_structure.Pull = GPIO_NOPULL;
     gpio_init_structure.Speed = GPIO_SPEED_FAST;
-    gpio_init_structure.Alternate = DISCOVERY_EXT_I2Cx_SCL_SDA_AF;
-    HAL_GPIO_Init(DISCOVERY_EXT_I2Cx_SCL_SDA_GPIO_PORT, &gpio_init_structure);
+    gpio_init_structure.Alternate = GPIO_AF4_I2C1;
+    HAL_GPIO_Init(GPIOB, &gpio_init_structure);
 
     /* Configure I2C Rx as alternate function */
-    gpio_init_structure.Pin = DISCOVERY_EXT_I2Cx_SDA_PIN;
-    HAL_GPIO_Init(DISCOVERY_EXT_I2Cx_SCL_SDA_GPIO_PORT, &gpio_init_structure);
+    gpio_init_structure.Pin = GPIO_PIN_9; // MAY NEED MORE
+    HAL_GPIO_Init(GPIOB, &gpio_init_structure);
 
     /*** Configure the I2C peripheral ***/
     /* Enable I2C clock */
-    DISCOVERY_EXT_I2Cx_CLK_ENABLE();
+    __HAL_RCC_I2C1_CLK_ENABLE();
 
     /* Force the I2C peripheral clock reset */
-    DISCOVERY_EXT_I2Cx_FORCE_RESET();
+    __HAL_RCC_I2C1_FORCE_RESET();
 
     /* Release the I2C peripheral clock reset */
-    DISCOVERY_EXT_I2Cx_RELEASE_RESET();
+    __HAL_RCC_I2C1_RELEASE_RESET();
 
     /* Enable and set I2Cx Interrupt to a lower priority */
-    HAL_NVIC_SetPriority(DISCOVERY_EXT_I2Cx_EV_IRQn, 0x0F, 0);
-    HAL_NVIC_EnableIRQ(DISCOVERY_EXT_I2Cx_EV_IRQn);
+    HAL_NVIC_SetPriority(I2C1_EV_IRQn, 0x0F, 0);
+    HAL_NVIC_EnableIRQ(I2C1_EV_IRQn);
 
     /* Enable and set I2Cx Interrupt to a lower priority */
-    HAL_NVIC_SetPriority(DISCOVERY_EXT_I2Cx_ER_IRQn, 0x0F, 0);
-    HAL_NVIC_EnableIRQ(DISCOVERY_EXT_I2Cx_ER_IRQn);
-  }
+    HAL_NVIC_SetPriority(I2C1_EV_IRQn, 0x0F, 0);
+    HAL_NVIC_EnableIRQ(I2C1_EV_IRQn);
+
 }
 
 static void I2Cx_Error(I2C_HandleTypeDef *i2c_handler, uint8_t Addr) {
