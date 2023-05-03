@@ -4,6 +4,11 @@
 
   (paper "A4")
 
+  (title_block
+    (date "2023-05-03")
+    (rev "2.2")
+  )
+
   (lib_symbols
   )
 

@@ -4,6 +4,10 @@
 
   (paper "A4")
 
+  (title_block
+    (rev "2.2")
+  )
+
   (lib_symbols
     (symbol "3885:APX803S" (pin_names (offset 0.254)) (in_bom yes) (on_board yes)
       (property "Reference" "U" (at 2.54 8.89 0)
@@ -1235,9 +1239,6 @@
   (junction (at 204.47 99.06) (diameter 0) (color 0 0 0 0)
     (uuid 5885d8cc-0f2e-41d4-99f2-4af4f142b69f)
   )
-  (junction (at 124.46 67.31) (diameter 0) (color 0 0 0 0)
-    (uuid 5ff4349f-ec24-4c2b-8f65-23c63bfc5a92)
-  )
   (junction (at 224.79 50.8) (diameter 0) (color 0 0 0 0)
     (uuid 6155e175-8292-421c-9fe2-026140c9db66)
   )
@@ -1482,10 +1483,6 @@
     (stroke (width 0) (type default))
     (uuid 57a6c302-05d5-4900-bfc7-f9081ce67d0d)
   )
-  (wire (pts (xy 124.46 67.31) (xy 132.08 67.31))
-    (stroke (width 0) (type default))
-    (uuid 598c28f7-5dd1-407e-aa5f-5aedbfd68364)
-  )
   (wire (pts (xy 124.46 39.37) (xy 151.13 39.37))
     (stroke (width 0) (type default))
     (uuid 5c3d7ba6-f43c-4d50-8226-ea0dccdf16f1)
@@ -1676,6 +1673,10 @@
     (stroke (width 0) (type default))
     (uuid c6381c8e-e3be-4cff-ba20-4f74d429184e)
   )
+  (wire (pts (xy 124.46 57.15) (xy 124.46 69.85))
+    (stroke (width 0) (type default))
+    (uuid c82fcebe-44cd-443f-ae7f-bd1684ee0a86)
+  )
   (polyline (pts (xy 215.9 77.47) (xy 262.89 77.47))
     (stroke (width 0) (type default))
     (uuid cab70573-ec79-4aee-a217-7e79e8acc005)
@@ -1705,7 +1706,7 @@
     (stroke (width 0) (type default))
     (uuid d7c56168-9535-4773-9754-d72da0b95e5c)
   )
-  (wire (pts (xy 111.76 67.31) (xy 124.46 67.31))
+  (wire (pts (xy 111.76 67.31) (xy 132.08 67.31))
     (stroke (width 0) (type default))
     (uuid d8e7bf98-1b21-4eba-8ad7-af04a5b84c16)
   )
@@ -1800,10 +1801,6 @@
     (uuid fde96db5-dccb-4e42-bb50-664cdd9ccd03)
   )
 
-  (wire (pts (xy 124.46 57.15) (xy 124.46 67.31))
-    (stroke (width 0) (type default))
-    (uuid fef2f61f-681e-4398-9c7d-3dd1c9fda59a)
-  )
   (wire (pts (xy 163.83 39.37) (xy 168.91 39.37))
     (stroke (width 0) (type default))
     (uuid ff23b141-6c20-40a6-9431-1225d0701318)
@@ -2650,6 +2647,31 @@
       (project "3885"
         (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/0217b7ef-3928-43d6-9a5a-467bfde0e5ea"
           (reference "#PWR069") (unit 1)
+        )
+      )
+    )
+  )
+
+  (symbol (lib_id "power:-BATT") (at 124.46 69.85 180) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (uuid 839d5b39-aab2-403a-93fb-3a1e36ffc3bd)
+    (property "Reference" "#PWR029" (at 124.46 66.04 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Value" "-BATT" (at 124.46 74.93 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "" (at 124.46 69.85 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "" (at 124.46 69.85 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid 1a00a2d2-8b7f-46cf-812c-64e381667c5d))
+    (instances
+      (project "3885"
+        (path "/7363a4f0-2da1-4086-abed-ea6709c3a185/0217b7ef-3928-43d6-9a5a-467bfde0e5ea"
+          (reference "#PWR029") (unit 1)
         )
       )
     )
