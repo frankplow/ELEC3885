@@ -73,6 +73,8 @@ void Error_Handler(void);
 #define STAT_GPIO_Port GPIOE
 #define CAM_ENABLE_Pin GPIO_PIN_15
 #define CAM_ENABLE_GPIO_Port GPIOD
+#define SD_DETECT_Pin GPIO_PIN_1
+#define SD_DETECT_GPIO_Port GPIOD
 #define CAM_PWDN_Pin GPIO_PIN_7
 #define CAM_PWDN_GPIO_Port GPIOD
 #define Cam_SCL_Pin GPIO_PIN_6
