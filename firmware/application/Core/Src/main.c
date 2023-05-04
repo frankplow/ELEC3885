@@ -62,8 +62,8 @@ static void MX_DMA_Init(void);
 static void MX_DCMI_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_RTC_Init(void);
-// static void MX_SDIO_SD_Init(void);
-// static void MX_USB_OTG_HS_PCD_Init(void);
+static void MX_SDIO_SD_Init(void);
+static void MX_USB_OTG_HS_PCD_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -122,8 +122,8 @@ int main(void)
   MX_DCMI_Init();
   MX_I2C1_Init();
   MX_RTC_Init();
-  // MX_SDIO_SD_Init();
-  // MX_USB_OTG_HS_PCD_Init();
+  MX_SDIO_SD_Init();
+  MX_USB_OTG_HS_PCD_Init();
   /* USER CODE BEGIN 2 */
   printf("Main Init\n");
 
