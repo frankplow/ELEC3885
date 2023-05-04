@@ -26,11 +26,11 @@ extern "C" {
 #endif
 
 #include "camera_I2C.h"
-//#include "events.h"
+#include "events.h"
 #include "ov5640_driver.h"
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_dcmi.h"
-#include "stm32f7xx_hal_gpio.h"
+#include "stm32f4xx_hal_gpio.h"
 
 
 #include <stdbool.h>

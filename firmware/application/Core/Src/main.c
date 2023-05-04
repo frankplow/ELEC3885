@@ -62,14 +62,30 @@ static void MX_DMA_Init(void);
 static void MX_DCMI_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_RTC_Init(void);
-static void MX_SDIO_SD_Init(void);
-static void MX_USB_OTG_HS_PCD_Init(void);
+// static void MX_SDIO_SD_Init(void);
+// static void MX_USB_OTG_HS_PCD_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+int _write(int fd, const char *data, size_t size) {
+  for (size_t i = 0; i < size; ++i) {
+    ITM_SendChar(data[i]);
+  }
+  return size;
+}
+
+struct Cam_config default_settings =  {
+        .img_format = FMT_JPEG,
+        .x_res = 640, //DVP timings need to be change for hi res
+        .y_res = 480,
+        .FPS = 15, //Can be 8, 15, 20, 23, 25, or 30. Setting to 9 == default PLL configuration (usually ~10FPS)
+        .jpeg_comp_ratio = 12 // 1- 63 lower = better quality
+};
+
 
 /* USER CODE END 0 */
 
@@ -89,8 +105,8 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-  HAL_GPIO_TogglePin(STAT_GPIO_Port, STAT_Pin);
-  HAL_Delay(1000);
+   HAL_GPIO_TogglePin(STAT_GPIO_Port, STAT_Pin);
+  // HAL_Delay(1000);
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -106,9 +122,20 @@ int main(void)
   MX_DCMI_Init();
   MX_I2C1_Init();
   MX_RTC_Init();
-  MX_SDIO_SD_Init();
-  MX_USB_OTG_HS_PCD_Init();
+  // MX_SDIO_SD_Init();
+  // MX_USB_OTG_HS_PCD_Init();
   /* USER CODE BEGIN 2 */
+  printf("Main Init\n");
+
+  if (CAM_Init(default_settings.img_format,
+           default_settings.x_res,
+           default_settings.y_res,
+           default_settings.FPS,
+           default_settings.jpeg_comp_ratio) != CAMERA_OK ) {
+            exit(1);
+           }
+
+  BSP_CAMERA_ContinuousStart();
 
   /* USER CODE END 2 */
 
@@ -119,8 +146,8 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    HAL_GPIO_TogglePin(STAT_GPIO_Port, STAT_Pin);
-    HAL_Delay(1000);
+    // HAL_GPIO_TogglePin(STAT_GPIO_Port, STAT_Pin);
+    // HAL_Delay(1000);
   }
   /* USER CODE END 3 */
 }
@@ -142,16 +169,13 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_LSI
-                              |RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSI|RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.LSEState = RCC_LSE_ON;
-  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   RCC_OscInitStruct.LSIState = RCC_LSI_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
-  RCC_OscInitStruct.PLL.PLLM = 8;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLM = 12;
   RCC_OscInitStruct.PLL.PLLN = 180;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = 8;
@@ -237,7 +261,7 @@ static void MX_I2C1_Init(void)
 
   /* USER CODE END I2C1_Init 1 */
   hi2c1.Instance = I2C1;
-  hi2c1.Init.ClockSpeed = 100000;
+  hi2c1.Init.ClockSpeed = 10000;
   hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
   hi2c1.Init.OwnAddress1 = 0;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
@@ -401,7 +425,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(STAT_GPIO_Port, STAT_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(DCMI_PWR_EN_GPIO_Port, DCMI_PWR_EN_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOD, CAM_ENABLE_Pin|CAM_PWDN_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : STAT_Pin */
   GPIO_InitStruct.Pin = STAT_Pin;
@@ -410,12 +434,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(STAT_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : DCMI_PWR_EN_Pin */
-  GPIO_InitStruct.Pin = DCMI_PWR_EN_Pin;
+  /*Configure GPIO pins : CAM_ENABLE_Pin CAM_PWDN_Pin */
+  GPIO_InitStruct.Pin = CAM_ENABLE_Pin|CAM_PWDN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-  HAL_GPIO_Init(DCMI_PWR_EN_GPIO_Port, &GPIO_InitStruct);
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PA8 */
   GPIO_InitStruct.Pin = GPIO_PIN_8;

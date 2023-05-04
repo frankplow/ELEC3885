@@ -31,6 +31,11 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "stdio.h"
+#include "F4Cam_Driver.h"
+
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
 
@@ -46,6 +51,13 @@ extern "C" {
 
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
+struct Cam_config {
+	uint8_t img_format;
+	uint16_t x_res;
+	uint16_t y_res;
+	uint8_t FPS; 
+	uint8_t jpeg_comp_ratio; //1 - 63 lower = more compression
+};
 
 /* USER CODE END EM */
 
@@ -59,8 +71,10 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define STAT_Pin GPIO_PIN_14
 #define STAT_GPIO_Port GPIOE
-#define DCMI_PWR_EN_Pin GPIO_PIN_15
-#define DCMI_PWR_EN_GPIO_Port GPIOD
+#define CAM_ENABLE_Pin GPIO_PIN_15
+#define CAM_ENABLE_GPIO_Port GPIOD
+#define CAM_PWDN_Pin GPIO_PIN_7
+#define CAM_PWDN_GPIO_Port GPIOD
 #define Cam_SCL_Pin GPIO_PIN_6
 #define Cam_SCL_GPIO_Port GPIOB
 #define Cam_SDA_Pin GPIO_PIN_9

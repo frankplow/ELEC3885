@@ -45,10 +45,12 @@ Camera_StatusTypeDef CAM_Init(uint8_t format, uint16_t x_res, uint16_t y_res, ui
   BSP_CAMERA_PwrUp();
   HAL_Delay(1000);
   
-  if (ov5640_ReadID() != OV5640_ID) {
+  const uint16_t id = ov5640_ReadID();
+  if (id != OV5640_ID) {
     printf("Read ID incorrect\n");
     return CAMERA_NOT_SUPPORTED;
   }
+  printf("Read ID correct\n");
 
   // Set image format
   switch (format) {
@@ -89,7 +91,7 @@ uint8_t BSP_CAMERA_DeInit(void) {
 
 void BSP_CAMERA_ContinuousStart() {
   // Wait for first VSYNC
-  while (!(HAL_GPIO_ReadPin(GPIOG, GPIO_PIN_9))) {
+  while (!(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7))) {
   }
 
   capture_data = true;
@@ -125,16 +127,16 @@ void BSP_CAMERA_PwrUp(void) {
 
   /*** Configure the GPIO ***/
   /* Configure DCMI GPIO as alternate function */
-  gpio_init_structure.Pin = GPIO_PIN_15;
+  gpio_init_structure.Pin = GPIO_PIN_7;
   gpio_init_structure.Mode = GPIO_MODE_OUTPUT_PP;
   gpio_init_structure.Pull = GPIO_NOPULL;
   gpio_init_structure.Speed = GPIO_SPEED_HIGH;
   HAL_GPIO_Init(GPIOD, &gpio_init_structure);
 
   /* De-assert the camera POWER_DOWN pin (active high) */ 
-  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_7, GPIO_PIN_RESET);
 
-  HAL_Delay(3); /* POWER_DOWN de-asserted during 3ms */
+  HAL_Delay(5); /* POWER_DOWN de-asserted during 3ms */
 }
 
 void BSP_CAMERA_PwrDown(void) {
@@ -145,14 +147,19 @@ void BSP_CAMERA_PwrDown(void) {
 
   /*** Configure the GPIO ***/
   /* Configure DCMI GPIO as alternate function */
-  gpio_init_structure.Pin = GPIO_PIN_15;
+  gpio_init_structure.Pin = GPIO_PIN_7;
   gpio_init_structure.Mode = GPIO_MODE_OUTPUT_PP;
   gpio_init_structure.Pull = GPIO_NOPULL;
   gpio_init_structure.Speed = GPIO_SPEED_HIGH;
   HAL_GPIO_Init(GPIOD, &gpio_init_structure);
 
   /* Assert the camera POWER_DOWN pin (active high) */
-  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_SET);
+  //HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_SET);
+
+  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_7, GPIO_PIN_SET);
+
+  //HAL_GPIO_TogglePin(STAT_GPIO_Port, STAT_Pin);
+
 }
 
 __weak void BSP_CAMERA_MspInit(DCMI_HandleTypeDef *hdcmi, void *Params) {
@@ -427,6 +434,7 @@ void DCMI_DMA_TRANSFER_COMPLETE(DMA_HandleTypeDef *hdma) {
     Event data_ready_full_event = {DCMIDataReady, full_data_ready_payload};
 
     push_event_queue(data_ready_full_event);
+    printf("Transfer complete\n");
   } else if (hdcmi->XferTransferNumber != 0 &&
              hdcmi->XferCount == hdcmi->XferTransferNumber / 2) {
     DCMIDataReadyEventData *full_data_ready_payload =
@@ -455,6 +463,8 @@ void DCMI_DMA_TRANSFER_HALF_COMPLETE(DMA_HandleTypeDef *hdma) {
   Event data_ready_half_event = {DCMIDataReady, half_data_ready_payload};
 
   push_event_queue(data_ready_half_event);
+  printf("Transfer Half complete\n");
+
 }
 
 HAL_StatusTypeDef HAL_DCMI_Start_DMA2(DCMI_HandleTypeDef *hdcmi,
