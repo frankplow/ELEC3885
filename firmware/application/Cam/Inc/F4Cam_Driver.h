@@ -39,7 +39,7 @@ extern "C" {
 
 
 #define PACKET_SIZE (1024)
-#define PACKET_COUNT (32)
+#define PACKET_COUNT (16)
 #define FRAME_SIZE (PACKET_COUNT * PACKET_SIZE)
 #define CAM_FB_SIZE (2 * FRAME_SIZE)
 

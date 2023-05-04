@@ -15,6 +15,9 @@
   *
   ******************************************************************************
   */
+
+#define MuTFF_MAX_TRACK_ATOMS 1
+#define MuTFF_MAX_USER_DATA_ITEMS 1
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -22,7 +25,11 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "mutff.h"
+#include "mutff_default.h"
 
+#include "container.h"
+#include "events.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -52,7 +59,7 @@ SD_HandleTypeDef hsd;
 DMA_HandleTypeDef hdma_sdio;
 
 /* USER CODE BEGIN PV */
-
+FRESULT fatfs_err;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -69,18 +76,41 @@ static void MX_SDIO_SD_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
-int _write(int fd, const char *data, size_t size) {
-  for (size_t i = 0; i < size; ++i) {
-    ITM_SendChar(data[i]);
-  }
-  return size;
+void handle_event(Event event) {
+    switch (event.type) {
+      case DCMIFrameComplete: {
+          const DCMIFrameCompleteEventData event_data =
+                  *((DCMIFrameCompleteEventData*) event.data);
+          container_on_dcmi_frame_complete(event_data);
+          free(event.data);
+          break;
+      }
+      case DCMIDataReady: {
+          const DCMIDataReadyEventData event_data =
+                  *((DCMIDataReadyEventData*) event.data);
+          container_on_dcmi_data_ready(event_data);
+          free(event.data);
+          break;
+      }
+      case DCMIVSync: {
+          break;
+      }
+      case PowerOff: {
+          break;
+      }
+      case USBPluggedIn: {
+          break;
+      }
+      default:
+          Error_Handler();
+          break;
+    }
 }
 
 struct Cam_config default_settings =  {
         .img_format = FMT_JPEG,
-        .x_res = 640, //DVP timings need to be change for hi res
-        .y_res = 480,
+        .x_res = 320, //DVP timings need to be change for hi res
+        .y_res = 240,
         .FPS = 15, //Can be 8, 15, 20, 23, 25, or 30. Setting to 9 == default PLL configuration (usually ~10FPS)
         .jpeg_comp_ratio = 12 // 1- 63 lower = better quality
 };
@@ -126,13 +156,37 @@ int main(void)
   /* USER CODE BEGIN 2 */
   printf("Main Init\n");
 
+  //Mount filesystem
+  fatfs_err = f_mount(&SDFatFS, SDPath, 1);
+  if (fatfs_err != FR_OK) {
+    printf("failed to mount card, code: %i.\n", fatfs_err);
+    if (fatfs_err != FR_NOT_READY) {
+      printf("exiting.\n");
+      exit(fatfs_err);
+    }
+    printf("continuing.\n");
+  }
+
+  // Open file
+  fatfs_err = f_open(&SDFile, "3885.mp4", FA_WRITE | FA_CREATE_ALWAYS);
+  if (fatfs_err != FR_OK) {
+    printf("failed to open file, code: %i.\n", fatfs_err);
+    printf("exiting.\n");
+    exit(fatfs_err);
+  }
+
+  container_set_frame_rate(default_settings.FPS);
+  container_set_resolution(default_settings.x_res, default_settings.y_res);
+  container_set_format(MuTFF_FOURCC('j', 'p', 'e', 'g'));
+  container_init(&SDFile);
+
   if (CAM_Init(default_settings.img_format,
            default_settings.x_res,
            default_settings.y_res,
            default_settings.FPS,
-           default_settings.jpeg_comp_ratio) != CAMERA_OK ) {
-            exit(1);
-           }
+           default_settings.jpeg_comp_ratio) != CAMERA_OK) {
+    exit(1);
+  }
 
   BSP_CAMERA_ContinuousStart();
 
@@ -142,11 +196,19 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    // Sleep until an interrupt occurs
+    HAL_SuspendTick();
+    HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON, PWR_SLEEPENTRY_WFI);
+    HAL_ResumeTick();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    // HAL_GPIO_TogglePin(STAT_GPIO_Port, STAT_Pin);
-    // HAL_Delay(1000);
+    // Handle any events produced by the interrupt
+    Event event;
+    while (pop_event_queue(&event)) {
+      handle_event(event);
+    }
+    /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
 }
@@ -336,7 +398,7 @@ static void MX_SDIO_SD_Init(void)
   hsd.Init.HardwareFlowControl = SDIO_HARDWARE_FLOW_CONTROL_DISABLE;
   hsd.Init.ClockDiv = 0;
   /* USER CODE BEGIN SDIO_Init 2 */
-
+  hsd.Init.BusWide = SDIO_BUS_WIDE_1B;
   /* USER CODE END SDIO_Init 2 */
 
 }
