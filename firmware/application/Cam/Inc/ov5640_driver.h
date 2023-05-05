@@ -94,6 +94,14 @@ void CAMERA_IO_Init(void);
 void CAMERA_Delay(uint32_t delay);
 void OV5640_Config_FIFO(uint16_t fifo_width, uint16_t packet_count);
 
+typedef enum {
+  OV5640_MIRROR_NONE,
+  OV5640_MIRROR_X,
+  OV5640_MIRROR_Y,
+  OV5640_MIRROR_XY,
+} OV5640_Mirror;
+
+
 #ifdef __cplusplus
 }
 #endif

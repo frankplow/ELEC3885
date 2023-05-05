@@ -22,7 +22,9 @@ void DCMI_DMA_TRANSFER_COMPLETE(DMA_HandleTypeDef *hdma);
 static void DCMI_DMAError(DMA_HandleTypeDef *hdma);
 
 #ifdef OV5640
-Camera_StatusTypeDef CAM_Init(uint8_t format, uint16_t x_res, uint16_t y_res, uint8_t FPS, uint8_t jpeg_comp_ratio) {
+Camera_StatusTypeDef CAM_Init(uint8_t format, uint16_t x_res, uint16_t y_res,
+                              uint8_t FPS, uint8_t jpeg_comp_ratio,
+                              OV5640_Mirror mirror) {
   DCMI_HandleTypeDef *phdcmi;
 
   /* Get the DCMI handle structure */
@@ -71,6 +73,8 @@ Camera_StatusTypeDef CAM_Init(uint8_t format, uint16_t x_res, uint16_t y_res, ui
       break;
     }
   }
+
+  OV5640_MirrorFlipConfig(mirror);
 
   /* DCMI Initialization */
   BSP_CAMERA_MspInit(&hDcmiHandler, NULL);

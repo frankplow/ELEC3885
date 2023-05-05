@@ -22,6 +22,7 @@
 #ifndef __MAIN_H
 #define __MAIN_H
 
+#include "ov5640_driver.h"
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -57,6 +58,7 @@ struct Cam_config {
 	uint16_t y_res;
 	uint8_t FPS; 
 	uint8_t jpeg_comp_ratio; //1 - 63 lower = more compression
+	OV5640_Mirror v_flipped;
 };
 
 /* USER CODE END EM */

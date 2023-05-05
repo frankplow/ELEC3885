@@ -111,6 +111,7 @@ struct Cam_config default_settings =  {
         .y_res = 240,
         .FPS = 15, //Can be 8, 15, 20, 23, 25, or 30. Setting to 9 == default PLL configuration (usually ~10FPS)
         .jpeg_comp_ratio = 12 // 1- 63 lower = better quality
+        .v_flipped = OV5640_MIRROR_Y,
 };
 
 
@@ -182,7 +183,8 @@ int main(void)
            default_settings.x_res,
            default_settings.y_res,
            default_settings.FPS,
-           default_settings.jpeg_comp_ratio) != CAMERA_OK) {
+           default_settings.jpeg_comp_ratio,
+           default_settings.v_flipped) != CAMERA_OK) {
     exit(1);
   }
 

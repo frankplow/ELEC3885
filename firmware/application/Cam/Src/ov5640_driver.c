@@ -223,6 +223,40 @@ void OV5640_SetPCLK(uint32_t ClockValue) {
   }
 }
 
+void OV5640_MirrorFlipConfig(OV5640_Mirror Config)
+{
+  uint8_t tmp3820 = 0, tmp3821;
+
+  tmp3820 = CAMERA_IO_Read_OV5640(OV5640_I2C_ADDRESS, TIMING_TC_REG20);
+  tmp3820 &= 0xF9;
+  tmp3821 = CAMERA_IO_Read_OV5640(OV5640_I2C_ADDRESS, TIMING_TC_REG21);
+  tmp3821 &= 0xF9;
+
+  switch (Config)
+  {
+  case OV5640_MIRROR_Y:
+    CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, TIMING_TC_REG20, tmp3820 | 0x00);
+    CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, TIMING_TC_REG21, tmp3821 | 0x06);
+    break;
+
+  case OV5640_MIRROR_X:
+    CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, TIMING_TC_REG20, tmp3820 | 0x06);
+    CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, TIMING_TC_REG21, tmp3821 | 0x00);
+    break;
+
+  case OV5640_MIRROR_XY:
+    CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, TIMING_TC_REG20, tmp3820 | 0x06);
+    CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, TIMING_TC_REG21, tmp3821 | 0x06);
+    break;
+
+  case OV5640_MIRROR_NONE:
+  default:
+    CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, TIMING_TC_REG20, tmp3820 | 0x00);
+    CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, TIMING_TC_REG21, tmp3821 | 0x00);
+    break;
+  }
+}
+
 void ov5640_Init_RGB565(uint16_t x_res, uint16_t y_res) {
   ov5640_Init();
   OV5640_Set_Size(4, 0, x_res, y_res);
