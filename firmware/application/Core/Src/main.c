@@ -107,10 +107,10 @@ void handle_event(Event event) {
 
 struct Cam_config default_settings =  {
         .img_format = FMT_JPEG,
-        .x_res = 320, //DVP timings need to be change for hi res
-        .y_res = 240,
-        .FPS = 15, //Can be 8, 15, 20, 23, 25, or 30. Setting to 9 == default PLL configuration (usually ~10FPS)
-        .jpeg_comp_ratio = 12 // 1- 63 lower = better quality
+        .x_res = 800, //DVP timings need to be change for hi res
+        .y_res = 600,
+        .FPS = 20, //Can be 8, 15, 20, 23, 25, or 30. Setting to 9 == default PLL configuration (usually ~10FPS)
+        .jpeg_comp_ratio = 12, // 1- 63 lower = better quality
         .v_flipped = OV5640_MIRROR_Y,
 };
 
