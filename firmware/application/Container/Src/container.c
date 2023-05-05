@@ -1,8 +1,5 @@
 #include "container.h"
 
-#define MuTFF_MAX_TRACK_ATOMS 1
-#define MuTFF_MAX_USER_DATA_ITEMS 1
-
 #include "container_template.h"
 #include "fatfs.h"
 #include "ff.h"

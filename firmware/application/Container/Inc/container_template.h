@@ -50,8 +50,6 @@
 #include <stdbool.h>
 
 // library includes
-#define MuTFF_MAX_TRACK_ATOMS 1
-#define MuTFF_MAX_USER_DATA_ITEMS 1
 #include "mutff.h"
 #include "mutff_default.h"
 
