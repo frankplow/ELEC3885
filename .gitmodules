@@ -1,3 +1,6 @@
+[submodule "firmware/application/mutff"]
+	path = firmware/application/mutff
+	url = https://github.com/frankplow/mutff
 [submodule "firmware/f7/mutff"]
 	path = firmware/f7/mutff
 	url = git@github.com:frankplow/mutff.git

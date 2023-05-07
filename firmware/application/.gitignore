@@ -1,0 +1,8 @@
+/Drivers
+/Middlewares
+/FATFS
+/STM32-for-VSCode.config.yaml
+/STM32Make.make
+/openocd.cfg
+/build
+/.vscode
