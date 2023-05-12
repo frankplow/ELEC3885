@@ -2210,7 +2210,7 @@
     (property "Value" "USB3300-EZK" (at 149.3394 125.73 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Footprint" "Package_DFN_QFN:QFN-32-1EP_5x5mm_P0.5mm_EP3.45x3.45mm" (at 177.8 128.27 0)
+    (property "Footprint" "3885:JLC_QFN-32-1EP_5x5mm_P0.5mm_EP3.45x3.45mm" (at 177.8 128.27 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "http://ww1.microchip.com/downloads/en/DeviceDoc/00001783C.pdf" (at 144.78 96.52 0)
