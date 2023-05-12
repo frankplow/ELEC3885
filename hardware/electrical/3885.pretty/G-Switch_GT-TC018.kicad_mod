@@ -49,10 +49,10 @@
     (stroke (width 0.1) (type solid)) (layer "F.Fab") (tstamp dcebc8a6-7650-4bb1-83d9-a6f18abbb9f4))
   (pad "" np_thru_hole circle (at -0.85 0 180) (size 0.75 0.75) (drill 0.75) (layers "F&B.Cu" "*.Mask") (tstamp c7f66ddc-11ef-47ba-aff3-0c5318866b62))
   (pad "" np_thru_hole circle (at 0.85 0 180) (size 0.75 0.75) (drill 0.75) (layers "F&B.Cu" "*.Mask") (tstamp d5f83497-e634-4637-ba2d-78e166a3f902))
-  (pad "1" smd rect (at -2.25 -0.85 180) (size 0.5 1) (layers "F.Cu" "F.Paste" "F.Mask") (tstamp 6384f92e-1a61-4458-a503-2e2a4525387c))
-  (pad "1" smd rect (at 2.25 -0.85 180) (size 0.5 1) (layers "F.Cu" "F.Paste" "F.Mask") (tstamp 20499ded-61e9-4192-a8ad-8c670773a2b9))
-  (pad "2" smd rect (at -1.675 1.2 180) (size 0.75 1) (layers "F.Cu" "F.Paste" "F.Mask") (tstamp 5796b327-a4ef-4bfc-9bac-09dd00e56552))
+  (pad "1" smd rect (at -1.675 1.2 180) (size 0.75 1) (layers "F.Cu" "F.Paste" "F.Mask") (tstamp 5796b327-a4ef-4bfc-9bac-09dd00e56552))
   (pad "2" smd rect (at 1.675 1.2 180) (size 0.75 1) (layers "F.Cu" "F.Paste" "F.Mask") (tstamp 086aa683-db96-4360-bdde-f507d1daac12))
+  (pad "MP" smd rect (at -2.25 -0.85 180) (size 0.5 1) (layers "F.Cu" "F.Paste" "F.Mask") (tstamp 6384f92e-1a61-4458-a503-2e2a4525387c))
+  (pad "MP" smd rect (at 2.25 -0.85 180) (size 0.5 1) (layers "F.Cu" "F.Paste" "F.Mask") (tstamp 20499ded-61e9-4192-a8ad-8c670773a2b9))
   (model "${KICAD6_3DMODEL_DIR}/Button_Switch_SMD.3dshapes/Panasonic_EVQPUK_EVQPUB.wrl"
     (offset (xyz 0 0 0))
     (scale (xyz 1 1 1))
