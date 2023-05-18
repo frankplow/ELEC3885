@@ -211,7 +211,10 @@ int main(void)
            default_settings.y_res,
            default_settings.FPS,
            default_settings.jpeg_comp_ratio,
-           default_settings.v_flipped) != CAMERA_OK) {
+           default_settings.v_flipped,
+           default_settings.light_mode,
+           default_settings.saturation,
+           default_settings.contrast) != CAMERA_OK) {
     exit(1);
   }
 
