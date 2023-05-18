@@ -326,3 +326,179 @@ void OV5640_Set_Comp_Ratio(uint16_t comp_ratio) {
 }
 
 
+void OV5640_SetLightMode(uint8_t LightMode)
+{
+ uint32_t index = 0;
+
+ CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x3406, 0x00);
+ CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5190, 0x46);
+ CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5191, 0xf8);
+ CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5192, 0x04);
+
+ switch(LightMode)
+ {
+ case OV5640_LIGHT_AUTO:
+   for(index=0; index< (sizeof(OV5640_LightModeAuto)/4) ; index++)
+   {
+     CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_LightModeAuto[index][0], OV5640_LightModeAuto[index][1]);
+   }
+   break;
+ case OV5640_LIGHT_SUNNY:
+   for(index=0; index< (sizeof(OV5640_LightModeSunny)/4) ; index++)
+   {
+     CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_LightModeSunny[index][0], OV5640_LightModeSunny[index][1]);
+   }
+   break;
+ case OV5640_LIGHT_OFFICE:
+   for(index=0; index< (sizeof(OV5640_LightModeOffice)/4) ; index++)
+   {
+     CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_LightModeOffice[index][0], OV5640_LightModeOffice[index][1]);
+   }
+   break;
+ case OV5640_LIGHT_CLOUDY:
+   for(index=0; index< (sizeof(OV5640_LightModeCloudy)/4) ; index++)
+   {
+     CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_LightModeCloudy[index][0], OV5640_LightModeCloudy[index][1]);
+   }
+   break;
+ case OV5640_LIGHT_HOME:
+   for(index=0; index< (sizeof(OV5640_LightModeHome)/4) ; index++)
+   {
+     CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_LightModeHome[index][0], OV5640_LightModeHome[index][1]);
+   }
+   break;
+ default :
+   /* Auto light mode used */
+   for(index=0; index< (sizeof(OV5640_LightModeAuto)/4) ; index++)
+   {
+     CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, OV5640_LightModeAuto[index][0], OV5640_LightModeAuto[index][1]);
+   }
+   break;
+ }
+}
+
+
+void OV5640_SetSaturation(uint8_t Level)
+{
+ CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, ISP_CONTROL_01, 0xFF);
+
+ switch(Level)
+ {
+ case OV5640_SATURATION_LEVEL4P:
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5583, 0x40);
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5584, 0x40);
+   break;
+
+ case OV5640_SATURATION_LEVEL3P:
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5583, 0x50);
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5584, 0x50);
+   break;
+
+ case OV5640_SATURATION_LEVEL2P:
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5583, 0x60);
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5584, 0x60);
+   break;
+
+ case OV5640_SATURATION_LEVEL1P:
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5583, 0x70);
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5584, 0x70);
+   break;
+
+ case OV5640_SATURATION_LEVEL0:
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5583, 0x80);
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5584, 0x80);
+   break;
+
+ case OV5640_SATURATION_LEVEL1N:
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5583, 0x30);
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5584, 0x30);
+   break;
+
+ case OV5640_SATURATION_LEVEL2N:
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5583, 0x20);
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5584, 0x20);
+   break;
+
+ case OV5640_SATURATION_LEVEL3N:
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5583, 0x10);
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5584, 0x10);
+   break;
+
+ case OV5640_SATURATION_LEVEL4N:
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5583, 0x00);
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5584, 0x00);
+   break;
+
+ default:
+   /* Level 0 as default */
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5583, 0x40);
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5584, 0x40);
+   break;
+ }
+
+ CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5580, 0x02);
+ CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5588, 0x41);
+}
+
+
+void OV5640_SetContrast(uint8_t Level)
+{
+ CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, ISP_CONTROL_01, 0xFF);
+ CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5580, 0x04);
+
+ switch(Level)
+ {
+ case OV5640_CONTRAST_LEVEL4P:
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5586, 0x30);
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5585, 0x30);
+   break;
+
+ case OV5640_CONTRAST_LEVEL3P:
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5586, 0x2C);
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5585, 0x2C);
+   break;
+
+ case OV5640_CONTRAST_LEVEL2P:
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5586, 0x28);
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5585, 0x28);
+   break;
+
+ case OV5640_CONTRAST_LEVEL1P:
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5586, 0x24);
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5585, 0x24);
+   break;
+
+ case OV5640_CONTRAST_LEVEL0:
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5586, 0x20);
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5585, 0x20);
+   break;
+
+ case OV5640_CONTRAST_LEVEL1N:
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5586, 0x1C);
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5585, 0x1C);
+   break;
+
+ case OV5640_CONTRAST_LEVEL2N:
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5586, 0x18);
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5585, 0x18);
+   break;
+
+ case OV5640_CONTRAST_LEVEL3N:
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5586, 0x14);
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5585, 0x14);
+   break;
+
+ case OV5640_CONTRAST_LEVEL4N:
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5586, 0x10);
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5585, 0x10);
+   break;
+
+ default:
+   /* Level 0 as default */
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5586, 0x20);
+   CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5585, 0x20);
+   break;
+ }
+
+ CAMERA_IO_Write_OV5640(OV5640_I2C_ADDRESS, 0x5588, 0x41);
+}

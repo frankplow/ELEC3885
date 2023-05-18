@@ -24,7 +24,7 @@ static void DCMI_DMAError(DMA_HandleTypeDef *hdma);
 #ifdef OV5640
 Camera_StatusTypeDef CAM_Init(uint8_t format, uint16_t x_res, uint16_t y_res,
                               uint8_t FPS, uint8_t jpeg_comp_ratio,
-                              OV5640_Mirror mirror) {
+                              OV5640_Mirror mirror, OV5640_LightMode lightmode, OV5640_Saturation saturation, OV5640_Contrast contrast) {
   DCMI_HandleTypeDef *phdcmi;
 
   /* Get the DCMI handle structure */
@@ -75,6 +75,9 @@ Camera_StatusTypeDef CAM_Init(uint8_t format, uint16_t x_res, uint16_t y_res,
   }
 
   OV5640_MirrorFlipConfig(mirror);
+  OV5640_SetLightMode(lightmode);
+  OV5640_SetSaturation(saturation);
+  OV5640_SetContrast(contrast);
 
   /* DCMI Initialization */
   BSP_CAMERA_MspInit(&hDcmiHandler, NULL);

@@ -58,6 +58,9 @@ struct Cam_config {
 	uint8_t FPS; 
 	uint8_t jpeg_comp_ratio; //1 - 63 lower = more compression
 	OV5640_Mirror v_flipped;
+  OV5640_LightMode light_mode;
+  OV5640_Saturation saturation;
+  OV5640_Contrast contrast;
 };
 
 /* USER CODE END EM */
