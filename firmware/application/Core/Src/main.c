@@ -28,6 +28,7 @@
 
 #include "container.h"
 #include "events.h"
+#include "stm32f4xx_hal_gpio.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -114,7 +115,18 @@ struct Cam_config default_settings =  {
         .v_flipped = OV5640_MIRROR_Y,
 };
 
+void turn_off() {
+  BSP_CAMERA_Stop();
 
+  // Close file
+  fatfs_err = f_close(&SDFile);
+  if (fatfs_err != FR_OK) {
+    exit(fatfs_err);
+  }
+
+  HAL_GPIO_WritePin(STAT_GPIO_Port, STAT_Pin, GPIO_PIN_RESET);
+  HAL_PWR_EnterSTANDBYMode();
+}
 /* USER CODE END 0 */
 
 /**
@@ -133,8 +145,7 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-   HAL_GPIO_TogglePin(STAT_GPIO_Port, STAT_Pin);
-  // HAL_Delay(1000);
+  HAL_PWR_EnableWakeUpPin(PWR_WAKEUP_PIN1);
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -154,8 +165,9 @@ int main(void)
   MX_FATFS_Init();
   /* USER CODE BEGIN 2 */
   printf("Main Init\n");
+  HAL_GPIO_WritePin(STAT_GPIO_Port, STAT_Pin, GPIO_PIN_SET);
 
-  //Mount filesystem
+  // Mount filesystem
   fatfs_err = f_mount(&SDFatFS, SDPath, 1);
   if (fatfs_err != FR_OK) {
     printf("failed to mount card, code: %i.\n", fatfs_err);
