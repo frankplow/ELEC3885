@@ -75,37 +75,6 @@ static void MX_SDIO_SD_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void handle_event(Event event) {
-    switch (event.type) {
-      case DCMIFrameComplete: {
-          const DCMIFrameCompleteEventData event_data =
-                  *((DCMIFrameCompleteEventData*) event.data);
-          container_on_dcmi_frame_complete(event_data);
-          free(event.data);
-          break;
-      }
-      case DCMIDataReady: {
-          const DCMIDataReadyEventData event_data =
-                  *((DCMIDataReadyEventData*) event.data);
-          container_on_dcmi_data_ready(event_data);
-          free(event.data);
-          break;
-      }
-      case DCMIVSync: {
-          break;
-      }
-      case PowerOff: {
-          break;
-      }
-      case USBPluggedIn: {
-          break;
-      }
-      default:
-          Error_Handler();
-          break;
-    }
-}
-
 struct Cam_config default_settings =  {
         .img_format = FMT_JPEG,
         .x_res = 800, //DVP timings need to be change for hi res
@@ -127,6 +96,52 @@ void turn_off() {
   HAL_GPIO_WritePin(STAT_GPIO_Port, STAT_Pin, GPIO_PIN_RESET);
   HAL_PWR_EnterSTANDBYMode();
 }
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+  switch (GPIO_Pin) {
+    case WKUP_Pin:
+      push_event_queue((Event) {
+        .type = PowerOff,
+        .data = NULL,
+      });
+      break;
+    default:
+      break;
+  }
+}
+
+void handle_event(Event event) {
+    switch (event.type) {
+      case DCMIFrameComplete: {
+          const DCMIFrameCompleteEventData event_data =
+                  *((DCMIFrameCompleteEventData*) event.data);
+          container_on_dcmi_frame_complete(event_data);
+          free(event.data);
+          break;
+      }
+      case DCMIDataReady: {
+          const DCMIDataReadyEventData event_data =
+                  *((DCMIDataReadyEventData*) event.data);
+          container_on_dcmi_data_ready(event_data);
+          free(event.data);
+          break;
+      }
+      case DCMIVSync: {
+          break;
+      }
+      case PowerOff: {
+          turn_off();
+          break;
+      }
+      case USBPluggedIn: {
+          break;
+      }
+      default:
+          Error_Handler();
+          break;
+    }
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -145,7 +160,7 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-  HAL_PWR_EnableWakeUpPin(PWR_WAKEUP_PIN1);
+  /* HAL_PWR_EnableWakeUpPin(PWR_WAKEUP_PIN1); */
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -459,6 +474,12 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOD, CAM_ENABLE_Pin|CAM_PWDN_Pin, GPIO_PIN_RESET);
 
+  /*Configure GPIO pin : WKUP_Pin */
+  GPIO_InitStruct.Pin = WKUP_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(WKUP_GPIO_Port, &GPIO_InitStruct);
+
   /*Configure GPIO pin : STAT_Pin */
   GPIO_InitStruct.Pin = STAT_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -486,6 +507,10 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(SD_DETECT_GPIO_Port, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
