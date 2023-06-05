@@ -22,7 +22,6 @@
 #ifndef __MAIN_H
 #define __MAIN_H
 
-#include "ov5640_driver.h"
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -71,6 +70,9 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define WKUP_Pin GPIO_PIN_0
+#define WKUP_GPIO_Port GPIOA
+#define WKUP_EXTI_IRQn EXTI0_IRQn
 #define STAT_Pin GPIO_PIN_14
 #define STAT_GPIO_Port GPIOE
 #define CAM_ENABLE_Pin GPIO_PIN_15
